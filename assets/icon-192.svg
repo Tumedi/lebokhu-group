@@ -1,0 +1,20 @@
+<svg width="192" height="192" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LeBoKhu Group app icon">
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#F6C453"/><stop offset="100%" stop-color="#B87910"/></linearGradient>
+    <linearGradient id="t" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#1FA98A"/><stop offset="100%" stop-color="#0C6B57"/></linearGradient>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#173A5E"/><stop offset="100%" stop-color="#0B2038"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="188" fill="none" stroke="url(#g)" stroke-width="8"/>
+  <g fill="url(#g)">
+    <circle cx="256" cy="84"  r="13"/>
+    <circle cx="400" cy="148" r="13"/>
+    <circle cx="420" cy="316" r="13"/>
+    <circle cx="256" cy="428" r="13"/>
+    <circle cx="92"  cy="316" r="13"/>
+    <circle cx="112" cy="148" r="13"/>
+  </g>
+  <path d="M270 176 a80 80 0 1 0 0 160 a48 48 0 1 1 0 -160 Z" fill="url(#t)"/>
+  <path d="M242 336 a80 80 0 1 0 0 -160 a48 48 0 1 1 0 160 Z" fill="url(#g)"/>
+  <circle cx="256" cy="256" r="22" fill="#0B2038"/>
+</svg>

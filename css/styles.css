@@ -292,3 +292,19 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
   .job-actions{width:100%}
   .job-actions .btn{width:100%}
 }
+
+
+/* ============================================================
+   PWA install button (floating)
+   ============================================================ */
+.pwa-install-btn{position:fixed;right:18px;bottom:18px;z-index:300;display:none;align-items:center;gap:8px;
+  padding:13px 20px;border:none;border-radius:999px;cursor:pointer;font-family:var(--sans);font-weight:800;
+  font-size:.95rem;color:#3a2600;background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));
+  box-shadow:0 10px 26px rgba(228,160,32,.5);transition:transform .2s,box-shadow .2s}
+.pwa-install-btn.show{display:inline-flex;animation:pwaPop .3s ease}
+.pwa-install-btn:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(228,160,32,.6)}
+.pwa-install-icon{font-size:1.1rem;line-height:1}
+@keyframes pwaPop{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+@media (max-width:720px){
+  .pwa-install-btn{right:14px;bottom:14px;padding:12px 18px}
+}

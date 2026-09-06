@@ -72,3 +72,36 @@ cd site && npx serve .
   small backend endpoint. Ask and I can wire this up.
 - Update the placeholder **email, phone and address** in `index.html` (Contact + Footer).
 - Optionally add: real founder photo, testimonials, a blog, or a job-listings page.
+
+
+## 📱 Mobile App (PWA)
+
+This site is a **Progressive Web App** — it can be installed on phones and desktops
+and works offline.
+
+### Files that make it an app
+- `manifest.webmanifest` — app name, icons, colours, launch behaviour
+- `sw.js` — service worker (offline caching of the app shell)
+- `js/pwa.js` — registers the service worker + shows the "Install App" button
+- `assets/icon-192.svg`, `icon-512.svg`, `icon-maskable.svg` — app icons
+
+### How users install it
+**Android (Chrome/Edge):** open the site → tap the **"Install App"** button (or
+browser menu ⋮ → *Install app / Add to Home screen*). It launches full-screen with
+the LeBoKhu icon.
+
+**iPhone/iPad (Safari):** open the site → tap **Share** → **Add to Home Screen**.
+(iOS doesn't support the automatic install button, so this manual step is normal.)
+
+**Desktop (Chrome/Edge):** an install icon appears in the address bar.
+
+> PWAs require **HTTPS**. GitHub Pages provides HTTPS automatically, so installation
+> works once the site is deployed there (it won't install over plain `file://`).
+
+### Publishing to the Google Play Store (optional, later)
+The same PWA can be packaged into a real Android app without rewriting anything:
+1. Use **[PWABuilder](https://www.pwabuilder.com)** — paste your live URL, it generates
+   a signed Android package (via Trusted Web Activity / Bubblewrap).
+2. Create a **Google Play Developer** account (one-time ~$25) and upload the package.
+Apple's App Store is stricter about PWAs; a Capacitor wrapper is the usual route there
+— ask and I can set that up.
