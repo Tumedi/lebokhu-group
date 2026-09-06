@@ -41,19 +41,40 @@ supabase secrets set APPROVAL_BCC="Tbmadihlaba@gmail.com"
 After you verify your domain in Resend, change `APPROVAL_FROM` to e.g.
 `"LeBoKhu Group <jobs@lebokhugroup.co.za>"` for the best deliverability.
 
-## Step 5 — Deploy the function
+## Step 5 — Deploy the functions
+There are **two** functions:
+
 ```bash
+# 1) Employer approval email (called by the logged-in admin)
 supabase functions deploy send-approval-email
+
+# 2) Job-seeker welcome email (called by anonymous visitors registering)
+#    Must allow public/anonymous calls, so deploy WITHOUT jwt verification:
+supabase functions deploy send-welcome-email --no-verify-jwt
 ```
-The admin dashboard calls it with your logged-in session, so the default (JWT-verified)
-deployment is fine. If you ever get an auth error from the function, you can redeploy with
-`--no-verify-jwt`, but the default is more secure and should work since admins are logged in.
+
+Why the difference? The **admin** is logged in, so `send-approval-email` can keep JWT
+verification on. But **job seekers register without logging in**, so `send-welcome-email`
+must be deployed with `--no-verify-jwt` or the browser call will be rejected.
+
+Optional welcome-email sender overrides (defaults shown):
+```bash
+supabase secrets set WELCOME_FROM="LeBoKhu Group <onboarding@resend.dev>"
+supabase secrets set WELCOME_BCC="Tbmadihlaba@gmail.com"
+```
 
 ## Step 6 — Test it
+**Approval email (employer):**
 1. Open your live **admin.html** → log in.
 2. Go to **Job Posts** → **Approve** a post that has a real `contact_email` you can check.
 3. You should see: *"a confirmation email was sent automatically to …"*.
 4. Check that inbox (and Spam the first time). A BCC copy also goes to `Tbmadihlaba@gmail.com`.
+
+**Welcome email (job seeker):**
+1. Open **register.html** → submit a registration using a real email you can check.
+2. That inbox should receive a "Thanks for registering" email shortly after.
+3. A BCC copy also goes to `Tbmadihlaba@gmail.com`.
+(If `send-welcome-email` isn't deployed, registration still works — the welcome email is just skipped.)
 
 ---
 

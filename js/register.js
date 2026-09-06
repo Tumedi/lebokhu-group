@@ -148,12 +148,32 @@
       }).catch(function () { return { ok: false }; });
     }
 
-    // ---- Orchestrate: DB first (source of truth), then email alert ----
+    // ---- Step 4: send the applicant a "thanks for registering" email ----
+    // (Automatic, via the Supabase Edge Function + Resend. Non-blocking:
+    //  if it isn't deployed, we simply skip it — the DB save is what matters.)
+    function sendWelcome() {
+      if (!dbConfigured) return Promise.resolve({ skipped: true });
+      var client = window.LEBOKHU_SUPABASE.client();
+      if (!client || !client.functions || !record.email) return Promise.resolve({ skipped: true });
+      return client.functions.invoke('send-welcome-email', {
+        body: {
+          email: record.email,
+          first_name: record.first_name,
+          preferred_sector: record.preferred_sector,
+          applying_for: record.applying_for,
+          has_cv: !!(cv && cv.files && cv.files.length)
+        }
+      }).then(function (res) {
+        return { ok: res && !res.error && res.data && res.data.success };
+      }).catch(function () { return { ok: false }; });
+    }
+
+    // ---- Orchestrate: DB first (source of truth), then the emails ----
     uploadCv()
       .then(saveToDb)
       .then(function (dbResult) {
-        // Fire the email alert regardless; don't fail the whole thing if email hiccups
-        return sendEmail().then(function () { return dbResult; });
+        // Fire both emails; don't fail the whole thing if either hiccups
+        return Promise.all([sendEmail(), sendWelcome()]).then(function () { return dbResult; });
       })
       .then(function (dbResult) {
         if (dbResult && dbResult.skipped && !emailConfigured) {
