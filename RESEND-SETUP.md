@@ -54,6 +54,9 @@ supabase functions deploy send-declined-email
 # 1c) Candidate-match email (also called by the logged-in admin)
 supabase functions deploy send-match-email
 
+# 1d) Application status-change email (also called by the logged-in admin)
+supabase functions deploy send-status-email
+
 # 2) Job-seeker welcome email (called by anonymous visitors registering)
 #    Must allow public/anonymous calls, so deploy WITHOUT jwt verification:
 supabase functions deploy send-welcome-email --no-verify-jwt

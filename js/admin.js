@@ -653,13 +653,20 @@
       var opts = APP_STATUSES.map(function (s) {
         return '<option value="' + s + '"' + ((r.status || 'submitted') === s ? ' selected' : '') + '>' + s + '</option>';
       }).join('');
+      var jobCell = r.job_id
+        ? '<a href="jobs.html" target="_blank" rel="noopener">' + esc(r.job_title || 'View') + '</a>'
+        : esc(r.job_title || '—');
+      var cvCell = r.cv_url
+        ? '<a href="' + esc(r.cv_url) + '" target="_blank" rel="noopener" class="cv-link">Download</a>'
+        : '<span class="muted">—</span>';
       return '<tr>' +
         '<td class="nowrap">' + esc(fmtDate2(r.created_at)) + '</td>' +
         '<td>' + esc(r.seeker_name || '—') + '</td>' +
         '<td><a href="mailto:' + esc(r.seeker_email) + '">' + esc(r.seeker_email) + '</a>' +
           (r.seeker_phone ? '<br><span class="muted">' + esc(r.seeker_phone) + '</span>' : '') + '</td>' +
-        '<td>' + esc(r.job_title || '—') + '</td>' +
+        '<td>' + jobCell + '</td>' +
         '<td>' + esc(r.company || '—') + '</td>' +
+        '<td>' + cvCell + '</td>' +
         '<td>' + appStatusBadge(r.status) + '</td>' +
         '<td><select class="status-select" data-app="' + esc(r.id) + '">' + opts + '</select></td>' +
       '</tr>';
@@ -679,7 +686,54 @@
         var a = APPS.filter(function (x) { return x.id === id; })[0];
         if (a) a.status = status;
         applyAppFilters(); renderAppStats();
+
+        // Offer to notify the applicant of the new status
+        if (a && a.seeker_email &&
+            confirm('Status set to "' + status + '".\n\nEmail ' + a.seeker_email +
+              ' to let them know?')) {
+          sendStatusEmailAuto(a, status).then(function (r) {
+            if (r.sent) {
+              alert('✓ ' + a.seeker_email + ' has been notified.');
+            } else {
+              openStatusMailto(a, status);
+            }
+          });
+        }
       });
+  }
+
+  function sendStatusEmailAuto(app, status) {
+    if (!app || !app.seeker_email || !client.functions) return Promise.resolve({ sent: false });
+    return client.functions.invoke('send-status-email', {
+      body: {
+        seeker_email: app.seeker_email,
+        seeker_name: app.seeker_name || '',
+        job_title: app.job_title || '',
+        company: app.company || '',
+        status: status
+      }
+    }).then(function (res) {
+      var ok = res && !res.error && res.data && res.data.success;
+      return { sent: !!ok };
+    }).catch(function () { return { sent: false }; });
+  }
+
+  function openStatusMailto(app, status) {
+    var name = app.seeker_name || 'there';
+    var role = (app.job_title || 'your application') + (app.company ? ' at ' + app.company : '');
+    var lines = {
+      reviewed: 'Your application for ' + role + ' is now being reviewed by our team.',
+      shortlisted: 'Great news — you have been shortlisted for ' + role + '! We may contact you shortly.',
+      hired: 'Congratulations — you have been selected for ' + role + '! We will be in touch with the details.',
+      rejected: 'Thank you for your interest in ' + role + '. This role has moved forward with other candidates, but we will keep your details for future opportunities.',
+      submitted: 'Your application for ' + role + ' has been received.'
+    };
+    var subject = 'Update on your application — LeBoKhu Group';
+    var body = 'Hi ' + name + ',\n\n' + (lines[status] || lines.submitted) +
+      '\n\nView your applications: https://tumedi.github.io/lebokhu-group/my-applications.html\n\n' +
+      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+    window.location.href = 'mailto:' + encodeURIComponent(app.seeker_email) +
+      '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
 
   function renderAppStats() {
@@ -693,11 +747,29 @@
     document.getElementById('appStatCards').innerHTML = cards.map(function (c) {
       return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
     }).join('');
+
+    // Status breakdown chart (bars, colour-coded per status)
+    var order = ['submitted', 'reviewed', 'shortlisted', 'rejected', 'hired'];
+    var total = APPS.length || 1;
+    var max = order.reduce(function (m, s) { return Math.max(m, cs(s)); }, 1);
+    var rows = order.map(function (s) {
+      var n = cs(s);
+      var pct = Math.round((n / max) * 100);
+      var share = Math.round((n / total) * 100);
+      return '<div class="bd-row">' +
+        '<span class="bd-label"><span class="badge app-' + s + '">' + s + '</span></span>' +
+        '<span class="bd-bar"><span class="bd-fill app-fill-' + s + '" style="width:' + pct + '%"></span></span>' +
+        '<span class="bd-n">' + n + ' <span class="muted">(' + share + '%)</span></span>' +
+      '</div>';
+    }).join('');
+    document.getElementById('appBreakdown').innerHTML =
+      '<div class="breakdown-card" style="grid-column:1/-1"><h3>Applications by Status</h3>' +
+      (APPS.length ? rows : '<p class="muted">No applications yet</p>') + '</div>';
   }
 
   function exportAppsCsv() {
     if (!APPS_VIEW.length) { alert('Nothing to export with the current filters.'); return; }
-    var cols = ['created_at', 'seeker_name', 'seeker_email', 'seeker_phone', 'job_title', 'company', 'status'];
+    var cols = ['created_at', 'seeker_name', 'seeker_email', 'seeker_phone', 'job_title', 'company', 'status', 'cv_url'];
     var head = cols.join(',');
     var rows = APPS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); });
     var csv = '\uFEFF' + head + '\n' + rows.join('\n');

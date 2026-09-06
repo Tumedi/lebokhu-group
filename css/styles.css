@@ -408,6 +408,12 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .app-rejected{background:#fdeaea;color:#c0392b}
 .app-hired{background:#e7f4f0;color:var(--teal)}
 .status-select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem;background:#fff;font-family:inherit}
+/* Application status chart fills */
+.bd-fill.app-fill-submitted{background:linear-gradient(90deg,#aeb9c4,#8496a6)}
+.bd-fill.app-fill-reviewed{background:linear-gradient(90deg,#F6C453,#E4A020)}
+.bd-fill.app-fill-shortlisted{background:linear-gradient(90deg,#5aa0e8,#1f5fa8)}
+.bd-fill.app-fill-rejected{background:linear-gradient(90deg,#e88a8a,#c0392b)}
+.bd-fill.app-fill-hired{background:linear-gradient(90deg,#3fd3b0,#0C6B57)}
 
 .actions-cell{white-space:nowrap;min-width:200px}
 .mini-btn{display:inline-block;margin:2px 3px;padding:5px 10px;border:1px solid var(--line);background:#fff;

@@ -151,9 +151,21 @@
     });
   }
 
+  // Look up the seeker's most recent CV (from a prior registration by email).
+  function findSeekerCv(client, email) {
+    if (!email) return Promise.resolve(null);
+    return client.from(window.LEBOKHU_SUPABASE.TABLE)
+      .select('cv_url').eq('email', email).not('cv_url', 'is', null)
+      .order('created_at', { ascending: false }).limit(1)
+      .then(function (r) { return (r.data && r.data[0] && r.data[0].cv_url) || null; })
+      .catch(function () { return null; });
+  }
+
   function submitApplication(job, profile) {
     var noteEl = document.getElementById('applyNote');
     var client = window.LEBOKHU_AUTH.client();
+
+    findSeekerCv(client, profile.email).then(function (cvUrl) {
     var record = {
       seeker_id: profile.id,
       job_id: job.id || null,
@@ -162,6 +174,7 @@
       seeker_name: profile.full_name || '',
       seeker_email: profile.email || '',
       seeker_phone: profile.phone || '',
+      cv_url: cvUrl,
       status: 'submitted'
     };
     client.from('applications').insert([record]).then(function (res) {
@@ -182,6 +195,7 @@
         '<a href="my-applications.html">My Applications</a>.';
       render();
     });
+    }); // end findSeekerCv
   }
 
   function showModal() { modal.hidden = false; document.body.style.overflow = 'hidden'; }
