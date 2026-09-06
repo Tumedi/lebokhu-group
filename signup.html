@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — LeBoKhu Group</title>
+  <meta name="description" content="Create a LeBoKhu Group account as a job seeker or employer.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0B2038">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header class="site-header" id="top">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand" aria-label="LeBoKhu Group home">
+        <img src="assets/logo.svg" alt="LeBoKhu Group" class="logo logo-dark">
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <a href="index.html#about">About</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="login.html" class="nav-cta">Log In</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <p class="eyebrow">Create Your Account</p>
+      <h1>Sign Up</h1>
+      <p class="lead">Join LeBoKhu Group to apply for jobs or post opportunities.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container narrow">
+      <form class="reg-form" id="signupForm" novalidate>
+        <div class="notice" id="notConfigured" hidden>
+          ⚠️ Accounts aren't available yet — the database connection isn't configured.
+        </div>
+
+        <h3 class="form-section-title">I am a…</h3>
+        <div class="role-toggle" role="group" aria-label="Account type">
+          <label class="role-option">
+            <input type="radio" name="role" value="seeker" checked>
+            <span class="role-card">
+              <span class="role-emoji">👤</span>
+              <strong>Job Seeker</strong>
+              <small>Find and apply for jobs</small>
+            </span>
+          </label>
+          <label class="role-option">
+            <input type="radio" name="role" value="employer">
+            <span class="role-card">
+              <span class="role-emoji">🏢</span>
+              <strong>Employer</strong>
+              <small>Post jobs &amp; hire</small>
+            </span>
+          </label>
+        </div>
+
+        <h3 class="form-section-title">Your details</h3>
+        <div class="field">
+          <label for="fullName">Full name *</label>
+          <input type="text" id="fullName" autocomplete="name" required>
+        </div>
+        <div class="field" id="companyField" hidden>
+          <label for="company">Company name</label>
+          <input type="text" id="company" autocomplete="organization">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="email">Email *</label>
+            <input type="email" id="email" autocomplete="email" required>
+          </div>
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" autocomplete="tel">
+          </div>
+        </div>
+        <div class="field">
+          <label for="password">Password * (min 6 characters)</label>
+          <input type="password" id="password" autocomplete="new-password" minlength="6" required>
+        </div>
+
+        <div class="field checkbox">
+          <label>
+            <input type="checkbox" id="consent" required>
+            <span>I agree that LeBoKhu Group may store my details and contact me (POPIA consent). *</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+        <p class="form-status" id="signupStatus" role="status" aria-live="polite"></p>
+        <p class="hint center">Already have an account? <a href="login.html">Log in</a></p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <div class="container"><p>&copy; <span id="year"></span> LeBoKhu Group. All rights reserved. &middot; <a href="admin.html">Admin</a></p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/signup.js"></script>
+</body>
+</html>

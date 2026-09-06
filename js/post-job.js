@@ -13,6 +13,28 @@
   var status = document.getElementById('jobStatus');
   var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  // Require a logged-in EMPLOYER (when auth is configured). This both
+  // protects the page and lets us stamp the post with the employer's id.
+  var currentProfile = null;
+  var AUTH = window.LEBOKHU_AUTH;
+  if (AUTH && AUTH.configured()) {
+    AUTH.requireAuth('employer').then(function (ctx) {
+      currentProfile = ctx.profile;
+      AUTH.renderHeader('#mainNav');
+      // Pre-fill contact details from the employer's profile
+      if (currentProfile) {
+        var c = document.getElementById('company');
+        var cn = document.getElementById('contactName');
+        var ce = document.getElementById('contactEmail');
+        var cp = document.getElementById('contactPhone');
+        if (c && !c.value && currentProfile.company) c.value = currentProfile.company;
+        if (cn && !cn.value && currentProfile.full_name) cn.value = currentProfile.full_name;
+        if (ce && !ce.value && currentProfile.email) ce.value = currentProfile.email;
+        if (cp && !cp.value && currentProfile.phone) cp.value = currentProfile.phone;
+      }
+    }).catch(function () { /* requireAuth redirected to login */ });
+  }
+
   form.querySelectorAll('input,select,textarea').forEach(function (f) {
     f.addEventListener('input', function () { f.classList.remove('err'); });
   });
@@ -62,7 +84,8 @@
       job_type: val('jobType'),
       description: val('description'),
       closing_date: val('closingDate') || null,
-      status: 'pending'
+      status: 'pending',
+      user_id: currentProfile ? currentProfile.id : null
     };
 
     function saveToDb() {

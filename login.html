@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — LeBoKhu Group</title>
+  <meta name="description" content="Log in to your LeBoKhu Group account.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0B2038">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header class="site-header" id="top">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand" aria-label="LeBoKhu Group home">
+        <img src="assets/logo.svg" alt="LeBoKhu Group" class="logo logo-dark">
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <a href="index.html#about">About</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="signup.html" class="nav-cta">Sign Up</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <p class="eyebrow">Welcome Back</p>
+      <h1>Log In</h1>
+      <p class="lead">Access your applications or manage your job posts.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container narrow">
+      <form class="reg-form login-card" id="loginForm" novalidate>
+        <div class="notice" id="notConfigured" hidden>
+          ⚠️ Login isn't available yet — the database connection isn't configured.
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+        <p class="form-status" id="loginStatus" role="status" aria-live="polite"></p>
+        <p class="hint center">
+          <a href="#" id="forgotLink">Forgot password?</a>
+          &middot; No account? <a href="signup.html">Sign up</a>
+        </p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <div class="container"><p>&copy; <span id="year"></span> LeBoKhu Group. All rights reserved. &middot; <a href="admin.html">Admin</a></p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

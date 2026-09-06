@@ -44,6 +44,7 @@
     adminUser.textContent = user && user.email ? user.email : '';
     loadData();
     loadPosts();
+    loadApps();
   }
   function showLogin() {
     dashView.hidden = true;
@@ -149,30 +150,39 @@
     el.addEventListener('change', applyFilters);
   });
   document.getElementById('refreshBtn').addEventListener('click', function () {
-    if (activeTab === 'posts') loadPosts(); else loadData();
+    if (activeTab === 'posts') loadPosts();
+    else if (activeTab === 'apps') loadApps();
+    else loadData();
   });
   document.getElementById('exportBtn').addEventListener('click', function () {
-    if (activeTab === 'posts') exportPostsCsv(); else exportCsv();
+    if (activeTab === 'posts') exportPostsCsv();
+    else if (activeTab === 'apps') exportAppsCsv();
+    else exportCsv();
   });
 
   /* ---------- Tab switching ---------- */
   var activeTab = 'seekers';
   var tabSeekers = document.getElementById('tabSeekers');
   var tabPosts = document.getElementById('tabPosts');
+  var tabApps = document.getElementById('tabApps');
   var panelSeekers = document.getElementById('panelSeekers');
   var panelPosts = document.getElementById('panelPosts');
+  var panelApps = document.getElementById('panelApps');
   function switchTab(tab) {
     activeTab = tab;
-    var isPosts = tab === 'posts';
-    tabPosts.classList.toggle('active', isPosts);
-    tabSeekers.classList.toggle('active', !isPosts);
-    tabPosts.setAttribute('aria-selected', isPosts ? 'true' : 'false');
-    tabSeekers.setAttribute('aria-selected', !isPosts ? 'true' : 'false');
-    panelPosts.hidden = !isPosts;
-    panelSeekers.hidden = isPosts;
+    var tabs = { seekers: tabSeekers, posts: tabPosts, apps: tabApps };
+    var panels = { seekers: panelSeekers, posts: panelPosts, apps: panelApps };
+    Object.keys(tabs).forEach(function (k) {
+      if (!tabs[k]) return;
+      var on = (k === tab);
+      tabs[k].classList.toggle('active', on);
+      tabs[k].setAttribute('aria-selected', on ? 'true' : 'false');
+      if (panels[k]) panels[k].hidden = !on;
+    });
   }
   tabSeekers.addEventListener('click', function () { switchTab('seekers'); });
   tabPosts.addEventListener('click', function () { switchTab('posts'); });
+  if (tabApps) tabApps.addEventListener('click', function () { switchTab('apps'); });
 
   /* ---------- Render table ---------- */
   function fmtDate(iso) {
@@ -584,6 +594,114 @@
     var rows = POSTS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); });
     var csv = '\uFEFF' + head + '\n' + rows.join('\n');
     downloadCsv(csv, 'lebokhu-job-posts');
+  }
+
+  /* ============================================================
+     APPLICATIONS — view & manage statuses (admin)
+     ============================================================ */
+  var APPS = [];
+  var APPS_VIEW = [];
+  var APP_STATUSES = ['submitted', 'reviewed', 'shortlisted', 'rejected', 'hired'];
+
+  function loadApps() {
+    var countEl = document.getElementById('appCount');
+    if (!countEl) return;
+    countEl.textContent = 'Loading…';
+    client.from('applications').select('*').order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error) {
+          countEl.textContent = 'Error loading applications: ' + res.error.message +
+            ' (make sure your account role is set to admin — see supabase-auth.sql).';
+          return;
+        }
+        APPS = res.data || [];
+        applyAppFilters();
+        renderAppStats();
+      });
+  }
+
+  function applyAppFilters() {
+    var q = (document.getElementById('aq').value || '').trim().toLowerCase();
+    var st = document.getElementById('aStatus').value;
+    APPS_VIEW = APPS.filter(function (r) {
+      if (st && (r.status || 'submitted') !== st) return false;
+      if (q) {
+        var hay = [r.seeker_name, r.seeker_email, r.seeker_phone, r.job_title, r.company]
+          .join(' ').toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    renderAppTable();
+  }
+  ['aq', 'aStatus'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', applyAppFilters); el.addEventListener('change', applyAppFilters); }
+  });
+
+  function appStatusBadge(s) {
+    s = s || 'submitted';
+    return '<span class="badge app-' + esc(s) + '">' + esc(s) + '</span>';
+  }
+
+  function renderAppTable() {
+    var tbody = document.getElementById('appTbody');
+    document.getElementById('appCount').textContent =
+      APPS_VIEW.length + ' of ' + APPS.length + ' applications';
+    document.getElementById('appNoRows').hidden = APPS_VIEW.length !== 0;
+    tbody.innerHTML = APPS_VIEW.map(function (r) {
+      var opts = APP_STATUSES.map(function (s) {
+        return '<option value="' + s + '"' + ((r.status || 'submitted') === s ? ' selected' : '') + '>' + s + '</option>';
+      }).join('');
+      return '<tr>' +
+        '<td class="nowrap">' + esc(fmtDate2(r.created_at)) + '</td>' +
+        '<td>' + esc(r.seeker_name || '—') + '</td>' +
+        '<td><a href="mailto:' + esc(r.seeker_email) + '">' + esc(r.seeker_email) + '</a>' +
+          (r.seeker_phone ? '<br><span class="muted">' + esc(r.seeker_phone) + '</span>' : '') + '</td>' +
+        '<td>' + esc(r.job_title || '—') + '</td>' +
+        '<td>' + esc(r.company || '—') + '</td>' +
+        '<td>' + appStatusBadge(r.status) + '</td>' +
+        '<td><select class="status-select" data-app="' + esc(r.id) + '">' + opts + '</select></td>' +
+      '</tr>';
+    }).join('');
+
+    tbody.querySelectorAll('[data-app]').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        setAppStatus(sel.getAttribute('data-app'), sel.value);
+      });
+    });
+  }
+
+  function setAppStatus(id, status) {
+    client.from('applications').update({ status: status }).eq('id', id)
+      .then(function (res) {
+        if (res.error) { alert('Update failed: ' + res.error.message); return; }
+        var a = APPS.filter(function (x) { return x.id === id; })[0];
+        if (a) a.status = status;
+        applyAppFilters(); renderAppStats();
+      });
+  }
+
+  function renderAppStats() {
+    function cs(s) { return APPS.filter(function (r) { return (r.status || 'submitted') === s; }).length; }
+    var cards = [
+      { label: 'Total Applications', value: APPS.length },
+      { label: 'Submitted', value: cs('submitted') },
+      { label: 'Shortlisted', value: cs('shortlisted') },
+      { label: 'Hired', value: cs('hired') }
+    ];
+    document.getElementById('appStatCards').innerHTML = cards.map(function (c) {
+      return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
+    }).join('');
+  }
+
+  function exportAppsCsv() {
+    if (!APPS_VIEW.length) { alert('Nothing to export with the current filters.'); return; }
+    var cols = ['created_at', 'seeker_name', 'seeker_email', 'seeker_phone', 'job_title', 'company', 'status'];
+    var head = cols.join(',');
+    var rows = APPS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); });
+    var csv = '\uFEFF' + head + '\n' + rows.join('\n');
+    downloadCsv(csv, 'lebokhu-applications');
   }
 
   /* ============================================================

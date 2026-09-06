@@ -32,8 +32,8 @@
         <a href="jobs.html">Jobs</a>
         <a href="#companies">Companies</a>
         <a href="#impact">Impact</a>
-        <a href="#founder">Our Story</a>
-        <a href="register.html" class="nav-cta">Register</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="signup.html" class="nav-cta">Sign Up</a>
       </nav>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
         <span></span><span></span><span></span>
@@ -172,7 +172,7 @@
           <li><strong>Get matched</strong> — we connect you to companies that are hiring.</li>
           <li><strong>Get supported</strong> — we guide you through the process to success.</li>
         </ol>
-        <a href="register.html" class="btn btn-primary">Register as a Job Seeker</a>
+        <a href="signup.html" class="btn btn-primary">Sign Up as a Job Seeker</a>
       </div>
     </div>
   </section>
@@ -337,7 +337,14 @@
     </div>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script src="js/pwa.js"></script>
+  <script>
+    // Reflect login state in the nav (adds Log In / dashboard + Log Out)
+    if (window.LEBOKHU_AUTH) window.LEBOKHU_AUTH.renderHeader('#mainNav');
+  </script>
 </body>
 </html>

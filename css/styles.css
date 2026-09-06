@@ -401,6 +401,13 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .badge-approved{background:#e7f4f0;color:var(--teal)}
 .badge-closed{background:#f0f0f3;color:var(--slate)}
 .badge-declined{background:#fdeaea;color:#c0392b}
+/* Application statuses */
+.app-submitted{background:#eef2f6;color:#5a6b7b}
+.app-reviewed{background:#fff4dc;color:#8a6100}
+.app-shortlisted{background:#e3f0ff;color:#1f5fa8}
+.app-rejected{background:#fdeaea;color:#c0392b}
+.app-hired{background:#e7f4f0;color:var(--teal)}
+.status-select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.82rem;background:#fff;font-family:inherit}
 
 .actions-cell{white-space:nowrap;min-width:200px}
 .mini-btn{display:inline-block;margin:2px 3px;padding:5px 10px;border:1px solid var(--line);background:#fff;
@@ -420,3 +427,18 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .mini-btn.close:hover{background:#eef0f3}
 .mini-btn.danger{border-color:#d64545;color:#d64545}
 .mini-btn.danger:hover{background:#d64545;color:#fff}
+
+
+/* ============================================================
+   Auth — role toggle (signup)
+   ============================================================ */
+.role-toggle{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
+.role-option{cursor:pointer;margin:0}
+.role-option input{position:absolute;opacity:0;pointer-events:none}
+.role-card{display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px;
+  border:2px solid var(--line);border-radius:var(--radius);padding:20px 14px;transition:.2s;background:#fff}
+.role-card .role-emoji{font-size:1.8rem}
+.role-card small{color:var(--slate);font-size:.82rem}
+.role-option input:checked + .role-card{border-color:var(--teal);background:#f2fbf8;box-shadow:0 0 0 3px rgba(12,107,87,.12)}
+.role-option:hover .role-card{border-color:var(--teal-light)}
+@media (max-width:480px){ .role-toggle{grid-template-columns:1fr} }

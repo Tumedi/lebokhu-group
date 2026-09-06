@@ -68,6 +68,7 @@
       <div class="tabs" role="tablist">
         <button class="tab active" id="tabSeekers" role="tab" aria-selected="true">👤 Job Seekers</button>
         <button class="tab" id="tabPosts" role="tab" aria-selected="false">💼 Job Posts</button>
+        <button class="tab" id="tabApps" role="tab" aria-selected="false">📨 Applications</button>
       </div>
 
       <!-- ===== JOB SEEKERS TAB ===== -->
@@ -166,6 +167,44 @@
             <tbody id="postTbody"></tbody>
           </table>
           <div class="no-results" id="postNoRows" hidden><p>No job posts match your filters.</p></div>
+        </div>
+      </div>
+
+      <!-- ===== APPLICATIONS TAB ===== -->
+      <div class="tab-panel" id="panelApps" hidden>
+        <div class="stat-cards" id="appStatCards"></div>
+
+        <div class="job-filters admin-filters">
+          <div class="field">
+            <label for="aq">Search</label>
+            <input type="text" id="aq" placeholder="Name, email, job, company…">
+          </div>
+          <div class="field">
+            <label for="aStatus">Status</label>
+            <select id="aStatus">
+              <option value="">All statuses</option>
+              <option value="submitted">Submitted</option>
+              <option value="reviewed">Reviewed</option>
+              <option value="shortlisted">Shortlisted</option>
+              <option value="rejected">Rejected</option>
+              <option value="hired">Hired</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="results-count" id="appCount"></p>
+
+        <div class="table-wrap">
+          <table class="data-table" id="appTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Applicant</th><th>Contact</th><th>Job</th>
+                <th>Company</th><th>Status</th><th>Update status</th>
+              </tr>
+            </thead>
+            <tbody id="appTbody"></tbody>
+          </table>
+          <div class="no-results" id="appNoRows" hidden><p>No applications match your filters.</p></div>
         </div>
       </div>
 

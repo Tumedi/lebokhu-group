@@ -165,3 +165,39 @@ Open **`admin.html`** → **💼 Job Posts** tab:
 Posts marked **approved** are the ones your public Jobs page is allowed to read (handy if you
 later want the Jobs page to show live employer posts instead of the sample list — ask and I can
 wire that up).
+
+
+## 🔐 User Accounts (Supabase Auth)
+
+Only registered users can post or apply for jobs. Two roles:
+- **Job Seeker** — applies for jobs, sees application history at `my-applications.html`
+- **Employer** — posts jobs, manages them at `my-posts.html`
+
+### One-time setup
+1. **Run the SQL:** open `supabase-auth.sql`, copy its contents into Supabase → SQL Editor → Run.
+   (Creates `profiles`, `applications`, adds `job_posts.user_id`, RLS, and the auto-profile trigger.)
+2. **Email confirmation:** in Supabase → **Authentication → Providers → Email**, keep
+   "Confirm email" ON (recommended). Users must click the link in their email before logging in.
+3. **Allowed URLs:** Supabase → **Authentication → URL Configuration** → set **Site URL** to
+   `https://tumedi.github.io/lebokhu-group/` and add it to **Redirect URLs**.
+4. **Make yourself admin:** sign up on the site (as anything), confirm your email, then run in SQL Editor:
+   ```sql
+   update public.profiles set role = 'admin'
+   where id = (select id from auth.users where email = 'Tbmadihlaba@gmail.com');
+   ```
+   This lets your admin dashboard see & manage ALL applications and posts.
+
+### Pages
+| Page | Who | Purpose |
+|------|-----|---------|
+| `signup.html` | anyone | Create account (choose Seeker / Employer) |
+| `login.html` | anyone | Log in (+ forgot password) |
+| `jobs.html` | public | Browse jobs; **Apply** requires seeker login |
+| `my-applications.html` | seeker | Application history + statuses |
+| `post-job.html` | employer | Post a job (login required) |
+| `my-posts.html` | employer | Manage own posts + applicant counts |
+| `admin.html` | admin | Seekers / Job Posts / **Applications** (set statuses) |
+
+### Application statuses
+`submitted → reviewed → shortlisted → rejected → hired` — the admin sets these on the
+**Applications** tab, and each seeker sees the current status on their dashboard.

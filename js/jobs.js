@@ -49,9 +49,15 @@
 
   function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 
-  function jobCard(job) {
-    var q = encodeURIComponent(job.title);
+  var FILTERED = [];          // current filtered jobs (apply buttons index into this)
+  var appliedJobIds = {};     // job_id -> true, for the logged-in seeker
+
+  function jobCard(job, idx) {
     var liveBadge = job.live ? '<span class="badge badge-live">● Live</span>' : '';
+    var already = job.id && appliedJobIds[job.id];
+    var btn = already
+      ? '<button class="btn btn-outline" disabled>✓ Applied</button>'
+      : '<button class="btn btn-primary" data-apply-idx="' + idx + '">Apply Now</button>';
     return '' +
       '<article class="job-card">' +
         '<div class="job-main">' +
@@ -69,9 +75,7 @@
           '</p>' +
           '<p class="job-desc">' + esc(job.desc) + '</p>' +
         '</div>' +
-        '<div class="job-actions">' +
-          '<button class="btn btn-primary" data-apply="' + q + '">Apply Now</button>' +
-        '</div>' +
+        '<div class="job-actions">' + btn + '</div>' +
       '</article>';
   }
 
@@ -79,7 +83,7 @@
     var s = (searchEl.value || '').trim().toLowerCase();
     var sector = sectorEl.value, level = levelEl.value, loc = locEl.value;
 
-    var filtered = JOBS.filter(function (j) {
+    FILTERED = JOBS.filter(function (j) {
       if (s && (j.title + ' ' + j.desc + ' ' + j.sector).toLowerCase().indexOf(s) === -1) return false;
       if (sector && j.sector !== sector) return false;
       if (level && j.level !== level) return false;
@@ -87,13 +91,15 @@
       return true;
     });
 
-    listEl.innerHTML = filtered.map(jobCard).join('');
-    countEl.textContent = filtered.length + (filtered.length === 1 ? ' job' : ' jobs') + ' found';
-    noRes.hidden = filtered.length !== 0;
+    listEl.innerHTML = FILTERED.map(jobCard).join('');
+    countEl.textContent = FILTERED.length + (FILTERED.length === 1 ? ' job' : ' jobs') + ' found';
+    noRes.hidden = FILTERED.length !== 0;
 
     // Wire apply buttons
-    listEl.querySelectorAll('[data-apply]').forEach(function (btn) {
-      btn.addEventListener('click', function () { openApply(decodeURIComponent(btn.getAttribute('data-apply'))); });
+    listEl.querySelectorAll('[data-apply-idx]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        openApply(FILTERED[parseInt(btn.getAttribute('data-apply-idx'), 10)]);
+      });
     });
   }
 
@@ -101,13 +107,84 @@
   var modal = document.getElementById('applyModal');
   var roleEl = document.getElementById('applyRole');
   var proceed = document.getElementById('applyProceed');
+  var currentJob = null;
 
-  function openApply(title) {
-    roleEl.textContent = title;
-    proceed.href = 'register.html?role=' + encodeURIComponent(title);
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
+  function openApply(job) {
+    currentJob = job;
+    roleEl.textContent = job.title + (job.company ? ' — ' + job.company : '');
+
+    var AUTH = window.LEBOKHU_AUTH;
+    var noteEl = document.getElementById('applyNote');
+
+    // Not configured (no DB): fall back to old behaviour (register page)
+    if (!AUTH || !AUTH.configured()) {
+      proceed.href = 'register.html?role=' + encodeURIComponent(job.title);
+      proceed.textContent = 'Continue to Application';
+      proceed.style.display = '';
+      if (noteEl) noteEl.textContent = 'This takes you to our registration form with the role pre-filled.';
+      showModal();
+      return;
+    }
+
+    // Configured: check auth + role
+    AUTH.getProfile().then(function (profile) {
+      if (!profile) {
+        // Not logged in → send to login, returning to jobs after
+        proceed.href = 'login.html?next=' + encodeURIComponent('jobs.html');
+        proceed.textContent = 'Log in to Apply';
+        proceed.style.display = '';
+        if (noteEl) noteEl.textContent = 'You need an account to apply. Log in or sign up — it only takes a minute.';
+        showModal();
+        return;
+      }
+      if (profile.role === 'employer') {
+        proceed.style.display = 'none';
+        if (noteEl) noteEl.textContent = 'You are logged in as an employer. Applying is for job-seeker accounts.';
+        showModal();
+        return;
+      }
+      // Logged-in seeker → submit application directly
+      proceed.style.display = 'none';
+      if (noteEl) noteEl.textContent = 'Submitting your application…';
+      showModal();
+      submitApplication(job, profile);
+    });
   }
+
+  function submitApplication(job, profile) {
+    var noteEl = document.getElementById('applyNote');
+    var client = window.LEBOKHU_AUTH.client();
+    var record = {
+      seeker_id: profile.id,
+      job_id: job.id || null,
+      job_title: job.title || '',
+      company: job.company || '',
+      seeker_name: profile.full_name || '',
+      seeker_email: profile.email || '',
+      seeker_phone: profile.phone || '',
+      status: 'submitted'
+    };
+    client.from('applications').insert([record]).then(function (res) {
+      if (res.error) {
+        // Unique-constraint violation => already applied
+        if ((res.error.code === '23505') || /duplicate|unique/i.test(res.error.message || '')) {
+          if (job.id) appliedJobIds[job.id] = true;
+          if (noteEl) noteEl.innerHTML = 'You have already applied for this role. ' +
+            'See your <a href="my-applications.html">applications</a>.';
+        } else {
+          if (noteEl) noteEl.textContent = 'Sorry, could not submit: ' + res.error.message;
+        }
+        render();
+        return;
+      }
+      if (job.id) appliedJobIds[job.id] = true;
+      if (noteEl) noteEl.innerHTML = '✓ Application submitted! Track it under ' +
+        '<a href="my-applications.html">My Applications</a>.';
+      render();
+    });
+  }
+
+  function showModal() { modal.hidden = false; document.body.style.overflow = 'hidden'; }
   function closeApply() { modal.hidden = true; document.body.style.overflow = ''; }
   if (modal) {
     modal.querySelectorAll('[data-close]').forEach(function (el) { el.addEventListener('click', closeApply); });
@@ -136,6 +213,7 @@
   /* ---- Map a DB job_posts row to the card model ---- */
   function mapPost(p) {
     return {
+      id: p.id,
       title: p.title || 'Untitled role',
       company: p.company || '',
       sector: p.sector || 'Other',
@@ -146,6 +224,20 @@
       desc: p.description || '',
       live: true
     };
+  }
+
+  /* ---- Load the seeker's existing applications (to show "Applied") ---- */
+  function loadMyApplications() {
+    var AUTH = window.LEBOKHU_AUTH;
+    if (!AUTH || !AUTH.configured()) return Promise.resolve();
+    return AUTH.getProfile().then(function (profile) {
+      if (!profile || profile.role !== 'seeker') return;
+      var client = AUTH.client();
+      return client.from('applications').select('job_id').eq('seeker_id', profile.id)
+        .then(function (res) {
+          if (res.data) res.data.forEach(function (a) { if (a.job_id) appliedJobIds[a.job_id] = true; });
+        });
+    }).catch(function () { /* ignore */ });
   }
 
   /* ---- Load live approved posts from Supabase, then merge ---- */
@@ -169,7 +261,8 @@
       .catch(function () { /* keep samples */ });
   }
 
-  // Initial render (samples), then upgrade with live posts when they arrive
+  // Initial render (samples), load applied set + live posts, update header
   render();
-  loadLiveJobs();
+  loadMyApplications().then(loadLiveJobs);
+  if (window.LEBOKHU_AUTH) window.LEBOKHU_AUTH.renderHeader('#mainNav');
 })();

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Applications — LeBoKhu Group</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0B2038">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="admin-body">
+
+  <header class="admin-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><img src="assets/logo.svg" alt="LeBoKhu Group" class="logo"></a>
+      <nav class="main-nav" id="mainNav" aria-label="Account navigation">
+        <a href="jobs.html">Browse Jobs</a>
+        <span class="admin-user" id="who"></span>
+        <a href="#" id="logoutBtn">Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <div class="container">
+      <div class="dash-head">
+        <div>
+          <p class="kicker">Job Seeker</p>
+          <h1>My Applications</h1>
+        </div>
+        <div class="dash-actions">
+          <a href="jobs.html" class="btn btn-primary btn-sm">＋ Find more jobs</a>
+        </div>
+      </div>
+
+      <div class="notice" id="notConfigured" hidden>
+        ⚠️ Accounts aren't available yet — the database connection isn't configured.
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-cards" id="statCards"></div>
+
+      <p class="results-count" id="count">Loading…</p>
+
+      <div class="table-wrap">
+        <table class="data-table" id="table">
+          <thead>
+            <tr>
+              <th>Date applied</th><th>Job</th><th>Company</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="no-results" id="noRows" hidden>
+          <p>You haven't applied for any jobs yet. <a href="jobs.html">Browse jobs</a> to get started!</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/my-applications.js"></script>
+</body>
+</html>
