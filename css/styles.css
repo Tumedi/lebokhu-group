@@ -400,6 +400,7 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .badge-pending{background:#fff4dc;color:#8a6100}
 .badge-approved{background:#e7f4f0;color:var(--teal)}
 .badge-closed{background:#f0f0f3;color:var(--slate)}
+.badge-declined{background:#fdeaea;color:#c0392b}
 
 .actions-cell{white-space:nowrap;min-width:200px}
 .mini-btn{display:inline-block;margin:2px 3px;padding:5px 10px;border:1px solid var(--line);background:#fff;
@@ -409,6 +410,8 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .mini-btn.approve:hover{background:var(--teal);color:#fff}
 .mini-btn.email{border-color:var(--gold-dark);color:var(--gold-dark)}
 .mini-btn.email:hover{background:var(--gold-dark);color:#fff}
+.mini-btn.decline{border-color:#c0392b;color:#c0392b}
+.mini-btn.decline:hover{background:#c0392b;color:#fff}
 .mini-btn.close:hover{background:#eef0f3}
 .mini-btn.danger{border-color:#d64545;color:#d64545}
 .mini-btn.danger:hover{background:#d64545;color:#fff}

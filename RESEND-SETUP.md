@@ -48,6 +48,9 @@ There are **two** functions:
 # 1) Employer approval email (called by the logged-in admin)
 supabase functions deploy send-approval-email
 
+# 1b) Employer declined email (also called by the logged-in admin)
+supabase functions deploy send-declined-email
+
 # 2) Job-seeker welcome email (called by anonymous visitors registering)
 #    Must allow public/anonymous calls, so deploy WITHOUT jwt verification:
 supabase functions deploy send-welcome-email --no-verify-jwt

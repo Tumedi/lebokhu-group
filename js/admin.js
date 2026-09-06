@@ -342,7 +342,9 @@
   });
 
   function statusBadge(s) {
-    var cls = s === 'approved' ? 'badge-approved' : (s === 'closed' ? 'badge-closed' : 'badge-pending');
+    var cls = s === 'approved' ? 'badge-approved'
+      : (s === 'closed' ? 'badge-closed'
+      : (s === 'declined' ? 'badge-declined' : 'badge-pending'));
     return '<span class="badge ' + cls + '">' + esc(s || 'pending') + '</span>';
   }
 
@@ -355,6 +357,7 @@
       var actions = '';
       if (r.status !== 'approved') actions += '<button class="mini-btn approve" data-approve="' + r.id + '">Approve</button>';
       if (r.status === 'approved' && r.contact_email) actions += '<button class="mini-btn email" data-email="' + r.id + '">✉ Email</button>';
+      if (r.status !== 'declined') actions += '<button class="mini-btn decline" data-decline="' + r.id + '">Decline</button>';
       if (r.status !== 'closed') actions += '<button class="mini-btn close" data-close="' + r.id + '">Close</button>';
       if (r.status !== 'pending') actions += '<button class="mini-btn" data-pending="' + r.id + '">Set pending</button>';
       actions += '<button class="mini-btn danger" data-del="' + r.id + '">Delete</button>';
@@ -388,6 +391,9 @@
     });
     tbody.querySelectorAll('[data-email]').forEach(function (b) {
       b.addEventListener('click', function () { window.__lebokhuEmailApproved(b.getAttribute('data-email')); });
+    });
+    tbody.querySelectorAll('[data-decline]').forEach(function (b) {
+      b.addEventListener('click', function () { declinePost(b.getAttribute('data-decline')); });
     });
   }
 
@@ -477,6 +483,65 @@
       else openApprovalEmail(p);
     });
   };
+
+  // Decline a post: set status to 'declined' and notify the employer.
+  function declinePost(id) {
+    var p = POSTS.filter(function (x) { return x.id === id; })[0];
+    if (!p) return;
+    if (!confirm('Decline this job post?\n\n"' + (p.title || '') + '" from ' + (p.company || '') +
+        '\n\nThe employer will be notified by email.')) return;
+    var reason = prompt('Optional: add a short reason to include in the email to the employer ' +
+      '(leave blank to send a general message).', '') || '';
+
+    client.from(CFG.POSTS_TABLE).update({ status: 'declined' }).eq('id', id)
+      .then(function (res) {
+        if (res.error) { alert('Update failed: ' + res.error.message); return; }
+        p.status = 'declined';
+        applyPostFilters(); renderPostStats();
+
+        if (!p.contact_email) { alert('Declined ✓ (no contact email on record to notify).'); return; }
+        sendDeclinedAuto(p, reason).then(function (r) {
+          if (r.sent) {
+            alert('Declined ✓ — the employer was notified automatically at ' + p.contact_email);
+          } else if (confirm('Declined ✓\n\nAutomatic email is not available.\n' +
+              'Click OK to open a ready-to-send email to ' + p.contact_email + '.')) {
+            openDeclinedEmail(p, reason);
+          }
+        });
+      });
+  }
+
+  function sendDeclinedAuto(post, reason) {
+    if (!post || !post.contact_email || !client.functions) return Promise.resolve({ sent: false });
+    return client.functions.invoke('send-declined-email', {
+      body: {
+        contact_email: post.contact_email,
+        contact_name: post.contact_name || '',
+        company: post.company || '',
+        title: post.title || '',
+        reason: reason || ''
+      }
+    }).then(function (res) {
+      var ok = res && !res.error && res.data && res.data.success;
+      return { sent: !!ok };
+    }).catch(function () { return { sent: false }; });
+  }
+
+  function openDeclinedEmail(post, reason) {
+    var name = post.contact_name || post.company || 'there';
+    var subject = 'Update on your job post — LeBoKhu Group';
+    var body =
+      'Hi ' + name + ',\n\n' +
+      'Thank you for submitting your job post "' + (post.title || '') + '"' +
+      (post.company ? ' for ' + post.company : '') + ' with LeBoKhu Group.\n\n' +
+      'After review, we\'re unable to publish this post in its current form.\n' +
+      (reason ? '\nNote from our team: ' + reason + '\n' : '') +
+      '\nWe\'d love to help you find the right people. Please feel free to submit an updated post ' +
+      'or reply to this email and our team will assist you.\n\n' +
+      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+    window.location.href = 'mailto:' + encodeURIComponent(post.contact_email) +
+      '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
   function deletePost(id) {
     if (!confirm('Delete this job post permanently?')) return;
     client.from(CFG.POSTS_TABLE).delete().eq('id', id)
