@@ -422,6 +422,29 @@
     window.location.href = href;
   }
 
+  // Try to send the approval email automatically via the Supabase Edge
+  // Function (Resend). Resolves { sent:true } on success, or { sent:false }
+  // if the function isn't deployed / errors — so the caller can fall back.
+  function sendApprovalAuto(post) {
+    if (!post || !post.contact_email || !client.functions) {
+      return Promise.resolve({ sent: false });
+    }
+    return client.functions.invoke('send-approval-email', {
+      body: {
+        contact_email: post.contact_email,
+        contact_name: post.contact_name || '',
+        company: post.company || '',
+        title: post.title || '',
+        sector: post.sector || '',
+        location: post.location || '',
+        job_type: post.job_type || ''
+      }
+    }).then(function (res) {
+      var ok = res && !res.error && res.data && res.data.success;
+      return { sent: !!ok, error: res && res.error };
+    }).catch(function () { return { sent: false }; });
+  }
+
   function setStatus(id, status) {
     client.from(CFG.POSTS_TABLE).update({ status: status }).eq('id', id)
       .then(function (res) {
@@ -430,20 +453,29 @@
         if (p) p.status = status;
         applyPostFilters(); renderPostStats();
 
-        // On approval, offer to notify the employer via a pre-filled email
+        // On approval, notify the employer — automatically if the Edge
+        // Function is available, otherwise via a pre-filled email.
         if (status === 'approved' && p && p.contact_email) {
-          if (confirm('Approved ✓\n\nSend a confirmation email to the employer (' +
-              p.contact_email + ')?\n\nClick OK to open a ready-to-send email.')) {
-            openApprovalEmail(p);
-          }
+          sendApprovalAuto(p).then(function (r) {
+            if (r.sent) {
+              alert('Approved ✓ — a confirmation email was sent automatically to ' + p.contact_email);
+            } else if (confirm('Approved ✓\n\nAutomatic email is not available yet.\n' +
+                'Click OK to open a ready-to-send email to ' + p.contact_email + '.')) {
+              openApprovalEmail(p);
+            }
+          });
         }
       });
   }
 
-  // Allow re-sending the approval email any time from a row button
+  // Re-send the approval email any time from a row button (auto first, else mailto)
   window.__lebokhuEmailApproved = function (id) {
     var p = POSTS.filter(function (x) { return x.id === id; })[0];
-    if (p) openApprovalEmail(p);
+    if (!p) return;
+    sendApprovalAuto(p).then(function (r) {
+      if (r.sent) alert('A confirmation email was sent automatically to ' + p.contact_email);
+      else openApprovalEmail(p);
+    });
   };
   function deletePost(id) {
     if (!confirm('Delete this job post permanently?')) return;

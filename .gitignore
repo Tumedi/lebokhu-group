@@ -8,3 +8,9 @@ Thumbs.db
 # Node (not used at runtime, but just in case)
 node_modules/
 npm-debug.log*
+
+
+# Supabase CLI local files
+.branches
+.temp
+supabase/.temp
