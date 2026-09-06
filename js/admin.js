@@ -387,6 +387,47 @@
     });
   }
 
+  // Web3Forms access key (same one used across the site) — used to email
+  // employers when their post is approved.
+  var WEB3FORMS_KEY = 'bebe08dd-f50a-4a86-8e98-5b79d71df5dc';
+
+  function emailEmployerApproved(post) {
+    if (!post || !post.contact_email) return Promise.resolve();
+    var name = post.contact_name || post.company || 'there';
+    var message =
+      'Hi ' + name + ',\n\n' +
+      'Good news! Your job post with LeBoKhu Group has been APPROVED and is now live on our Jobs page.\n\n' +
+      'Post details:\n' +
+      '• Job title: ' + (post.title || '') + '\n' +
+      '• Company: ' + (post.company || '') + '\n' +
+      '• Sector: ' + (post.sector || '') + '\n' +
+      '• Location: ' + (post.location || '') + '\n' +
+      '• Type: ' + (post.job_type || '') + '\n\n' +
+      'Job seekers can now view and apply for this role. We will be in touch as suitable candidates come through.\n\n' +
+      'Thank you for partnering with us to connect people, resources and opportunity.\n\n' +
+      'Kind regards,\n' +
+      'LeBoKhu Group\n' +
+      'Tbmadihlaba@gmail.com | 081 798 6359';
+
+    var payload = {
+      access_key: WEB3FORMS_KEY,
+      subject: 'Your job post has been approved — LeBoKhu Group',
+      from_name: 'LeBoKhu Group',
+      email: post.contact_email,          // send TO the employer
+      replyto: 'Tbmadihlaba@gmail.com',
+      cc: 'Tbmadihlaba@gmail.com',         // keep a copy for your records
+      company: post.company || '',
+      job_title: post.title || '',
+      message: message
+    };
+
+    return fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(payload)
+    }).then(function (res) { return res.json(); }).catch(function () { return { success: false }; });
+  }
+
   function setStatus(id, status) {
     client.from(CFG.POSTS_TABLE).update({ status: status }).eq('id', id)
       .then(function (res) {
@@ -394,6 +435,18 @@
         var p = POSTS.filter(function (x) { return x.id === id; })[0];
         if (p) p.status = status;
         applyPostFilters(); renderPostStats();
+
+        // On approval, email the employer to notify them
+        if (status === 'approved' && p) {
+          emailEmployerApproved(p).then(function (r) {
+            if (r && r.success) {
+              alert('Approved ✓ — a confirmation email was sent to ' + p.contact_email);
+            } else {
+              alert('Approved ✓ — but the notification email could not be sent to ' +
+                p.contact_email + '. You may want to email them manually.');
+            }
+          });
+        }
       });
   }
   function deletePost(id) {
