@@ -110,7 +110,7 @@
               <tr>
                 <th>Date</th><th>Name</th><th>Contact</th><th>Location</th>
                 <th>Qualification</th><th>Experience</th><th>Sector</th>
-                <th>Applying for</th><th>Skills</th><th>CV</th>
+                <th>Applying for</th><th>Skills</th><th>CV</th><th>Match</th>
               </tr>
             </thead>
             <tbody id="tbody"></tbody>
@@ -171,6 +171,24 @@
 
     </div>
   </main>
+
+  <!-- ===== MATCH / NOTIFY MODAL ===== -->
+  <div class="modal" id="matchModal" hidden>
+    <div class="modal-backdrop" data-mclose></div>
+    <div class="modal-card match-card" role="dialog" aria-modal="true" aria-labelledby="matchTitle">
+      <button class="modal-close" data-mclose aria-label="Close">&times;</button>
+      <h3 id="matchTitle">Notify about a job</h3>
+      <p class="modal-role">To: <strong id="matchSeeker"></strong></p>
+      <p class="modal-note">Pick an approved job to notify this seeker about. Jobs in their
+        preferred sector are marked <span class="match-hint">★ match</span>.</p>
+      <div class="field">
+        <label for="matchSelect">Choose a job</label>
+        <select id="matchSelect"><option value="">Loading approved jobs…</option></select>
+      </div>
+      <button type="button" class="btn btn-primary btn-block" id="matchSend">Send Notification</button>
+      <p class="form-status" id="matchStatus" role="status" aria-live="polite"></p>
+    </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>

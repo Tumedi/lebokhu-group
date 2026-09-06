@@ -188,6 +188,9 @@
       var cv = r.cv_url
         ? '<a href="' + esc(r.cv_url) + '" target="_blank" rel="noopener" class="cv-link">Download</a>'
         : '<span class="muted">—</span>';
+      var notify = r.email
+        ? '<button class="mini-btn match" data-notify="' + esc(r.id) + '">Notify</button>'
+        : '<span class="muted">—</span>';
       return '<tr>' +
         '<td class="nowrap">' + esc(fmtDate(r.created_at)) + '</td>' +
         '<td>' + esc((r.first_name || '') + ' ' + (r.last_name || '')) + '</td>' +
@@ -199,8 +202,13 @@
         '<td>' + esc(r.applying_for) + '</td>' +
         '<td class="skills-cell">' + esc(r.skills) + '</td>' +
         '<td>' + cv + '</td>' +
+        '<td>' + notify + '</td>' +
       '</tr>';
     }).join('');
+
+    tbody.querySelectorAll('[data-notify]').forEach(function (b) {
+      b.addEventListener('click', function () { openMatch(b.getAttribute('data-notify')); });
+    });
   }
 
   /* ---------- Stats + breakdowns ---------- */
@@ -576,5 +584,122 @@
     var rows = POSTS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); });
     var csv = '\uFEFF' + head + '\n' + rows.join('\n');
     downloadCsv(csv, 'lebokhu-job-posts');
+  }
+
+  /* ============================================================
+     CANDIDATE MATCH — notify a job seeker about an approved job
+     ============================================================ */
+  var matchModal = document.getElementById('matchModal');
+  var matchSeekerEl = document.getElementById('matchSeeker');
+  var matchSelect = document.getElementById('matchSelect');
+  var matchStatus = document.getElementById('matchStatus');
+  var matchSendBtn = document.getElementById('matchSend');
+  var currentSeeker = null;
+
+  function openMatch(seekerId) {
+    var s = ALL.filter(function (x) { return String(x.id) === String(seekerId); })[0];
+    if (!s) return;
+    currentSeeker = s;
+    matchSeekerEl.textContent = (s.first_name || '') + ' ' + (s.last_name || '') + ' <' + s.email + '>';
+    matchStatus.textContent = '';
+    matchStatus.className = 'form-status';
+
+    // Approved jobs only; sector matches first, each tagged
+    var approved = POSTS.filter(function (p) { return p.status === 'approved'; });
+    var seekerSector = (s.preferred_sector || '').toLowerCase();
+    approved.sort(function (a, b) {
+      var am = (a.sector || '').toLowerCase() === seekerSector ? 0 : 1;
+      var bm = (b.sector || '').toLowerCase() === seekerSector ? 0 : 1;
+      if (am !== bm) return am - bm;
+      return new Date(b.created_at) - new Date(a.created_at);
+    });
+
+    if (!approved.length) {
+      matchSelect.innerHTML = '<option value="">No approved jobs available yet</option>';
+    } else {
+      matchSelect.innerHTML = approved.map(function (p) {
+        var isMatch = (p.sector || '').toLowerCase() === seekerSector && seekerSector;
+        var label = (isMatch ? '★ ' : '') + (p.title || 'Untitled') +
+          (p.company ? ' — ' + p.company : '') + (p.sector ? ' (' + p.sector + ')' : '');
+        return '<option value="' + esc(p.id) + '">' + esc(label) + '</option>';
+      }).join('');
+    }
+
+    matchModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMatch() { matchModal.hidden = true; document.body.style.overflow = ''; }
+  if (matchModal) {
+    matchModal.querySelectorAll('[data-mclose]').forEach(function (el) { el.addEventListener('click', closeMatch); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMatch(); });
+  }
+
+  if (matchSendBtn) {
+    matchSendBtn.addEventListener('click', function () {
+      var jobId = matchSelect.value;
+      if (!currentSeeker || !jobId) {
+        matchStatus.textContent = 'Please select a job first.';
+        matchStatus.className = 'form-status bad';
+        return;
+      }
+      var job = POSTS.filter(function (x) { return String(x.id) === String(jobId); })[0];
+      if (!job) return;
+
+      matchSendBtn.disabled = true; matchSendBtn.textContent = 'Sending…';
+      matchStatus.textContent = ''; matchStatus.className = 'form-status';
+
+      var payload = {
+        seeker_email: currentSeeker.email,
+        seeker_name: currentSeeker.first_name || '',
+        title: job.title || '',
+        company: job.company || '',
+        sector: job.sector || '',
+        level: job.level || '',
+        location: job.location || '',
+        job_type: job.job_type || '',
+        description: job.description || ''
+      };
+
+      var canAuto = client.functions && true;
+      var p = canAuto
+        ? client.functions.invoke('send-match-email', { body: payload })
+            .then(function (res) { return res && !res.error && res.data && res.data.success; })
+            .catch(function () { return false; })
+        : Promise.resolve(false);
+
+      p.then(function (sent) {
+        if (sent) {
+          matchStatus.textContent = 'Sent ✓ — ' + currentSeeker.email + ' was notified about "' + job.title + '".';
+          matchStatus.className = 'form-status ok';
+          setTimeout(closeMatch, 1600);
+        } else {
+          // Fallback: open a pre-filled email
+          openMatchMailto(currentSeeker, job);
+          matchStatus.textContent = 'Automatic email unavailable — opened a ready-to-send email instead.';
+          matchStatus.className = 'form-status ok';
+        }
+      }).then(function () {
+        matchSendBtn.disabled = false; matchSendBtn.textContent = 'Send Notification';
+      });
+    });
+  }
+
+  function openMatchMailto(seeker, job) {
+    var subject = 'A job matching your profile — LeBoKhu Group';
+    var applyUrl = 'https://tumedi.github.io/lebokhu-group/register.html?role=' + encodeURIComponent(job.title || '');
+    var body =
+      'Hi ' + (seeker.first_name || 'there') + ',\n\n' +
+      'Good news — we found a job opportunity that matches your profile!\n\n' +
+      (job.title || '') + '\n' +
+      (job.company ? 'Company: ' + job.company + '\n' : '') +
+      (job.sector ? 'Sector: ' + job.sector + '\n' : '') +
+      (job.level ? 'Level: ' + job.level + '\n' : '') +
+      (job.location ? 'Location: ' + job.location + '\n' : '') +
+      (job.job_type ? 'Type: ' + job.job_type + '\n' : '') +
+      (job.description ? '\n' + job.description + '\n' : '') +
+      '\nInterested? Apply / confirm here: ' + applyUrl + '\nOr reply to this email.\n\n' +
+      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+    window.location.href = 'mailto:' + encodeURIComponent(seeker.email) +
+      '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
 })();

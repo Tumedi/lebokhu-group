@@ -412,6 +412,11 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .mini-btn.email:hover{background:var(--gold-dark);color:#fff}
 .mini-btn.decline{border-color:#c0392b;color:#c0392b}
 .mini-btn.decline:hover{background:#c0392b;color:#fff}
+.mini-btn.match{border-color:var(--teal);color:var(--teal)}
+.mini-btn.match:hover{background:var(--teal);color:#fff}
+.match-card{text-align:left;max-width:520px}
+.match-card .modal-role{font-size:1rem;color:var(--ink);font-family:var(--sans)}
+.match-hint{color:var(--teal);font-weight:800}
 .mini-btn.close:hover{background:#eef0f3}
 .mini-btn.danger{border-color:#d64545;color:#d64545}
 .mini-btn.danger:hover{background:#d64545;color:#fff}
