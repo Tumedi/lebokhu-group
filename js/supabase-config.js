@@ -8,8 +8,8 @@
    Do NOT put the service_role secret key here.
    ============================================================ */
 window.LEBOKHU_SUPABASE = {
-  SUPABASE_URL: 'SUPABASE_URL_PLACEHOLDER',
-  SUPABASE_ANON_KEY: 'SUPABASE_ANON_KEY_PLACEHOLDER',
+  SUPABASE_URL: 'https://efupodoraphybvzttrjj.supabase.co',
+  SUPABASE_ANON_KEY: 'sb_publishable_RNrGuV3g7k98hiAlfwz6wA_QrThfmTJ',
   TABLE: 'job_seekers',
   BUCKET: 'cvs'
 };
