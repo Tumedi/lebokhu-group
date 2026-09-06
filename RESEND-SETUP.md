@@ -51,16 +51,23 @@ supabase functions deploy send-approval-email
 # 2) Job-seeker welcome email (called by anonymous visitors registering)
 #    Must allow public/anonymous calls, so deploy WITHOUT jwt verification:
 supabase functions deploy send-welcome-email --no-verify-jwt
+
+# 3) Employer "post received" email (called by anonymous visitors posting a job)
+#    Also public/anonymous, so deploy WITHOUT jwt verification:
+supabase functions deploy send-post-received-email --no-verify-jwt
 ```
 
 Why the difference? The **admin** is logged in, so `send-approval-email` can keep JWT
-verification on. But **job seekers register without logging in**, so `send-welcome-email`
-must be deployed with `--no-verify-jwt` or the browser call will be rejected.
+verification on. But **job seekers and employers submit without logging in**, so
+`send-welcome-email` and `send-post-received-email` must be deployed with `--no-verify-jwt`
+or the browser call will be rejected.
 
-Optional welcome-email sender overrides (defaults shown):
+Optional sender overrides (defaults shown):
 ```bash
 supabase secrets set WELCOME_FROM="LeBoKhu Group <onboarding@resend.dev>"
 supabase secrets set WELCOME_BCC="Tbmadihlaba@gmail.com"
+supabase secrets set POST_RECEIVED_FROM="LeBoKhu Group <onboarding@resend.dev>"
+supabase secrets set POST_RECEIVED_BCC="Tbmadihlaba@gmail.com"
 ```
 
 ## Step 6 — Test it
@@ -75,6 +82,12 @@ supabase secrets set WELCOME_BCC="Tbmadihlaba@gmail.com"
 2. That inbox should receive a "Thanks for registering" email shortly after.
 3. A BCC copy also goes to `Tbmadihlaba@gmail.com`.
 (If `send-welcome-email` isn't deployed, registration still works — the welcome email is just skipped.)
+
+**Post-received email (employer):**
+1. Open **post-job.html** → submit a job post using a real email you can check.
+2. That inbox should receive a "We've received your job post" email shortly after.
+3. A BCC copy also goes to `Tbmadihlaba@gmail.com`.
+(If `send-post-received-email` isn't deployed, posting still works — the email is just skipped.)
 
 ---
 

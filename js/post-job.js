@@ -76,6 +76,7 @@
         });
     }
 
+    // Web3Forms alert to YOU (the admin)
     function sendEmail() {
       if (!emailConfigured) return Promise.resolve({ skipped: true });
       return fetch(form.getAttribute('action'), {
@@ -87,9 +88,32 @@
       }).catch(function () { return { ok: false }; });
     }
 
+    // "We've received your post" confirmation to the EMPLOYER
+    // (Automatic, via the Supabase Edge Function + Resend. Non-blocking:
+    //  skipped if the function isn't deployed.)
+    function sendReceipt() {
+      if (!dbConfigured) return Promise.resolve({ skipped: true });
+      var client = window.LEBOKHU_SUPABASE.client();
+      if (!client || !client.functions || !record.contact_email) return Promise.resolve({ skipped: true });
+      return client.functions.invoke('send-post-received-email', {
+        body: {
+          contact_email: record.contact_email,
+          contact_name: record.contact_name,
+          company: record.company,
+          title: record.title,
+          sector: record.sector,
+          location: record.location,
+          job_type: record.job_type
+        }
+      }).then(function (res) {
+        return { ok: res && !res.error && res.data && res.data.success };
+      }).catch(function () { return { ok: false }; });
+    }
+
     saveToDb()
       .then(function (dbResult) {
-        return sendEmail().then(function () { return dbResult; });
+        // Fire both emails; don't fail the submission if either hiccups
+        return Promise.all([sendEmail(), sendReceipt()]).then(function () { return dbResult; });
       })
       .then(function (dbResult) {
         if (dbResult && dbResult.skipped && !emailConfigured) {
