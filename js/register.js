@@ -1,10 +1,13 @@
 /* ============================================================
    LeBoKhu Group — register.js
-   Pre-fill role from ?role=, validate, submit via Web3Forms (AJAX).
-   Web3Forms supports file attachments (CV), so the whole form —
-   including the CV — is sent in one submission to your email.
-   If the access key isn't set yet, it falls back to a friendly
-   on-page success message so the form still "works".
+   On submit:
+     1. Upload CV to Supabase Storage (if provided)
+     2. Save the registration row to the Supabase database
+     3. Send a Web3Forms email alert (with CV attachment)
+   The database is the source of truth for reporting; the email
+   is a real-time alert. Each part degrades gracefully if not
+   configured, so the form always gives the user feedback.
+   Also pre-fills the role from ?role= and validates input.
    ============================================================ */
 (function () {
   'use strict';
@@ -78,51 +81,102 @@
     }
 
     var accessKey = (form.querySelector('input[name="access_key"]') || {}).value || '';
-    var configured = accessKey && accessKey.indexOf('WEB3FORMS_ACCESS_KEY') === -1;
+    var emailConfigured = accessKey && accessKey.indexOf('WEB3FORMS_ACCESS_KEY') === -1;
+    var dbConfigured = window.LEBOKHU_SUPABASE && window.LEBOKHU_SUPABASE.isConfigured();
     var first = (document.getElementById('firstName').value || '').trim();
-
-    // If Web3Forms isn't set up yet, show a friendly local success.
-    if (!configured) {
-      status.textContent = 'Thank you' + (first ? ', ' + first : '') +
-        '! Your registration has been captured. (Note: email delivery is not yet connected — ' +
-        'add your Web3Forms access key to enable it.)';
-      status.className = 'form-status ok';
-      form.reset();
-      return;
-    }
-
-    // Build submission data. FormData(form) automatically includes the file
-    // input (name="attachment") and all text fields for Web3Forms.
-    var data = new FormData(form);
 
     var btn = form.querySelector('button[type="submit"]');
     var original = btn.textContent;
     btn.disabled = true; btn.textContent = 'Sending…';
 
-    fetch(form.getAttribute('action'), {
-      method: 'POST',
-      body: data,
-      headers: { 'Accept': 'application/json' }
-    }).then(function (res) {
-      return res.json().then(function (d) { return { ok: res.ok, data: d }; });
-    }).then(function (r) {
-      if (r.ok && r.data.success) {
-        status.textContent = 'Thank you' + (first ? ', ' + first : '') +
-          '! Your registration' + (cv && cv.files.length ? ' and CV have' : ' has') +
-          ' been submitted. Our team will be in touch soon.';
+    // Gather the field values once
+    function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+    var record = {
+      first_name: val('firstName'),
+      last_name: val('lastName'),
+      email: val('email'),
+      phone: val('phone'),
+      location: val('location'),
+      right_to_work: val('idType'),
+      qualification: val('qualLevel'),
+      experience: val('expLevel'),
+      preferred_sector: val('sector'),
+      skills: val('skills'),
+      applying_for: (document.getElementById('applyingFor') || {}).value || '',
+      consent: (document.getElementById('consent') || {}).checked || false
+    };
+
+    // ---- Step 1: upload CV to Supabase Storage (if any) ----
+    function uploadCv() {
+      if (!dbConfigured || !cv || !cv.files || !cv.files.length) return Promise.resolve(null);
+      var client = window.LEBOKHU_SUPABASE.client();
+      if (!client) return Promise.resolve(null);
+      var file = cv.files[0];
+      var safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var path = Date.now() + '_' + Math.random().toString(36).slice(2, 8) + '_' + safe;
+      return client.storage.from(window.LEBOKHU_SUPABASE.BUCKET)
+        .upload(path, file, { cacheControl: '3600', upsert: false })
+        .then(function (res) {
+          if (res.error) { console.warn('CV upload failed:', res.error.message); return null; }
+          var pub = client.storage.from(window.LEBOKHU_SUPABASE.BUCKET).getPublicUrl(path);
+          return { url: (pub.data && pub.data.publicUrl) || null, name: file.name };
+        }).catch(function () { return null; });
+    }
+
+    // ---- Step 2: insert row into the database ----
+    function saveToDb(cvInfo) {
+      if (!dbConfigured) return Promise.resolve({ skipped: true });
+      var client = window.LEBOKHU_SUPABASE.client();
+      if (!client) return Promise.resolve({ skipped: true });
+      if (cvInfo) { record.cv_url = cvInfo.url; record.cv_filename = cvInfo.name; }
+      return client.from(window.LEBOKHU_SUPABASE.TABLE).insert([record])
+        .then(function (res) {
+          if (res.error) throw new Error('Database: ' + res.error.message);
+          return { saved: true };
+        });
+    }
+
+    // ---- Step 3: send Web3Forms email alert (includes CV attachment) ----
+    function sendEmail() {
+      if (!emailConfigured) return Promise.resolve({ skipped: true });
+      return fetch(form.getAttribute('action'), {
+        method: 'POST',
+        body: new FormData(form),
+        headers: { 'Accept': 'application/json' }
+      }).then(function (res) {
+        return res.json().then(function (d) { return { ok: res.ok && d.success, data: d }; });
+      }).catch(function () { return { ok: false }; });
+    }
+
+    // ---- Orchestrate: DB first (source of truth), then email alert ----
+    uploadCv()
+      .then(saveToDb)
+      .then(function (dbResult) {
+        // Fire the email alert regardless; don't fail the whole thing if email hiccups
+        return sendEmail().then(function () { return dbResult; });
+      })
+      .then(function (dbResult) {
+        if (dbResult && dbResult.skipped && !emailConfigured) {
+          // Nothing is connected yet
+          status.textContent = 'Thank you' + (first ? ', ' + first : '') +
+            '! Your registration has been captured. (Note: storage/email are not connected yet.)';
+        } else {
+          status.textContent = 'Thank you' + (first ? ', ' + first : '') +
+            '! Your registration' + (cv && cv.files.length ? ' and CV have' : ' has') +
+            ' been submitted. Our team will be in touch soon.';
+        }
         status.className = 'form-status ok';
         form.reset();
         var hint = cv && cv.parentNode.querySelector('.hint');
         if (hint) hint.innerHTML = 'Max file size 5&nbsp;MB. No CV? No problem — you can still register.';
-      } else {
-        throw new Error((r.data && r.data.message) || 'Submission failed');
-      }
-    }).catch(function (err) {
-      status.textContent = 'Sorry, something went wrong: ' + err.message +
-        '. Please try again or email us directly at Tbmadihlaba@gmail.com.';
-      status.className = 'form-status bad';
-    }).finally(function () {
-      btn.disabled = false; btn.textContent = original;
-    });
+      })
+      .catch(function (err) {
+        status.textContent = 'Sorry, something went wrong: ' + err.message +
+          '. Please try again or email us directly at Tbmadihlaba@gmail.com.';
+        status.className = 'form-status bad';
+      })
+      .then(function () {
+        btn.disabled = false; btn.textContent = original;
+      });
   });
 })();

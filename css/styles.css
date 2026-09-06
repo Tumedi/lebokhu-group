@@ -184,6 +184,8 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .footer-cols a{display:block;padding:5px 0;font-size:.94rem;color:#aebccb}
 .footer-cols a:hover{color:var(--gold-light)}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding:18px 0;text-align:center;font-size:.85rem;color:var(--slate-light)}
+.footer-bottom a{color:var(--slate-light);text-decoration:underline}
+.footer-bottom a:hover{color:var(--gold-light)}
 
 /* ---------- Reveal animation ---------- */
 .reveal{opacity:0;transform:translateY(24px);transition:.7s cubic-bezier(.2,.7,.2,1)}
@@ -315,4 +317,70 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 @keyframes pwaPop{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 @media (max-width:720px){
   .pwa-install-btn{right:14px;bottom:14px;padding:12px 18px}
+}
+
+
+/* ============================================================
+   Admin Dashboard
+   ============================================================ */
+.admin-body{background:var(--bg-alt)}
+.admin-header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--line)}
+.admin-header .nav-inner{height:66px}
+.admin-header .logo{height:40px}
+.admin-header-right{display:flex;align-items:center;gap:14px}
+.admin-user{font-size:.85rem;color:var(--slate);font-weight:600}
+.btn-sm{padding:9px 16px;font-size:.85rem}
+
+.login-card{max-width:460px;margin:20px auto}
+.login-sub{color:var(--slate);margin-bottom:18px;font-size:.95rem}
+.notice{background:#fff4dc;border:1px solid var(--gold);color:#5a4200;border-radius:var(--radius-sm);
+  padding:14px 16px;margin-bottom:18px;font-size:.9rem}
+.notice code{background:rgba(0,0,0,.06);padding:2px 6px;border-radius:4px;font-size:.85em}
+
+.dashboard{padding:34px 0 70px}
+.dash-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:26px}
+.dash-head h1{font-size:clamp(1.6rem,3vw,2.1rem)}
+.dash-actions{display:flex;gap:10px}
+
+/* Stat cards */
+.stat-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:26px}
+.stat-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow);
+  display:flex;flex-direction:column;gap:4px}
+.stat-num{font-family:var(--serif);font-size:2.2rem;font-weight:700;color:var(--teal)}
+.stat-label{font-size:.85rem;color:var(--slate);font-weight:600}
+
+/* Breakdowns */
+.breakdowns{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:26px}
+.breakdown-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.breakdown-card h3{font-size:1.05rem;margin-bottom:14px}
+.bd-row{display:grid;grid-template-columns:130px 1fr 34px;align-items:center;gap:10px;margin-bottom:9px;font-size:.85rem}
+.bd-label{color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bd-bar{background:var(--bg-alt);border-radius:999px;height:12px;overflow:hidden}
+.bd-fill{display:block;height:100%;background:linear-gradient(90deg,var(--gold-light),var(--gold-dark));border-radius:999px}
+.bd-n{text-align:right;font-weight:800;color:var(--slate)}
+
+/* Filters (reuse .job-filters) */
+.admin-filters{grid-template-columns:2fr repeat(4,1fr)}
+
+/* Table */
+.table-wrap{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);overflow-x:auto}
+.data-table{width:100%;border-collapse:collapse;font-size:.86rem;min-width:920px}
+.data-table th,.data-table td{padding:12px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.data-table thead th{background:var(--ink);color:#fff;font-family:var(--sans);font-weight:700;font-size:.78rem;
+  text-transform:uppercase;letter-spacing:.4px;position:sticky;top:0}
+.data-table tbody tr:hover{background:#fafcfd}
+.data-table .nowrap{white-space:nowrap}
+.data-table .muted{color:var(--slate-light)}
+.data-table .skills-cell{max-width:220px;color:var(--slate)}
+.cv-link{color:var(--teal);font-weight:700}
+.cv-link:hover{text-decoration:underline}
+
+@media (max-width:900px){
+  .stat-cards{grid-template-columns:1fr 1fr}
+  .breakdowns{grid-template-columns:1fr}
+  .admin-filters{grid-template-columns:1fr 1fr}
+}
+@media (max-width:560px){
+  .stat-cards{grid-template-columns:1fr 1fr}
+  .admin-filters{grid-template-columns:1fr}
 }

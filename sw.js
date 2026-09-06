@@ -8,7 +8,7 @@
    ============================================================ */
 'use strict';
 
-var CACHE_VERSION = 'lebokhu-v1';
+var CACHE_VERSION = 'lebokhu-v2';
 var CACHE_NAME = 'lebokhu-cache-' + CACHE_VERSION;
 
 // Paths are relative so the SW works whether the site is served from

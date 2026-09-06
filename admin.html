@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — LeBoKhu Group</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0B2038">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="admin-body">
+
+  <!-- ===== HEADER ===== -->
+  <header class="admin-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><img src="assets/logo.svg" alt="LeBoKhu Group" class="logo"></a>
+      <div class="admin-header-right">
+        <span class="admin-user" id="adminUser"></span>
+        <button class="btn btn-outline btn-sm" id="logoutBtn" hidden>Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== LOGIN VIEW ===== -->
+  <section class="section" id="loginView">
+    <div class="container narrow">
+      <div class="reg-form login-card">
+        <p class="kicker">Admin Access</p>
+        <h2>Dashboard Login</h2>
+        <p class="login-sub">Sign in with your admin email and password to view job-seeker registrations and reports.</p>
+        <div class="notice" id="notConfigured" hidden>
+          ⚠️ The database isn't connected yet. Add your Supabase URL and anon key in
+          <code>js/supabase-config.js</code>, then reload this page.
+        </div>
+        <form id="loginForm" novalidate>
+          <div class="field">
+            <label for="loginEmail">Email</label>
+            <input type="email" id="loginEmail" autocomplete="username" required>
+          </div>
+          <div class="field">
+            <label for="loginPassword">Password</label>
+            <input type="password" id="loginPassword" autocomplete="current-password" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Log In</button>
+          <p class="form-status" id="loginStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== DASHBOARD VIEW ===== -->
+  <main class="dashboard" id="dashboardView" hidden>
+    <div class="container">
+
+      <div class="dash-head">
+        <div>
+          <p class="kicker">Reports</p>
+          <h1>Job Seeker Dashboard</h1>
+        </div>
+        <div class="dash-actions">
+          <button class="btn btn-outline btn-sm" id="refreshBtn">↻ Refresh</button>
+          <button class="btn btn-primary btn-sm" id="exportBtn">📥 Export CSV</button>
+        </div>
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-cards" id="statCards"></div>
+
+      <!-- Breakdowns -->
+      <div class="breakdowns" id="breakdowns"></div>
+
+      <!-- Filters -->
+      <div class="job-filters admin-filters">
+        <div class="field">
+          <label for="q">Search</label>
+          <input type="text" id="q" placeholder="Name, email, phone, skills…">
+        </div>
+        <div class="field">
+          <label for="fSector">Sector</label>
+          <select id="fSector"><option value="">All sectors</option></select>
+        </div>
+        <div class="field">
+          <label for="fQual">Qualification</label>
+          <select id="fQual"><option value="">All qualifications</option></select>
+        </div>
+        <div class="field">
+          <label for="fExp">Experience</label>
+          <select id="fExp"><option value="">All experience</option></select>
+        </div>
+        <div class="field">
+          <label for="fCv">CV</label>
+          <select id="fCv">
+            <option value="">Any</option>
+            <option value="yes">Has CV</option>
+            <option value="no">No CV</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="results-count" id="count"></p>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table class="data-table" id="table">
+          <thead>
+            <tr>
+              <th>Date</th><th>Name</th><th>Contact</th><th>Location</th>
+              <th>Qualification</th><th>Experience</th><th>Sector</th>
+              <th>Applying for</th><th>Skills</th><th>CV</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+        <div class="no-results" id="noRows" hidden><p>No registrations match your filters.</p></div>
+      </div>
+
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

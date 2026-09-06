@@ -105,3 +105,38 @@ The same PWA can be packaged into a real Android app without rewriting anything:
 2. Create a **Google Play Developer** account (one-time ~$25) and upload the package.
 Apple's App Store is stricter about PWAs; a Capacitor wrapper is the usual route there
 — ask and I can set that up.
+
+
+## 🗄️ Database, CV storage & Admin Dashboard (Supabase)
+
+Registrations are saved to a **Supabase** database (with CVs in Supabase Storage), and you
+also receive an **email alert** per registration via Web3Forms. A password-protected
+**Admin Dashboard** (`admin.html`) lets you view, search, filter and export the data.
+
+### One-time setup
+1. **Create a project** at [supabase.com](https://supabase.com) (free). Pick a region near South Africa.
+2. **Create the database + storage + rules:** open **SQL Editor → New query**, paste the
+   contents of [`supabase-setup.sql`](supabase-setup.sql), and click **Run**.
+3. **Create your admin login:** Dashboard → **Authentication → Users → Add user** →
+   email `Tbmadihlaba@gmail.com` + a strong password. (This is your dashboard login.)
+4. **Get your keys:** Dashboard → **Project Settings → API** → copy the **Project URL** and
+   the **anon public** key.
+5. **Add the keys to the site:** open `js/supabase-config.js` and replace:
+   - `SUPABASE_URL_PLACEHOLDER` → your Project URL
+   - `SUPABASE_ANON_KEY_PLACEHOLDER` → your anon public key
+   (The anon key is safe in frontend code; security is enforced by the RLS rules in the SQL.)
+
+### Using the dashboard
+- Go to **`/admin.html`** on your site and log in with the admin email/password.
+- **Stat cards:** total registrations, CVs uploaded, last 7 / 30 days.
+- **Breakdowns:** by sector, qualification, experience and location.
+- **Search & filter**, then **📥 Export CSV** (opens in Excel) — export respects the current filters.
+- Each row has a **Download** link for the applicant's CV.
+
+### How data flows on submit
+1. CV (if any) → uploaded to Supabase Storage (`cvs` bucket)
+2. All fields (+ CV link) → saved as a row in the `job_seekers` table  ← source of truth
+3. Web3Forms → sends you an **email alert** (with the CV attached)
+
+Each step degrades gracefully: if Supabase keys aren't set yet, the email alert still works;
+if email hiccups, the database record is still saved.
