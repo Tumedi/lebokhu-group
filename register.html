@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register as a Job Seeker — LeBoKhu Group</title>
+  <meta name="description" content="Register with LeBoKhu Group. Qualified or not, we're here to assist you find work in South Africa.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===== HEADER / NAV ===== -->
+  <header class="site-header" id="top">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand" aria-label="LeBoKhu Group home">
+        <img src="assets/logo.svg" alt="LeBoKhu Group" class="logo logo-dark">
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <a href="index.html#about">About</a>
+        <a href="index.html#services">Services</a>
+        <a href="jobs.html">Jobs</a>
+        <a href="index.html#companies">Companies</a>
+        <a href="index.html#impact">Impact</a>
+        <a href="register.html" class="nav-cta active">Register</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== PAGE HERO ===== -->
+  <section class="page-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <p class="eyebrow">Job Seeker Registration</p>
+      <h1>Register With Us</h1>
+      <p class="lead">Qualified or not — we are here to assist you. Fill in your details and
+        we'll match you with opportunities that fit.</p>
+    </div>
+  </section>
+
+  <!-- ===== REGISTRATION FORM ===== -->
+  <section class="section">
+    <div class="container narrow">
+      <form class="reg-form" id="regForm" novalidate
+            action="https://formspree.io/f/xeaqlgow"
+            method="POST">
+        <!-- Applying-for banner (shown when arriving from a job) -->
+        <div class="apply-banner" id="applyBanner" hidden>
+          Applying for: <strong id="applyRoleText"></strong>
+          <input type="hidden" name="applying_for" id="applyingFor">
+        </div>
+
+        <h3 class="form-section-title">Personal details</h3>
+        <div class="row">
+          <div class="field">
+            <label for="firstName">First name *</label>
+            <input type="text" id="firstName" name="first_name" required>
+          </div>
+          <div class="field">
+            <label for="lastName">Last name *</label>
+            <input type="text" id="lastName" name="last_name" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="email">Email *</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="field">
+            <label for="phone">Phone *</label>
+            <input type="tel" id="phone" name="phone" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="location">Location / City *</label>
+            <input type="text" id="location" name="location" required>
+          </div>
+          <div class="field">
+            <label for="idType">Right to work</label>
+            <select id="idType" name="right_to_work">
+              <option>SA Citizen</option>
+              <option>Permanent Resident</option>
+              <option>Valid Work Permit</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <h3 class="form-section-title">Your skills &amp; experience</h3>
+        <div class="row">
+          <div class="field">
+            <label for="qualLevel">Highest qualification *</label>
+            <select id="qualLevel" name="qualification" required>
+              <option value="">Please choose…</option>
+              <option>No formal qualification</option>
+              <option>Some school</option>
+              <option>Matric / Grade 12</option>
+              <option>Certificate</option>
+              <option>Diploma</option>
+              <option>Degree</option>
+              <option>Postgraduate</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="expLevel">Experience level *</label>
+            <select id="expLevel" name="experience" required>
+              <option value="">Please choose…</option>
+              <option>No experience / First job</option>
+              <option>Less than 1 year</option>
+              <option>1–3 years</option>
+              <option>3–5 years</option>
+              <option>5+ years</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="sector">Preferred sector / type of work *</label>
+          <select id="sector" name="preferred_sector" required>
+            <option value="">Please choose…</option>
+            <option>Any / Open to anything</option>
+            <option>Retail</option>
+            <option>Information Technology</option>
+            <option>Finance</option>
+            <option>Logistics &amp; Warehousing</option>
+            <option>Hospitality</option>
+            <option>Construction</option>
+            <option>Administration</option>
+            <option>Call Centre</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="skills">Skills (tell us what you can do)</label>
+          <textarea id="skills" name="skills" rows="3" placeholder="e.g. driving (Code 10), customer service, MS Office, hard-working and reliable…"></textarea>
+        </div>
+        <div class="field">
+          <label for="cv">Upload your CV (optional — PDF or Word)</label>
+          <input type="file" id="cv" name="cv" accept=".pdf,.doc,.docx">
+          <p class="hint">No CV? No problem — you can still register. We'll help you build one.</p>
+        </div>
+
+        <div class="field checkbox">
+          <label>
+            <input type="checkbox" id="consent" name="consent" required>
+            <span>I agree that LeBoKhu Group may contact me and store my details for the purpose of finding me work (POPIA consent). *</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit Registration</button>
+        <p class="form-status" id="regStatus" role="status" aria-live="polite"></p>
+        <p class="hint center">* Required fields</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo-white.svg" alt="LeBoKhu Group" class="logo">
+        <p>Connecting People, Resources &amp; Opportunity.</p>
+        <p class="small">100% Black youth-owned &bull; Proudly South African</p>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <h4>Explore</h4>
+          <a href="index.html#about">About</a>
+          <a href="index.html#services">Services</a>
+          <a href="jobs.html">Jobs</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div>
+          <h4>For You</h4>
+          <a href="index.html#companies">Companies</a>
+          <a href="index.html#contact">Contact</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <a href="mailto:Tbmadihlaba@gmail.com">Tbmadihlaba@gmail.com</a>
+          <a href="tel:+27817986359">081 798 6359</a>
+          <a href="index.html#contact">Glen Marais, Kempton Park</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container"><p>&copy; <span id="year"></span> LeBoKhu Group. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/register.js"></script>
+</body>
+</html>

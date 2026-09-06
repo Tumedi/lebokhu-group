@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jobs — LeBoKhu Group</title>
+  <meta name="description" content="Browse current job opportunities with LeBoKhu Group. Skilled and entry-level roles across multiple industries in South Africa.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- ===== HEADER / NAV ===== -->
+  <header class="site-header" id="top">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand" aria-label="LeBoKhu Group home">
+        <img src="assets/logo.svg" alt="LeBoKhu Group" class="logo logo-dark">
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <a href="index.html#about">About</a>
+        <a href="index.html#services">Services</a>
+        <a href="jobs.html" class="active">Jobs</a>
+        <a href="index.html#companies">Companies</a>
+        <a href="index.html#impact">Impact</a>
+        <a href="register.html" class="nav-cta">Register</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== PAGE HERO ===== -->
+  <section class="page-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <p class="eyebrow">Current Opportunities</p>
+      <h1>Find Your Next Job</h1>
+      <p class="lead">Skilled or entry-level, we have opportunities across many industries.
+        Qualified or not — apply and let us help you take the next step.</p>
+    </div>
+  </section>
+
+  <!-- ===== JOBS ===== -->
+  <section class="section">
+    <div class="container">
+
+      <!-- Filters -->
+      <div class="job-filters">
+        <div class="field">
+          <label for="search">Search</label>
+          <input type="text" id="search" placeholder="Job title or keyword…">
+        </div>
+        <div class="field">
+          <label for="sector">Sector</label>
+          <select id="sector">
+            <option value="">All sectors</option>
+            <option>Retail</option>
+            <option>Information Technology</option>
+            <option>Finance</option>
+            <option>Logistics &amp; Warehousing</option>
+            <option>Hospitality</option>
+            <option>Construction</option>
+            <option>Administration</option>
+            <option>Call Centre</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="level">Level</label>
+          <select id="level">
+            <option value="">All levels</option>
+            <option>Entry-level / No experience</option>
+            <option>Skilled / Experienced</option>
+            <option>Graduate</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="loc">Location</label>
+          <select id="loc">
+            <option value="">All locations</option>
+            <option>Pretoria / Tshwane</option>
+            <option>Johannesburg</option>
+            <option>Cape Town</option>
+            <option>Durban</option>
+            <option>Remote</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="results-count" id="resultsCount"></p>
+
+      <!-- Job list (rendered by JS) -->
+      <div class="job-list" id="jobList"></div>
+
+      <div class="no-results" id="noResults" hidden>
+        <p>No jobs match your filters right now. Try broadening your search — or
+        <a href="register.html">register with us</a> and we'll contact you when something fits.</p>
+      </div>
+
+      <!-- CTA -->
+      <div class="jobs-cta">
+        <h3>Don't see the right role?</h3>
+        <p>New opportunities come in all the time. Register your details and we'll match you.</p>
+        <a href="register.html" class="btn btn-primary">Register as a Job Seeker</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== APPLY MODAL ===== -->
+  <div class="modal" id="applyModal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="applyTitle">
+      <button class="modal-close" data-close aria-label="Close">&times;</button>
+      <h3 id="applyTitle">Apply for this role</h3>
+      <p class="modal-role" id="applyRole"></p>
+      <p class="modal-note">This takes you to our registration form with the role pre-filled.</p>
+      <a href="#" class="btn btn-primary btn-block" id="applyProceed">Continue to Application</a>
+    </div>
+  </div>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <img src="assets/logo-white.svg" alt="LeBoKhu Group" class="logo">
+        <p>Connecting People, Resources &amp; Opportunity.</p>
+        <p class="small">100% Black youth-owned &bull; Proudly South African</p>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <h4>Explore</h4>
+          <a href="index.html#about">About</a>
+          <a href="index.html#services">Services</a>
+          <a href="jobs.html">Jobs</a>
+          <a href="register.html">Register</a>
+        </div>
+        <div>
+          <h4>For You</h4>
+          <a href="index.html#companies">Companies</a>
+          <a href="index.html#contact">Contact</a>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <a href="mailto:Tbmadihlaba@gmail.com">Tbmadihlaba@gmail.com</a>
+          <a href="tel:+27817986359">081 798 6359</a>
+          <a href="index.html#contact">Glen Marais, Kempton Park</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container"><p>&copy; <span id="year"></span> LeBoKhu Group. All rights reserved.</p></div>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/jobs.js"></script>
+</body>
+</html>
