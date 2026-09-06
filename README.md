@@ -140,3 +140,28 @@ also receive an **email alert** per registration via Web3Forms. A password-prote
 
 Each step degrades gracefully: if Supabase keys aren't set yet, the email alert still works;
 if email hiccups, the database record is still saved.
+
+
+## 💼 Employer Job Posts
+
+Employers can submit job openings via **`post-job.html`**. Each submission is:
+1. Saved to the Supabase **`job_posts`** table with `status = 'pending'`
+2. Emailed to you as an alert (Web3Forms)
+
+### One-time setup
+Run **`supabase-job-posts.sql`** in the Supabase SQL Editor (same way as the main setup:
+open the file, copy its contents, paste into SQL Editor → Run). It creates the `job_posts`
+table and security rules so:
+- the public can **submit** posts and **read only approved** ones,
+- only you (logged in) can **read all / approve / edit / delete**.
+
+### Managing posts (admin)
+Open **`admin.html`** → **💼 Job Posts** tab:
+- Stat cards: total, pending review, approved (live), last 30 days
+- Search + filter by status / sector / level / location
+- Per-row actions: **Approve**, **Close**, **Set pending**, **Delete**
+- **Export CSV** (respects filters)
+
+Posts marked **approved** are the ones your public Jobs page is allowed to read (handy if you
+later want the Jobs page to show live employer posts instead of the sample list — ask and I can
+wire that up).

@@ -384,3 +384,27 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
   .stat-cards{grid-template-columns:1fr 1fr}
   .admin-filters{grid-template-columns:1fr}
 }
+
+
+/* ============================================================
+   Admin tabs + job-post actions
+   ============================================================ */
+.tabs{display:flex;gap:8px;margin-bottom:24px;border-bottom:2px solid var(--line)}
+.tab{background:none;border:none;cursor:pointer;padding:12px 20px;font-family:var(--sans);font-weight:700;
+  font-size:.95rem;color:var(--slate);border-bottom:3px solid transparent;margin-bottom:-2px;transition:.2s}
+.tab:hover{color:var(--ink)}
+.tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+
+.badge-pending{background:#fff4dc;color:#8a6100}
+.badge-approved{background:#e7f4f0;color:var(--teal)}
+.badge-closed{background:#f0f0f3;color:var(--slate)}
+
+.actions-cell{white-space:nowrap;min-width:200px}
+.mini-btn{display:inline-block;margin:2px 3px;padding:5px 10px;border:1px solid var(--line);background:#fff;
+  border-radius:8px;font-size:.78rem;font-weight:700;color:var(--ink);cursor:pointer;transition:.15s}
+.mini-btn:hover{background:var(--bg-alt)}
+.mini-btn.approve{border-color:var(--teal);color:var(--teal)}
+.mini-btn.approve:hover{background:var(--teal);color:#fff}
+.mini-btn.close:hover{background:#eef0f3}
+.mini-btn.danger{border-color:#d64545;color:#d64545}
+.mini-btn.danger:hover{background:#d64545;color:#fff}

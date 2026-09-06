@@ -56,7 +56,7 @@
       <div class="dash-head">
         <div>
           <p class="kicker">Reports</p>
-          <h1>Job Seeker Dashboard</h1>
+          <h1>Dashboard</h1>
         </div>
         <div class="dash-actions">
           <button class="btn btn-outline btn-sm" id="refreshBtn">↻ Refresh</button>
@@ -64,55 +64,108 @@
         </div>
       </div>
 
-      <!-- Stat cards -->
-      <div class="stat-cards" id="statCards"></div>
+      <!-- Tabs -->
+      <div class="tabs" role="tablist">
+        <button class="tab active" id="tabSeekers" role="tab" aria-selected="true">👤 Job Seekers</button>
+        <button class="tab" id="tabPosts" role="tab" aria-selected="false">💼 Job Posts</button>
+      </div>
 
-      <!-- Breakdowns -->
-      <div class="breakdowns" id="breakdowns"></div>
+      <!-- ===== JOB SEEKERS TAB ===== -->
+      <div class="tab-panel" id="panelSeekers">
+        <div class="stat-cards" id="statCards"></div>
+        <div class="breakdowns" id="breakdowns"></div>
 
-      <!-- Filters -->
-      <div class="job-filters admin-filters">
-        <div class="field">
-          <label for="q">Search</label>
-          <input type="text" id="q" placeholder="Name, email, phone, skills…">
+        <div class="job-filters admin-filters">
+          <div class="field">
+            <label for="q">Search</label>
+            <input type="text" id="q" placeholder="Name, email, phone, skills…">
+          </div>
+          <div class="field">
+            <label for="fSector">Sector</label>
+            <select id="fSector"><option value="">All sectors</option></select>
+          </div>
+          <div class="field">
+            <label for="fQual">Qualification</label>
+            <select id="fQual"><option value="">All qualifications</option></select>
+          </div>
+          <div class="field">
+            <label for="fExp">Experience</label>
+            <select id="fExp"><option value="">All experience</option></select>
+          </div>
+          <div class="field">
+            <label for="fCv">CV</label>
+            <select id="fCv">
+              <option value="">Any</option>
+              <option value="yes">Has CV</option>
+              <option value="no">No CV</option>
+            </select>
+          </div>
         </div>
-        <div class="field">
-          <label for="fSector">Sector</label>
-          <select id="fSector"><option value="">All sectors</option></select>
-        </div>
-        <div class="field">
-          <label for="fQual">Qualification</label>
-          <select id="fQual"><option value="">All qualifications</option></select>
-        </div>
-        <div class="field">
-          <label for="fExp">Experience</label>
-          <select id="fExp"><option value="">All experience</option></select>
-        </div>
-        <div class="field">
-          <label for="fCv">CV</label>
-          <select id="fCv">
-            <option value="">Any</option>
-            <option value="yes">Has CV</option>
-            <option value="no">No CV</option>
-          </select>
+
+        <p class="results-count" id="count"></p>
+
+        <div class="table-wrap">
+          <table class="data-table" id="table">
+            <thead>
+              <tr>
+                <th>Date</th><th>Name</th><th>Contact</th><th>Location</th>
+                <th>Qualification</th><th>Experience</th><th>Sector</th>
+                <th>Applying for</th><th>Skills</th><th>CV</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+          <div class="no-results" id="noRows" hidden><p>No registrations match your filters.</p></div>
         </div>
       </div>
 
-      <p class="results-count" id="count"></p>
+      <!-- ===== JOB POSTS TAB ===== -->
+      <div class="tab-panel" id="panelPosts" hidden>
+        <div class="stat-cards" id="postStatCards"></div>
 
-      <!-- Table -->
-      <div class="table-wrap">
-        <table class="data-table" id="table">
-          <thead>
-            <tr>
-              <th>Date</th><th>Name</th><th>Contact</th><th>Location</th>
-              <th>Qualification</th><th>Experience</th><th>Sector</th>
-              <th>Applying for</th><th>Skills</th><th>CV</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-        <div class="no-results" id="noRows" hidden><p>No registrations match your filters.</p></div>
+        <div class="job-filters admin-filters">
+          <div class="field">
+            <label for="pq">Search</label>
+            <input type="text" id="pq" placeholder="Company, title, contact…">
+          </div>
+          <div class="field">
+            <label for="pStatus">Status</label>
+            <select id="pStatus">
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pSector">Sector</label>
+            <select id="pSector"><option value="">All sectors</option></select>
+          </div>
+          <div class="field">
+            <label for="pLevel">Level</label>
+            <select id="pLevel"><option value="">All levels</option></select>
+          </div>
+          <div class="field">
+            <label for="pLoc">Location</label>
+            <select id="pLoc"><option value="">All locations</option></select>
+          </div>
+        </div>
+
+        <p class="results-count" id="postCount"></p>
+
+        <div class="table-wrap">
+          <table class="data-table" id="postTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Status</th><th>Company</th><th>Title</th>
+                <th>Sector</th><th>Level</th><th>Location</th><th>Type</th>
+                <th>Contact</th><th>Description</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="postTbody"></tbody>
+          </table>
+          <div class="no-results" id="postNoRows" hidden><p>No job posts match your filters.</p></div>
+        </div>
       </div>
 
     </div>

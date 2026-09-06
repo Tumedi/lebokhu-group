@@ -43,6 +43,7 @@
     logoutBtn.hidden = false;
     adminUser.textContent = user && user.email ? user.email : '';
     loadData();
+    loadPosts();
   }
   function showLogin() {
     dashView.hidden = true;
@@ -147,8 +148,31 @@
     el.addEventListener('input', applyFilters);
     el.addEventListener('change', applyFilters);
   });
-  document.getElementById('refreshBtn').addEventListener('click', loadData);
-  document.getElementById('exportBtn').addEventListener('click', exportCsv);
+  document.getElementById('refreshBtn').addEventListener('click', function () {
+    if (activeTab === 'posts') loadPosts(); else loadData();
+  });
+  document.getElementById('exportBtn').addEventListener('click', function () {
+    if (activeTab === 'posts') exportPostsCsv(); else exportCsv();
+  });
+
+  /* ---------- Tab switching ---------- */
+  var activeTab = 'seekers';
+  var tabSeekers = document.getElementById('tabSeekers');
+  var tabPosts = document.getElementById('tabPosts');
+  var panelSeekers = document.getElementById('panelSeekers');
+  var panelPosts = document.getElementById('panelPosts');
+  function switchTab(tab) {
+    activeTab = tab;
+    var isPosts = tab === 'posts';
+    tabPosts.classList.toggle('active', isPosts);
+    tabSeekers.classList.toggle('active', !isPosts);
+    tabPosts.setAttribute('aria-selected', isPosts ? 'true' : 'false');
+    tabSeekers.setAttribute('aria-selected', !isPosts ? 'true' : 'false');
+    panelPosts.hidden = !isPosts;
+    panelSeekers.hidden = isPosts;
+  }
+  tabSeekers.addEventListener('click', function () { switchTab('seekers'); });
+  tabPosts.addEventListener('click', function () { switchTab('posts'); });
 
   /* ---------- Render table ---------- */
   function fmtDate(iso) {
@@ -237,11 +261,174 @@
     }
     var rows = VIEW.map(function (r) { return cols.map(function (c) { return cell(r[c]); }).join(','); });
     var csv = '\uFEFF' + head + '\n' + rows.join('\n'); // BOM for Excel
+    downloadCsv(csv, 'lebokhu-registrations');
+  }
+
+  function downloadCsv(csv, base) {
     var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'lebokhu-registrations-' + new Date().toISOString().slice(0, 10) + '.csv';
+    a.download = base + '-' + new Date().toISOString().slice(0, 10) + '.csv';
     document.body.appendChild(a); a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  function csvCell(v) {
+    v = v == null ? '' : String(v);
+    if (/[",\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+    return v;
+  }
+  function fmtDate2(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    return d.toLocaleDateString('en-ZA') + ' ' + d.toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  /* ============================================================
+     JOB POSTS (employer submissions)
+     ============================================================ */
+  var POSTS = [];       // all posts
+  var POSTS_VIEW = [];  // filtered
+
+  function loadPosts() {
+    var count = document.getElementById('postCount');
+    count.textContent = 'Loading…';
+    client.from(CFG.POSTS_TABLE).select('*').order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error) { count.textContent = 'Error loading posts: ' + res.error.message; return; }
+        POSTS = res.data || [];
+        buildPostFilterOptions();
+        applyPostFilters();
+        renderPostStats();
+      });
+  }
+
+  function postUnique(key) {
+    var set = {};
+    POSTS.forEach(function (r) { if (r[key]) set[r[key]] = true; });
+    return Object.keys(set).sort();
+  }
+  function buildPostFilterOptions() {
+    fillSelect('pSector', postUnique('sector'));
+    fillSelect('pLevel', postUnique('level'));
+    fillSelect('pLoc', postUnique('location'));
+  }
+
+  function applyPostFilters() {
+    var q = (document.getElementById('pq').value || '').trim().toLowerCase();
+    var st = document.getElementById('pStatus').value;
+    var sector = document.getElementById('pSector').value;
+    var level = document.getElementById('pLevel').value;
+    var loc = document.getElementById('pLoc').value;
+
+    POSTS_VIEW = POSTS.filter(function (r) {
+      if (st && r.status !== st) return false;
+      if (sector && r.sector !== sector) return false;
+      if (level && r.level !== level) return false;
+      if (loc && r.location !== loc) return false;
+      if (q) {
+        var hay = [r.company, r.title, r.contact_name, r.contact_email, r.description]
+          .join(' ').toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    renderPostTable();
+  }
+
+  ['pq', 'pStatus', 'pSector', 'pLevel', 'pLoc'].forEach(function (id) {
+    var el = document.getElementById(id);
+    el.addEventListener('input', applyPostFilters);
+    el.addEventListener('change', applyPostFilters);
+  });
+
+  function statusBadge(s) {
+    var cls = s === 'approved' ? 'badge-approved' : (s === 'closed' ? 'badge-closed' : 'badge-pending');
+    return '<span class="badge ' + cls + '">' + esc(s || 'pending') + '</span>';
+  }
+
+  function renderPostTable() {
+    var tbody = document.getElementById('postTbody');
+    document.getElementById('postCount').textContent =
+      POSTS_VIEW.length + ' of ' + POSTS.length + ' job posts';
+    document.getElementById('postNoRows').hidden = POSTS_VIEW.length !== 0;
+    tbody.innerHTML = POSTS_VIEW.map(function (r) {
+      var actions = '';
+      if (r.status !== 'approved') actions += '<button class="mini-btn approve" data-approve="' + r.id + '">Approve</button>';
+      if (r.status !== 'closed') actions += '<button class="mini-btn close" data-close="' + r.id + '">Close</button>';
+      if (r.status !== 'pending') actions += '<button class="mini-btn" data-pending="' + r.id + '">Set pending</button>';
+      actions += '<button class="mini-btn danger" data-del="' + r.id + '">Delete</button>';
+      return '<tr>' +
+        '<td class="nowrap">' + esc(fmtDate2(r.created_at)) + '</td>' +
+        '<td>' + statusBadge(r.status) + '</td>' +
+        '<td>' + esc(r.company) + '</td>' +
+        '<td>' + esc(r.title) + '</td>' +
+        '<td>' + esc(r.sector) + '</td>' +
+        '<td>' + esc(r.level) + '</td>' +
+        '<td>' + esc(r.location) + '</td>' +
+        '<td>' + esc(r.job_type) + '</td>' +
+        '<td><a href="mailto:' + esc(r.contact_email) + '">' + esc(r.contact_email) + '</a>' +
+          (r.contact_phone ? '<br><span class="muted">' + esc(r.contact_phone) + '</span>' : '') + '</td>' +
+        '<td class="skills-cell">' + esc(r.description) + '</td>' +
+        '<td class="actions-cell">' + actions + '</td>' +
+      '</tr>';
+    }).join('');
+
+    tbody.querySelectorAll('[data-approve]').forEach(function (b) {
+      b.addEventListener('click', function () { setStatus(b.getAttribute('data-approve'), 'approved'); });
+    });
+    tbody.querySelectorAll('[data-close]').forEach(function (b) {
+      b.addEventListener('click', function () { setStatus(b.getAttribute('data-close'), 'closed'); });
+    });
+    tbody.querySelectorAll('[data-pending]').forEach(function (b) {
+      b.addEventListener('click', function () { setStatus(b.getAttribute('data-pending'), 'pending'); });
+    });
+    tbody.querySelectorAll('[data-del]').forEach(function (b) {
+      b.addEventListener('click', function () { deletePost(b.getAttribute('data-del')); });
+    });
+  }
+
+  function setStatus(id, status) {
+    client.from(CFG.POSTS_TABLE).update({ status: status }).eq('id', id)
+      .then(function (res) {
+        if (res.error) { alert('Update failed: ' + res.error.message); return; }
+        var p = POSTS.filter(function (x) { return x.id === id; })[0];
+        if (p) p.status = status;
+        applyPostFilters(); renderPostStats();
+      });
+  }
+  function deletePost(id) {
+    if (!confirm('Delete this job post permanently?')) return;
+    client.from(CFG.POSTS_TABLE).delete().eq('id', id)
+      .then(function (res) {
+        if (res.error) { alert('Delete failed: ' + res.error.message); return; }
+        POSTS = POSTS.filter(function (x) { return x.id !== id; });
+        applyPostFilters(); renderPostStats();
+      });
+  }
+
+  function renderPostStats() {
+    var total = POSTS.length;
+    var pending = POSTS.filter(function (r) { return r.status === 'pending'; }).length;
+    var approved = POSTS.filter(function (r) { return r.status === 'approved'; }).length;
+    var last30 = POSTS.filter(function (r) { return new Date(r.created_at) >= daysAgo(30); }).length;
+    var cards = [
+      { label: 'Total Job Posts', value: total },
+      { label: 'Pending Review', value: pending },
+      { label: 'Approved (live)', value: approved },
+      { label: 'Last 30 Days', value: last30 }
+    ];
+    document.getElementById('postStatCards').innerHTML = cards.map(function (c) {
+      return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
+    }).join('');
+  }
+
+  function exportPostsCsv() {
+    if (!POSTS_VIEW.length) { alert('Nothing to export with the current filters.'); return; }
+    var cols = ['created_at', 'status', 'company', 'contact_name', 'contact_email', 'contact_phone',
+      'title', 'sector', 'level', 'location', 'job_type', 'closing_date', 'description'];
+    var head = cols.join(',');
+    var rows = POSTS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); });
+    var csv = '\uFEFF' + head + '\n' + rows.join('\n');
+    downloadCsv(csv, 'lebokhu-job-posts');
   }
 })();
