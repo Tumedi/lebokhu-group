@@ -354,6 +354,7 @@
     tbody.innerHTML = POSTS_VIEW.map(function (r) {
       var actions = '';
       if (r.status !== 'approved') actions += '<button class="mini-btn approve" data-approve="' + r.id + '">Approve</button>';
+      if (r.status === 'approved' && r.contact_email) actions += '<button class="mini-btn email" data-email="' + r.id + '">✉ Email</button>';
       if (r.status !== 'closed') actions += '<button class="mini-btn close" data-close="' + r.id + '">Close</button>';
       if (r.status !== 'pending') actions += '<button class="mini-btn" data-pending="' + r.id + '">Set pending</button>';
       actions += '<button class="mini-btn danger" data-del="' + r.id + '">Delete</button>';
@@ -385,47 +386,40 @@
     tbody.querySelectorAll('[data-del]').forEach(function (b) {
       b.addEventListener('click', function () { deletePost(b.getAttribute('data-del')); });
     });
+    tbody.querySelectorAll('[data-email]').forEach(function (b) {
+      b.addEventListener('click', function () { window.__lebokhuEmailApproved(b.getAttribute('data-email')); });
+    });
   }
 
-  // Web3Forms access key (same one used across the site) — used to email
-  // employers when their post is approved.
-  var WEB3FORMS_KEY = 'bebe08dd-f50a-4a86-8e98-5b79d71df5dc';
-
-  function emailEmployerApproved(post) {
-    if (!post || !post.contact_email) return Promise.resolve();
+  // Build a pre-filled approval email (opens in the admin's own mail app).
+  // This is free and reliable — it sends from YOUR real address, so the
+  // employer sees it genuinely comes from LeBoKhu Group.
+  function openApprovalEmail(post) {
+    if (!post || !post.contact_email) {
+      alert('This post has no contact email on record, so no email could be prepared.');
+      return;
+    }
     var name = post.contact_name || post.company || 'there';
-    var message =
+    var subject = 'Your job post has been approved — LeBoKhu Group';
+    var body =
       'Hi ' + name + ',\n\n' +
       'Good news! Your job post with LeBoKhu Group has been APPROVED and is now live on our Jobs page.\n\n' +
       'Post details:\n' +
-      '• Job title: ' + (post.title || '') + '\n' +
-      '• Company: ' + (post.company || '') + '\n' +
-      '• Sector: ' + (post.sector || '') + '\n' +
-      '• Location: ' + (post.location || '') + '\n' +
-      '• Type: ' + (post.job_type || '') + '\n\n' +
+      '- Job title: ' + (post.title || '') + '\n' +
+      '- Company: ' + (post.company || '') + '\n' +
+      '- Sector: ' + (post.sector || '') + '\n' +
+      '- Location: ' + (post.location || '') + '\n' +
+      '- Type: ' + (post.job_type || '') + '\n\n' +
       'Job seekers can now view and apply for this role. We will be in touch as suitable candidates come through.\n\n' +
       'Thank you for partnering with us to connect people, resources and opportunity.\n\n' +
       'Kind regards,\n' +
       'LeBoKhu Group\n' +
       'Tbmadihlaba@gmail.com | 081 798 6359';
 
-    var payload = {
-      access_key: WEB3FORMS_KEY,
-      subject: 'Your job post has been approved — LeBoKhu Group',
-      from_name: 'LeBoKhu Group',
-      email: post.contact_email,          // send TO the employer
-      replyto: 'Tbmadihlaba@gmail.com',
-      cc: 'Tbmadihlaba@gmail.com',         // keep a copy for your records
-      company: post.company || '',
-      job_title: post.title || '',
-      message: message
-    };
-
-    return fetch('https://api.web3forms.com/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(payload)
-    }).then(function (res) { return res.json(); }).catch(function () { return { success: false }; });
+    var href = 'mailto:' + encodeURIComponent(post.contact_email) +
+      '?subject=' + encodeURIComponent(subject) +
+      '&body=' + encodeURIComponent(body);
+    window.location.href = href;
   }
 
   function setStatus(id, status) {
@@ -436,19 +430,21 @@
         if (p) p.status = status;
         applyPostFilters(); renderPostStats();
 
-        // On approval, email the employer to notify them
-        if (status === 'approved' && p) {
-          emailEmployerApproved(p).then(function (r) {
-            if (r && r.success) {
-              alert('Approved ✓ — a confirmation email was sent to ' + p.contact_email);
-            } else {
-              alert('Approved ✓ — but the notification email could not be sent to ' +
-                p.contact_email + '. You may want to email them manually.');
-            }
-          });
+        // On approval, offer to notify the employer via a pre-filled email
+        if (status === 'approved' && p && p.contact_email) {
+          if (confirm('Approved ✓\n\nSend a confirmation email to the employer (' +
+              p.contact_email + ')?\n\nClick OK to open a ready-to-send email.')) {
+            openApprovalEmail(p);
+          }
         }
       });
   }
+
+  // Allow re-sending the approval email any time from a row button
+  window.__lebokhuEmailApproved = function (id) {
+    var p = POSTS.filter(function (x) { return x.id === id; })[0];
+    if (p) openApprovalEmail(p);
+  };
   function deletePost(id) {
     if (!confirm('Delete this job post permanently?')) return;
     client.from(CFG.POSTS_TABLE).delete().eq('id', id)
