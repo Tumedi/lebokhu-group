@@ -76,26 +76,52 @@
       return;
     }
 
-    // Real submission via Formspree AJAX
+    // Build submission data WITHOUT the file field.
+    // (The free Formspree plan rejects file uploads, which would fail the
+    //  whole submission — so we send text fields only and handle the CV
+    //  separately by asking the applicant to email it.)
+    var data = new FormData();
+    var hasCv = false, cvName = '';
+    form.querySelectorAll('input, select, textarea').forEach(function (el) {
+      if (!el.name) return;
+      if (el.type === 'file') {
+        if (el.files && el.files.length) { hasCv = true; cvName = el.files[0].name; }
+        return; // never append the file itself
+      }
+      if (el.type === 'checkbox') { data.append(el.name, el.checked ? 'Yes' : 'No'); return; }
+      data.append(el.name, el.value);
+    });
+    // Record whether a CV exists so you know to expect it by email
+    data.append('cv_status', hasCv ? ('Applicant will email CV: ' + cvName) : 'No CV attached');
+
     var btn = form.querySelector('button[type="submit"]');
     var original = btn.textContent;
     btn.disabled = true; btn.textContent = 'Sending…';
 
     fetch(endpoint, {
       method: 'POST',
-      body: new FormData(form),
+      body: data,
       headers: { 'Accept': 'application/json' }
     }).then(function (res) {
       if (res.ok) {
-        status.textContent = 'Thank you' + (first ? ', ' + first : '') +
+        var msg = 'Thank you' + (first ? ', ' + first : '') +
           '! Your registration has been submitted. Our team will be in touch soon.';
+        if (hasCv) {
+          var subject = encodeURIComponent('CV — ' + first + ' ' +
+            (document.getElementById('lastName').value || '').trim());
+          msg += ' To include your CV, please email it to ' +
+            '<a href="mailto:Tbmadihlaba@gmail.com?subject=' + subject + '">Tbmadihlaba@gmail.com</a>.';
+        }
+        status.innerHTML = msg;
         status.className = 'form-status ok';
         form.reset();
+        var hint = cv && cv.parentNode.querySelector('.hint');
+        if (hint) hint.textContent = 'No CV? No problem — you can still register. We\'ll help you build one.';
       } else {
         return res.json().then(function (d) { throw new Error((d.errors && d.errors[0] && d.errors[0].message) || 'Submission failed'); });
       }
     }).catch(function (err) {
-      status.textContent = 'Sorry, something went wrong: ' + err.message + '. Please try again or email us directly.';
+      status.textContent = 'Sorry, something went wrong: ' + err.message + '. Please try again or email us directly at Tbmadihlaba@gmail.com.';
       status.className = 'form-status bad';
     }).finally(function () {
       btn.disabled = false; btn.textContent = original;
