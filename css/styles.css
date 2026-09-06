@@ -248,6 +248,8 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .job-head h3{margin:0}
 .badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:.76rem;font-weight:800;letter-spacing:.3px}
 .badge-level{background:#e7f4f0;color:var(--teal)}
+.badge-live{background:#fdeaea;color:#c0392b}
+.job-company{font-weight:700;color:var(--slate);font-size:.9rem}
 .job-meta{display:flex;flex-wrap:wrap;gap:16px;color:var(--slate);font-size:.88rem;font-weight:600;margin-bottom:10px}
 .job-desc{color:var(--slate);margin:0}
 .job-actions{flex:none}

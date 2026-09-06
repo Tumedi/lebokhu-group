@@ -1,13 +1,14 @@
 /* ============================================================
    LeBoKhu Group — jobs.js
-   Sample job listings + client-side filtering + apply modal
-   NOTE: These are SAMPLE listings. Replace the JOBS array below
-   with your real openings (or load them from a backend/CMS later).
+   Loads LIVE approved job posts from Supabase (job_posts table)
+   and merges them with the built-in SAMPLE_JOBS below so the page
+   is never empty. Live posts appear first and are tagged "Live".
+   Includes client-side search/filter + the apply modal.
    ============================================================ */
 (function () {
   'use strict';
 
-  var JOBS = [
+  var SAMPLE_JOBS = [
     { title: 'General Warehouse Assistant', sector: 'Logistics & Warehousing', level: 'Entry-level / No experience', loc: 'Johannesburg', type: 'Full-time', posted: '2 days ago',
       desc: 'Assist with picking, packing, loading and stock control. No experience required — full training provided. A great first job.' },
     { title: 'Retail Sales Assistant', sector: 'Retail', level: 'Entry-level / No experience', loc: 'Pretoria / Tshwane', type: 'Full-time', posted: '3 days ago',
@@ -34,6 +35,10 @@
       desc: 'Kick-start your career analysing processes and data. Relevant degree required. Structured graduate programme.' }
   ];
 
+  // The list actually rendered. Starts with samples; live posts are
+  // prepended once loaded from the database.
+  var JOBS = SAMPLE_JOBS.slice();
+
   var listEl = document.getElementById('jobList');
   var countEl = document.getElementById('resultsCount');
   var noRes = document.getElementById('noResults');
@@ -46,12 +51,15 @@
 
   function jobCard(job) {
     var q = encodeURIComponent(job.title);
+    var liveBadge = job.live ? '<span class="badge badge-live">● Live</span>' : '';
     return '' +
       '<article class="job-card">' +
         '<div class="job-main">' +
           '<div class="job-head">' +
             '<h3>' + esc(job.title) + '</h3>' +
+            (job.company ? '<span class="job-company">' + esc(job.company) + '</span>' : '') +
             '<span class="badge badge-level">' + esc(job.level) + '</span>' +
+            liveBadge +
           '</div>' +
           '<p class="job-meta">' +
             '<span>🏢 ' + esc(job.sector) + '</span>' +
@@ -111,5 +119,57 @@
     el.addEventListener('change', render);
   });
 
+  /* ---- Relative "posted" time from an ISO date ---- */
+  function relTime(iso) {
+    if (!iso) return 'Recently';
+    var diff = Date.now() - new Date(iso).getTime();
+    var day = 86400000;
+    var d = Math.floor(diff / day);
+    if (d <= 0) return 'Today';
+    if (d === 1) return '1 day ago';
+    if (d < 7) return d + ' days ago';
+    if (d < 14) return '1 week ago';
+    if (d < 60) return Math.floor(d / 7) + ' weeks ago';
+    return Math.floor(d / 30) + ' months ago';
+  }
+
+  /* ---- Map a DB job_posts row to the card model ---- */
+  function mapPost(p) {
+    return {
+      title: p.title || 'Untitled role',
+      company: p.company || '',
+      sector: p.sector || 'Other',
+      level: p.level || 'Entry-level / No experience',
+      loc: p.location || 'Other',
+      type: p.job_type || 'Full-time',
+      posted: relTime(p.created_at),
+      desc: p.description || '',
+      live: true
+    };
+  }
+
+  /* ---- Load live approved posts from Supabase, then merge ---- */
+  function loadLiveJobs() {
+    var CFG = window.LEBOKHU_SUPABASE;
+    if (!CFG || !CFG.isConfigured()) return; // no DB yet → samples only
+    var client = CFG.client();
+    if (!client) return;
+
+    client.from(CFG.POSTS_TABLE)
+      .select('*')
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error || !res.data || !res.data.length) return; // keep samples on error/empty
+        var live = res.data.map(mapPost);
+        // Live posts first, then the sample listings as extra content
+        JOBS = live.concat(SAMPLE_JOBS);
+        render();
+      })
+      .catch(function () { /* keep samples */ });
+  }
+
+  // Initial render (samples), then upgrade with live posts when they arrive
   render();
+  loadLiveJobs();
 })();
