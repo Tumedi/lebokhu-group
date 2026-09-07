@@ -107,14 +107,21 @@
         var dashHref = d.href;
         var dashLabel = d.label;
 
-        // Homeowners get a quick "Request a Service" shortcut in the header.
-        if (role === 'homeowner') {
-          var req = document.createElement('a');
-          req.href = 'services-directory.html';
-          req.className = 'nav-cta';
-          req.textContent = '＋ Request a Service';
-          req.setAttribute('data-auth-node', '');
-          nav.appendChild(req);
+        // Each role gets a quick primary action shortcut in the header.
+        var shortcuts = {
+          homeowner: { href: 'services-directory.html', label: '＋ Request a Service' },
+          employer:  { href: 'post-job.html',           label: '＋ Post a Job' },
+          seeker:    { href: 'jobs.html',                label: 'Browse Jobs' },
+          provider:  { href: 'list-service.html',        label: 'Edit My Listing' }
+        };
+        var sc = shortcuts[role];
+        if (sc) {
+          var scLink = document.createElement('a');
+          scLink.href = sc.href;
+          scLink.className = 'nav-cta';
+          scLink.textContent = sc.label;
+          scLink.setAttribute('data-auth-node', '');
+          nav.appendChild(scLink);
         }
 
         var dash = document.createElement('a');
