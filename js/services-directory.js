@@ -227,6 +227,18 @@
     currentRevProvider = p;
     chosenRating = 0; paintStarInput();
     revProviderEl.textContent = (p.full_name || '') + ' — ' + (p.service || '');
+    // Provider photo + rating header
+    var head = document.getElementById('revProviderHead');
+    if (head) {
+      var avatar = p.photo_url
+        ? '<img class="prov-photo" src="' + esc(p.photo_url) + '" alt="' + esc(p.full_name) + '">'
+        : '<span class="prov-avatar">' + esc((p.full_name || '?').charAt(0).toUpperCase()) + '</span>';
+      var rt = p.rating_count
+        ? '<span class="stars">' + starsHtml(p.rating_avg) + '</span> <span class="rating-text">' +
+          Number(p.rating_avg).toFixed(1) + ' (' + p.rating_count + ')</span>'
+        : '<span class="rating-text">No reviews yet</span>';
+      head.innerHTML = avatar + '<div><strong>' + esc(p.full_name) + '</strong><div class="prov-rating">' + rt + '</div></div>';
+    }
     revStatus.textContent = ''; revStatus.className = 'form-status';
     if (revForm) revForm.reset();
     revListEl.innerHTML = '<p class="muted">Loading reviews…</p>';

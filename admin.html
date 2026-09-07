@@ -71,6 +71,7 @@
         <button class="tab" id="tabApps" role="tab" aria-selected="false">📨 Applications</button>
         <button class="tab" id="tabProviders" role="tab" aria-selected="false">🛠️ Service Providers</button>
         <button class="tab" id="tabRequests" role="tab" aria-selected="false">🏠 Service Requests</button>
+        <button class="tab" id="tabReviews" role="tab" aria-selected="false">⭐ Reviews</button>
       </div>
 
       <!-- ===== JOB SEEKERS TAB ===== -->
@@ -285,6 +286,43 @@
             <tbody id="reqTbody"></tbody>
           </table>
           <div class="no-results" id="reqNoRows" hidden><p>No service requests match your filters.</p></div>
+        </div>
+      </div>
+
+      <!-- ===== REVIEWS TAB (moderation) ===== -->
+      <div class="tab-panel" id="panelReviews" hidden>
+        <div class="stat-cards" id="revStatCards"></div>
+
+        <div class="job-filters admin-filters">
+          <div class="field">
+            <label for="rvq">Search</label>
+            <input type="text" id="rvq" placeholder="Provider, reviewer, comment…">
+          </div>
+          <div class="field">
+            <label for="rvRating">Rating</label>
+            <select id="rvRating">
+              <option value="">All ratings</option>
+              <option value="5">5 stars</option>
+              <option value="4">4 stars</option>
+              <option value="3">3 stars</option>
+              <option value="2">2 stars</option>
+              <option value="1">1 star</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="results-count" id="revCount"></p>
+
+        <div class="table-wrap">
+          <table class="data-table" id="rvTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Provider</th><th>Rating</th><th>Reviewer</th><th>Comment</th><th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="rvTbody"></tbody>
+          </table>
+          <div class="no-results" id="rvNoRows" hidden><p>No reviews match your filters.</p></div>
         </div>
       </div>
 

@@ -181,6 +181,15 @@
           <p>Every provider is reviewed by our team before going live, so homeowners connect with reliable, local talent.</p>
         </article>
       </div>
+
+      <!-- Featured (top-rated) providers — populated by JS when available -->
+      <div id="featuredProviders" class="featured-wrap" hidden>
+        <h3 class="featured-title">⭐ Top-Rated Providers</h3>
+        <div class="featured-grid" id="featuredGrid"></div>
+        <p style="text-align:center;margin-top:22px">
+          <a href="services-directory.html" class="btn btn-outline btn-sm">See all providers</a>
+        </p>
+      </div>
     </div>
   </section>
 
@@ -374,6 +383,7 @@
   <script src="js/auth.js"></script>
   <script src="js/main.js"></script>
   <script src="js/pwa.js"></script>
+  <script src="js/featured-providers.js"></script>
   <script>
     // Reflect login state in the nav (adds Log In / dashboard + Log Out)
     if (window.LEBOKHU_AUTH) window.LEBOKHU_AUTH.renderHeader('#mainNav');

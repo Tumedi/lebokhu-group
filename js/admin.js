@@ -47,6 +47,7 @@
     loadApps();
     loadProviders();
     loadRequests();
+    loadReviews();
   }
   function showLogin() {
     dashView.hidden = true;
@@ -156,6 +157,7 @@
     else if (activeTab === 'apps') loadApps();
     else if (activeTab === 'providers') loadProviders();
     else if (activeTab === 'requests') loadRequests();
+    else if (activeTab === 'reviews') loadReviews();
     else loadData();
   });
   document.getElementById('exportBtn').addEventListener('click', function () {
@@ -163,6 +165,7 @@
     else if (activeTab === 'apps') exportAppsCsv();
     else if (activeTab === 'providers') exportProvidersCsv();
     else if (activeTab === 'requests') exportRequestsCsv();
+    else if (activeTab === 'reviews') exportReviewsCsv();
     else exportCsv();
   });
 
@@ -173,14 +176,16 @@
     posts: document.getElementById('tabPosts'),
     apps: document.getElementById('tabApps'),
     providers: document.getElementById('tabProviders'),
-    requests: document.getElementById('tabRequests')
+    requests: document.getElementById('tabRequests'),
+    reviews: document.getElementById('tabReviews')
   };
   var panels = {
     seekers: document.getElementById('panelSeekers'),
     posts: document.getElementById('panelPosts'),
     apps: document.getElementById('panelApps'),
     providers: document.getElementById('panelProviders'),
-    requests: document.getElementById('panelRequests')
+    requests: document.getElementById('panelRequests'),
+    reviews: document.getElementById('panelReviews')
   };
   function switchTab(tab) {
     activeTab = tab;
@@ -1144,5 +1149,102 @@
     var csv = '\uFEFF' + cols.join(',') + '\n' +
       REQS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); }).join('\n');
     downloadCsv(csv, 'lebokhu-service-requests');
+  }
+
+  /* ============================================================
+     REVIEWS (admin moderation) — view + delete
+     ============================================================ */
+  var REVIEWS = [], REVIEWS_VIEW = [];
+
+  function starsText(n) {
+    n = Number(n) || 0;
+    var out = '';
+    for (var i = 1; i <= 5; i++) out += (i <= n ? '★' : '☆');
+    return '<span class="stars">' + out + '</span>';
+  }
+  function providerName(id) {
+    var p = PROVIDERS.filter(function (x) { return x.id === id; })[0];
+    return p ? (p.full_name + (p.service ? ' (' + p.service + ')' : '')) : '(provider)';
+  }
+
+  function loadReviews() {
+    var countEl = document.getElementById('revCount');
+    if (!countEl) return;
+    countEl.textContent = 'Loading…';
+    client.from(CFG.REVIEWS_TABLE).select('*').order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error) { countEl.textContent = 'Error loading reviews: ' + res.error.message; return; }
+        REVIEWS = res.data || [];
+        applyRevFilters();
+        renderRevStats();
+      });
+  }
+  ['rvq', 'rvRating'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', applyRevFilters); el.addEventListener('change', applyRevFilters); }
+  });
+  function applyRevFilters() {
+    var q = (document.getElementById('rvq').value || '').trim().toLowerCase();
+    var rating = document.getElementById('rvRating').value;
+    REVIEWS_VIEW = REVIEWS.filter(function (r) {
+      if (rating && String(r.rating) !== rating) return false;
+      if (q) {
+        var hay = [providerName(r.provider_id), r.reviewer_name, r.comment].join(' ').toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    renderRevTable();
+  }
+  function renderRevTable() {
+    var tbody = document.getElementById('rvTbody');
+    document.getElementById('revCount').textContent = REVIEWS_VIEW.length + ' of ' + REVIEWS.length + ' reviews';
+    document.getElementById('rvNoRows').hidden = REVIEWS_VIEW.length !== 0;
+    tbody.innerHTML = REVIEWS_VIEW.map(function (r) {
+      return '<tr>' +
+        '<td class="nowrap">' + esc(fmtDate2(r.created_at)) + '</td>' +
+        '<td>' + esc(providerName(r.provider_id)) + '</td>' +
+        '<td>' + starsText(r.rating) + '</td>' +
+        '<td>' + esc(r.reviewer_name || 'Anonymous') + '</td>' +
+        '<td class="skills-cell">' + esc(r.comment || '') + '</td>' +
+        '<td class="actions-cell"><button class="mini-btn danger" data-rv-del="' + esc(r.id) + '">Delete</button></td>' +
+      '</tr>';
+    }).join('');
+    tbody.querySelectorAll('[data-rv-del]').forEach(function (b) {
+      b.addEventListener('click', function () { delReview(b.getAttribute('data-rv-del')); });
+    });
+  }
+  function delReview(id) {
+    if (!confirm('Delete this review permanently? This will update the provider\'s average rating.')) return;
+    client.from(CFG.REVIEWS_TABLE).delete().eq('id', id).then(function (res) {
+      if (res.error) { alert('Delete failed: ' + res.error.message); return; }
+      REVIEWS = REVIEWS.filter(function (x) { return x.id !== id; });
+      applyRevFilters(); renderRevStats();
+      loadProviders(); // refresh averages shown in providers tab
+    });
+  }
+  function renderRevStats() {
+    var n = REVIEWS.length;
+    var avg = n ? (REVIEWS.reduce(function (s, r) { return s + (r.rating || 0); }, 0) / n) : 0;
+    function cs(x) { return REVIEWS.filter(function (r) { return r.rating === x; }).length; }
+    var cards = [
+      { label: 'Total Reviews', value: n },
+      { label: 'Average Rating', value: n ? avg.toFixed(1) + ' ★' : '—' },
+      { label: '5-Star', value: cs(5) },
+      { label: '1-Star', value: cs(1) }
+    ];
+    document.getElementById('revStatCards').innerHTML = cards.map(function (c) {
+      return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
+    }).join('');
+  }
+  function exportReviewsCsv() {
+    if (!REVIEWS_VIEW.length) { alert('Nothing to export with the current filters.'); return; }
+    var cols = ['created_at', 'rating', 'reviewer_name', 'comment'];
+    var head = ['created_at', 'provider', 'rating', 'reviewer_name', 'comment'].join(',');
+    var rows = REVIEWS_VIEW.map(function (r) {
+      return [csvCell(r.created_at), csvCell(providerName(r.provider_id)), csvCell(r.rating),
+        csvCell(r.reviewer_name), csvCell(r.comment)].join(',');
+    });
+    downloadCsv('\uFEFF' + head + '\n' + rows.join('\n'), 'lebokhu-reviews');
   }
 })();
