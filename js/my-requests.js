@@ -45,6 +45,7 @@
     profile = ctx.profile;
     var who = document.getElementById('who');
     if (who) who.textContent = (profile && (profile.full_name || profile.email)) || '';
+    var lo = document.getElementById('logoutBtn'); if (lo) lo.hidden = false;
     loadRequests();
   }).catch(function () { /* redirected */ });
 

@@ -48,6 +48,7 @@
   AUTH.requireAuth('provider').then(function (ctx) {
     var who = document.getElementById('who');
     if (who) who.textContent = (ctx.profile && (ctx.profile.full_name || ctx.profile.email)) || '';
+    var lo = document.getElementById('logoutBtn'); if (lo) lo.hidden = false;
     loadListing(ctx.profile);
   }).catch(function () { /* redirected */ });
 

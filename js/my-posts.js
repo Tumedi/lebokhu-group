@@ -45,6 +45,7 @@
   AUTH.requireAuth('employer').then(function (ctx) {
     var who = document.getElementById('who');
     if (who) who.textContent = (ctx.profile && (ctx.profile.company || ctx.profile.full_name || ctx.profile.email)) || '';
+    var lo = document.getElementById('logoutBtn'); if (lo) lo.hidden = false;
     loadPosts(ctx.profile);
   }).catch(function () { /* redirected */ });
 

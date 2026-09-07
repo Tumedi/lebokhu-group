@@ -39,6 +39,7 @@
   AUTH.requireAuth('seeker').then(function (ctx) {
     var who = document.getElementById('who');
     if (who) who.textContent = (ctx.profile && (ctx.profile.full_name || ctx.profile.email)) || '';
+    var lo = document.getElementById('logoutBtn'); if (lo) lo.hidden = false;
     loadApplications(ctx.profile);
   }).catch(function () { /* requireAuth already redirected */ });
 
