@@ -201,3 +201,35 @@ Only registered users can post or apply for jobs. Two roles:
 ### Application statuses
 `submitted → reviewed → shortlisted → rejected → hired` — the admin sets these on the
 **Applications** tab, and each seeker sees the current status on their dashboard.
+
+
+## 🛠️ Home Services Marketplace
+
+Alongside jobs, the site has a **home-services directory** — painters, plumbers, gardeners,
+domestic workers, electricians and more — that homeowners can search and contact.
+
+### One-time setup
+Run **`supabase-services.sql`** in Supabase → SQL Editor (after `supabase-auth.sql`, since it
+uses `is_admin()`). Creates `service_providers` + `service_requests` with RLS.
+
+### How it works
+| Who | Page | What |
+|-----|------|------|
+| Service provider | `signup.html` (role **Service Provider**) → `list-service.html` | Lists their service (goes **pending**) |
+| Homeowner | `services-directory.html` | Searches by service + area, contacts provider or **Requests a Service** (no login needed) |
+| Provider | `my-services.html` | Sees their listing status + incoming requests |
+| Admin | `admin.html` → **Service Providers** / **Service Requests** tabs | Approve/reject providers; manage request statuses |
+
+- Providers appear in the public directory only once **approved** by the admin.
+- Homeowner requests save to the DB and trigger an email (via `send-service-request-email`)
+  to you and, if known, the provider.
+
+### Service categories
+Painting · Plumbing · Gardening · Domestic Work/Cleaning · Electrical · Handyman ·
+Moving/Transport · Tiling · Carpentry · Security/Fencing · Other
+
+### Deploy the services email function
+```bash
+supabase functions deploy send-service-request-email --no-verify-jwt
+```
+(Homeowners submit without logging in, so this one needs `--no-verify-jwt`.)

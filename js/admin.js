@@ -45,6 +45,8 @@
     loadData();
     loadPosts();
     loadApps();
+    loadProviders();
+    loadRequests();
   }
   function showLogin() {
     dashView.hidden = true;
@@ -152,26 +154,36 @@
   document.getElementById('refreshBtn').addEventListener('click', function () {
     if (activeTab === 'posts') loadPosts();
     else if (activeTab === 'apps') loadApps();
+    else if (activeTab === 'providers') loadProviders();
+    else if (activeTab === 'requests') loadRequests();
     else loadData();
   });
   document.getElementById('exportBtn').addEventListener('click', function () {
     if (activeTab === 'posts') exportPostsCsv();
     else if (activeTab === 'apps') exportAppsCsv();
+    else if (activeTab === 'providers') exportProvidersCsv();
+    else if (activeTab === 'requests') exportRequestsCsv();
     else exportCsv();
   });
 
   /* ---------- Tab switching ---------- */
   var activeTab = 'seekers';
-  var tabSeekers = document.getElementById('tabSeekers');
-  var tabPosts = document.getElementById('tabPosts');
-  var tabApps = document.getElementById('tabApps');
-  var panelSeekers = document.getElementById('panelSeekers');
-  var panelPosts = document.getElementById('panelPosts');
-  var panelApps = document.getElementById('panelApps');
+  var tabs = {
+    seekers: document.getElementById('tabSeekers'),
+    posts: document.getElementById('tabPosts'),
+    apps: document.getElementById('tabApps'),
+    providers: document.getElementById('tabProviders'),
+    requests: document.getElementById('tabRequests')
+  };
+  var panels = {
+    seekers: document.getElementById('panelSeekers'),
+    posts: document.getElementById('panelPosts'),
+    apps: document.getElementById('panelApps'),
+    providers: document.getElementById('panelProviders'),
+    requests: document.getElementById('panelRequests')
+  };
   function switchTab(tab) {
     activeTab = tab;
-    var tabs = { seekers: tabSeekers, posts: tabPosts, apps: tabApps };
-    var panels = { seekers: panelSeekers, posts: panelPosts, apps: panelApps };
     Object.keys(tabs).forEach(function (k) {
       if (!tabs[k]) return;
       var on = (k === tab);
@@ -180,9 +192,9 @@
       if (panels[k]) panels[k].hidden = !on;
     });
   }
-  tabSeekers.addEventListener('click', function () { switchTab('seekers'); });
-  tabPosts.addEventListener('click', function () { switchTab('posts'); });
-  if (tabApps) tabApps.addEventListener('click', function () { switchTab('apps'); });
+  Object.keys(tabs).forEach(function (k) {
+    if (tabs[k]) tabs[k].addEventListener('click', function () { switchTab(k); });
+  });
 
   /* ---------- Render table ---------- */
   function fmtDate(iso) {
@@ -891,5 +903,212 @@
       'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(seeker.email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  }
+
+  /* ============================================================
+     SERVICE PROVIDERS (admin) — approve / reject / delete
+     ============================================================ */
+  var PROVIDERS = [], PROVIDERS_VIEW = [];
+
+  function loadProviders() {
+    var countEl = document.getElementById('provCount');
+    if (!countEl) return;
+    countEl.textContent = 'Loading…';
+    client.from(CFG.PROVIDERS_TABLE).select('*').order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error) { countEl.textContent = 'Error loading providers: ' + res.error.message; return; }
+        PROVIDERS = res.data || [];
+        fillSelect('pvService', (function () {
+          var set = {}; PROVIDERS.forEach(function (p) { if (p.service) set[p.service] = 1; });
+          return Object.keys(set).sort();
+        })());
+        applyProvFilters();
+        renderProvStats();
+      });
+  }
+  ['pvq', 'pvStatus', 'pvService'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', applyProvFilters); el.addEventListener('change', applyProvFilters); }
+  });
+  function applyProvFilters() {
+    var q = (document.getElementById('pvq').value || '').trim().toLowerCase();
+    var st = document.getElementById('pvStatus').value;
+    var svc = document.getElementById('pvService').value;
+    PROVIDERS_VIEW = PROVIDERS.filter(function (p) {
+      if (st && (p.status || 'pending') !== st) return false;
+      if (svc && p.service !== svc) return false;
+      if (q) {
+        var hay = [p.full_name, p.service, p.location, p.bio].join(' ').toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    renderProvTable();
+  }
+  function provBadge(s) {
+    s = s || 'pending';
+    var cls = s === 'approved' ? 'badge-approved' : (s === 'rejected' ? 'badge-declined' : 'badge-pending');
+    return '<span class="badge ' + cls + '">' + esc(s) + '</span>';
+  }
+  function renderProvTable() {
+    var tbody = document.getElementById('provTbody');
+    document.getElementById('provCount').textContent = PROVIDERS_VIEW.length + ' of ' + PROVIDERS.length + ' providers';
+    document.getElementById('provNoRows').hidden = PROVIDERS_VIEW.length !== 0;
+    tbody.innerHTML = PROVIDERS_VIEW.map(function (p) {
+      var actions = '';
+      if (p.status !== 'approved') actions += '<button class="mini-btn approve" data-pv-approve="' + esc(p.id) + '">Approve</button>';
+      if (p.status !== 'rejected') actions += '<button class="mini-btn decline" data-pv-reject="' + esc(p.id) + '">Reject</button>';
+      actions += '<button class="mini-btn danger" data-pv-del="' + esc(p.id) + '">Delete</button>';
+      var contact = (p.phone ? esc(p.phone) : '') + (p.email ? '<br><span class="muted">' + esc(p.email) + '</span>' : '');
+      return '<tr>' +
+        '<td class="nowrap">' + esc(fmtDate2(p.created_at)) + '</td>' +
+        '<td>' + provBadge(p.status) + '</td>' +
+        '<td>' + esc(p.full_name) + '</td>' +
+        '<td>' + esc(p.service) + '</td>' +
+        '<td>' + esc(p.location) + '</td>' +
+        '<td>' + contact + '</td>' +
+        '<td>' + esc(p.rate || '—') + '</td>' +
+        '<td class="skills-cell">' + esc(p.bio || '') + '</td>' +
+        '<td class="actions-cell">' + actions + '</td>' +
+      '</tr>';
+    }).join('');
+    tbody.querySelectorAll('[data-pv-approve]').forEach(function (b) {
+      b.addEventListener('click', function () { setProvStatus(b.getAttribute('data-pv-approve'), 'approved'); });
+    });
+    tbody.querySelectorAll('[data-pv-reject]').forEach(function (b) {
+      b.addEventListener('click', function () { setProvStatus(b.getAttribute('data-pv-reject'), 'rejected'); });
+    });
+    tbody.querySelectorAll('[data-pv-del]').forEach(function (b) {
+      b.addEventListener('click', function () { delProvider(b.getAttribute('data-pv-del')); });
+    });
+  }
+  function setProvStatus(id, status) {
+    client.from(CFG.PROVIDERS_TABLE).update({ status: status }).eq('id', id).then(function (res) {
+      if (res.error) { alert('Update failed: ' + res.error.message); return; }
+      var p = PROVIDERS.filter(function (x) { return x.id === id; })[0];
+      if (p) p.status = status;
+      applyProvFilters(); renderProvStats();
+    });
+  }
+  function delProvider(id) {
+    if (!confirm('Delete this provider listing permanently?')) return;
+    client.from(CFG.PROVIDERS_TABLE).delete().eq('id', id).then(function (res) {
+      if (res.error) { alert('Delete failed: ' + res.error.message); return; }
+      PROVIDERS = PROVIDERS.filter(function (x) { return x.id !== id; });
+      applyProvFilters(); renderProvStats();
+    });
+  }
+  function renderProvStats() {
+    function cs(s) { return PROVIDERS.filter(function (p) { return (p.status || 'pending') === s; }).length; }
+    var cards = [
+      { label: 'Total Providers', value: PROVIDERS.length },
+      { label: 'Pending', value: cs('pending') },
+      { label: 'Approved (live)', value: cs('approved') },
+      { label: 'Rejected', value: cs('rejected') }
+    ];
+    document.getElementById('provStatCards').innerHTML = cards.map(function (c) {
+      return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
+    }).join('');
+  }
+  function exportProvidersCsv() {
+    if (!PROVIDERS_VIEW.length) { alert('Nothing to export with the current filters.'); return; }
+    var cols = ['created_at', 'status', 'full_name', 'service', 'location', 'phone', 'email', 'whatsapp', 'rate', 'experience', 'bio'];
+    var csv = '\uFEFF' + cols.join(',') + '\n' +
+      PROVIDERS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); }).join('\n');
+    downloadCsv(csv, 'lebokhu-providers');
+  }
+
+  /* ============================================================
+     SERVICE REQUESTS (admin) — manage statuses
+     ============================================================ */
+  var REQS = [], REQS_VIEW = [];
+  var REQ_STATUSES = ['new', 'contacted', 'completed', 'closed'];
+
+  function loadRequests() {
+    var countEl = document.getElementById('reqCount');
+    if (!countEl) return;
+    countEl.textContent = 'Loading…';
+    client.from(CFG.REQUESTS_TABLE).select('*').order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error) { countEl.textContent = 'Error loading requests: ' + res.error.message; return; }
+        REQS = res.data || [];
+        applyReqFilters();
+        renderReqStats();
+      });
+  }
+  ['rqq', 'rqStatus'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', applyReqFilters); el.addEventListener('change', applyReqFilters); }
+  });
+  function applyReqFilters() {
+    var q = (document.getElementById('rqq').value || '').trim().toLowerCase();
+    var st = document.getElementById('rqStatus').value;
+    REQS_VIEW = REQS.filter(function (r) {
+      if (st && (r.status || 'new') !== st) return false;
+      if (q) {
+        var hay = [r.homeowner_name, r.homeowner_phone, r.provider_name, r.service, r.location, r.details].join(' ').toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    renderReqTable();
+  }
+  function reqBadge(s) {
+    s = s || 'new';
+    var cls = s === 'completed' ? 'badge-approved' : (s === 'closed' ? 'badge-closed'
+      : (s === 'contacted' ? 'badge-pending' : 'badge-live'));
+    return '<span class="badge ' + cls + '">' + esc(s) + '</span>';
+  }
+  function renderReqTable() {
+    var tbody = document.getElementById('reqTbody');
+    document.getElementById('reqCount').textContent = REQS_VIEW.length + ' of ' + REQS.length + ' requests';
+    document.getElementById('reqNoRows').hidden = REQS_VIEW.length !== 0;
+    tbody.innerHTML = REQS_VIEW.map(function (r) {
+      var opts = REQ_STATUSES.map(function (s) {
+        return '<option value="' + s + '"' + ((r.status || 'new') === s ? ' selected' : '') + '>' + s + '</option>';
+      }).join('');
+      return '<tr>' +
+        '<td class="nowrap">' + esc(fmtDate2(r.created_at)) + '</td>' +
+        '<td>' + esc(r.homeowner_name || '—') + '</td>' +
+        '<td><a href="tel:' + esc(r.homeowner_phone) + '">' + esc(r.homeowner_phone) + '</a>' +
+          (r.homeowner_email ? '<br><span class="muted">' + esc(r.homeowner_email) + '</span>' : '') + '</td>' +
+        '<td>' + esc(r.service || '—') + '</td>' +
+        '<td>' + esc(r.provider_name || '—') + '</td>' +
+        '<td>' + esc(r.location || '—') + '</td>' +
+        '<td class="skills-cell">' + esc(r.details || '') + '</td>' +
+        '<td>' + reqBadge(r.status) + '</td>' +
+        '<td><select class="status-select" data-rq="' + esc(r.id) + '">' + opts + '</select></td>' +
+      '</tr>';
+    }).join('');
+    tbody.querySelectorAll('[data-rq]').forEach(function (sel) {
+      sel.addEventListener('change', function () { setReqStatus(sel.getAttribute('data-rq'), sel.value); });
+    });
+  }
+  function setReqStatus(id, status) {
+    client.from(CFG.REQUESTS_TABLE).update({ status: status }).eq('id', id).then(function (res) {
+      if (res.error) { alert('Update failed: ' + res.error.message); return; }
+      var r = REQS.filter(function (x) { return x.id === id; })[0];
+      if (r) r.status = status;
+      applyReqFilters(); renderReqStats();
+    });
+  }
+  function renderReqStats() {
+    function cs(s) { return REQS.filter(function (r) { return (r.status || 'new') === s; }).length; }
+    var cards = [
+      { label: 'Total Requests', value: REQS.length },
+      { label: 'New', value: cs('new') },
+      { label: 'Contacted', value: cs('contacted') },
+      { label: 'Completed', value: cs('completed') }
+    ];
+    document.getElementById('reqStatCards').innerHTML = cards.map(function (c) {
+      return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
+    }).join('');
+  }
+  function exportRequestsCsv() {
+    if (!REQS_VIEW.length) { alert('Nothing to export with the current filters.'); return; }
+    var cols = ['created_at', 'status', 'homeowner_name', 'homeowner_phone', 'homeowner_email', 'service', 'provider_name', 'location', 'details'];
+    var csv = '\uFEFF' + cols.join(',') + '\n' +
+      REQS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); }).join('\n');
+    downloadCsv(csv, 'lebokhu-service-requests');
   }
 })();

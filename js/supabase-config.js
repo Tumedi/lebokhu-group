@@ -12,6 +12,8 @@ window.LEBOKHU_SUPABASE = {
   SUPABASE_ANON_KEY: 'sb_publishable_RNrGuV3g7k98hiAlfwz6wA_QrThfmTJ',
   TABLE: 'job_seekers',
   POSTS_TABLE: 'job_posts',
+  PROVIDERS_TABLE: 'service_providers',
+  REQUESTS_TABLE: 'service_requests',
   BUCKET: 'cvs'
 };
 

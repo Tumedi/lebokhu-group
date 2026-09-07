@@ -69,6 +69,8 @@
         <button class="tab active" id="tabSeekers" role="tab" aria-selected="true">👤 Job Seekers</button>
         <button class="tab" id="tabPosts" role="tab" aria-selected="false">💼 Job Posts</button>
         <button class="tab" id="tabApps" role="tab" aria-selected="false">📨 Applications</button>
+        <button class="tab" id="tabProviders" role="tab" aria-selected="false">🛠️ Service Providers</button>
+        <button class="tab" id="tabRequests" role="tab" aria-selected="false">🏠 Service Requests</button>
       </div>
 
       <!-- ===== JOB SEEKERS TAB ===== -->
@@ -206,6 +208,83 @@
             <tbody id="appTbody"></tbody>
           </table>
           <div class="no-results" id="appNoRows" hidden><p>No applications match your filters.</p></div>
+        </div>
+      </div>
+
+      <!-- ===== SERVICE PROVIDERS TAB ===== -->
+      <div class="tab-panel" id="panelProviders" hidden>
+        <div class="stat-cards" id="provStatCards"></div>
+
+        <div class="job-filters admin-filters">
+          <div class="field">
+            <label for="pvq">Search</label>
+            <input type="text" id="pvq" placeholder="Name, service, area…">
+          </div>
+          <div class="field">
+            <label for="pvStatus">Status</label>
+            <select id="pvStatus">
+              <option value="">All statuses</option>
+              <option value="pending">Pending</option>
+              <option value="approved">Approved</option>
+              <option value="rejected">Rejected</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="pvService">Service</label>
+            <select id="pvService"><option value="">All services</option></select>
+          </div>
+        </div>
+
+        <p class="results-count" id="provCount"></p>
+
+        <div class="table-wrap">
+          <table class="data-table" id="provTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Status</th><th>Name</th><th>Service</th>
+                <th>Area</th><th>Contact</th><th>Rate</th><th>About</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="provTbody"></tbody>
+          </table>
+          <div class="no-results" id="provNoRows" hidden><p>No providers match your filters.</p></div>
+        </div>
+      </div>
+
+      <!-- ===== SERVICE REQUESTS TAB ===== -->
+      <div class="tab-panel" id="panelRequests" hidden>
+        <div class="stat-cards" id="reqStatCards"></div>
+
+        <div class="job-filters admin-filters">
+          <div class="field">
+            <label for="rqq">Search</label>
+            <input type="text" id="rqq" placeholder="Homeowner, provider, service…">
+          </div>
+          <div class="field">
+            <label for="rqStatus">Status</label>
+            <select id="rqStatus">
+              <option value="">All statuses</option>
+              <option value="new">New</option>
+              <option value="contacted">Contacted</option>
+              <option value="completed">Completed</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="results-count" id="reqCount"></p>
+
+        <div class="table-wrap">
+          <table class="data-table" id="reqTable">
+            <thead>
+              <tr>
+                <th>Date</th><th>Homeowner</th><th>Contact</th><th>Service</th>
+                <th>Provider</th><th>Area</th><th>Details</th><th>Status</th><th>Update</th>
+              </tr>
+            </thead>
+            <tbody id="reqTbody"></tbody>
+          </table>
+          <div class="no-results" id="reqNoRows" hidden><p>No service requests match your filters.</p></div>
         </div>
       </div>
 

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>List Your Service — LeBoKhu Group</title>
+  <meta name="description" content="Offer your services — painting, plumbing, gardening and more — to homeowners near you.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0B2038">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header class="site-header" id="top">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand" aria-label="LeBoKhu Group home">
+        <img src="assets/logo.svg" alt="LeBoKhu Group" class="logo logo-dark">
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <a href="index.html#about">About</a>
+        <a href="services-directory.html">Find a Service</a>
+        <a href="jobs.html">Jobs</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <p class="eyebrow">For Service Providers</p>
+      <h1>List Your Service</h1>
+      <p class="lead">Painters, plumbers, gardeners, domestic workers and more — get found by
+        homeowners in your area. Your listing goes live once our team approves it.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container narrow">
+      <form class="reg-form" id="serviceForm" novalidate>
+        <div class="notice" id="notConfigured" hidden>
+          ⚠️ Listings aren't available yet — the database connection isn't configured.
+        </div>
+
+        <h3 class="form-section-title">Your details</h3>
+        <div class="field">
+          <label for="fullName">Full name / business name *</label>
+          <input type="text" id="fullName" required>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="service">Service you offer *</label>
+            <select id="service" required>
+              <option value="">Please choose…</option>
+              <option>Painting</option>
+              <option>Plumbing</option>
+              <option>Gardening</option>
+              <option>Domestic Work / Cleaning</option>
+              <option>Electrical</option>
+              <option>Handyman</option>
+              <option>Moving / Transport</option>
+              <option>Tiling</option>
+              <option>Carpentry</option>
+              <option>Security / Fencing</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="location">Area you serve *</label>
+            <input type="text" id="location" placeholder="e.g. Kempton Park, Ekurhuleni" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="phone">Phone *</label>
+            <input type="tel" id="phone" required>
+          </div>
+          <div class="field">
+            <label for="whatsapp">WhatsApp (optional)</label>
+            <input type="tel" id="whatsapp">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="rate">Rate (optional)</label>
+            <input type="text" id="rate" placeholder="e.g. From R250/day or Per quote">
+          </div>
+          <div class="field">
+            <label for="experience">Experience (optional)</label>
+            <input type="text" id="experience" placeholder="e.g. 5 years">
+          </div>
+        </div>
+        <div class="field">
+          <label for="bio">About your service *</label>
+          <textarea id="bio" rows="4" required placeholder="Describe what you do, your specialities and why homeowners should choose you."></textarea>
+        </div>
+
+        <div class="notice" style="margin-bottom:18px">
+          ℹ️ Your listing is reviewed by our team before it appears in the public directory.
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit Listing</button>
+        <p class="form-status" id="serviceStatus" role="status" aria-live="polite"></p>
+        <p class="hint center">* Required fields</p>
+      </form>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <div class="container"><p>&copy; <span id="year"></span> LeBoKhu Group. All rights reserved. &middot; <a href="admin.html">Admin</a></p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/list-service.js"></script>
+</body>
+</html>

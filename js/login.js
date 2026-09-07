@@ -30,7 +30,7 @@
   function redirectAfterLogin(profile) {
     var next = nextParam();
     if (next) { location.href = next; return; }
-    location.href = (profile && profile.role === 'employer') ? 'my-posts.html' : 'my-applications.html';
+    location.href = window.LEBOKHU_AUTH.dashboardFor(profile && profile.role).href;
   }
 
   form.querySelectorAll('input').forEach(function (f) {

@@ -21,6 +21,13 @@
   AUTH.configured = function () { return !!(CFG && CFG.isConfigured()); };
   AUTH.client = function () { return AUTH.configured() ? CFG.client() : null; };
 
+  // Map a role to its dashboard page + label.
+  AUTH.dashboardFor = function (role) {
+    if (role === 'employer') return { href: 'my-posts.html', label: 'My Job Posts' };
+    if (role === 'provider') return { href: 'my-services.html', label: 'My Services' };
+    return { href: 'my-applications.html', label: 'My Applications' };
+  };
+
   AUTH.getSession = function () {
     var c = AUTH.client();
     if (!c) return Promise.resolve(null);
@@ -60,7 +67,7 @@
         if (role && profile && profile.role !== role) {
           // Logged in but wrong role — send them to their own dashboard
           alert('This page is for ' + role + ' accounts. Redirecting you to your dashboard.');
-          location.href = (profile.role === 'employer') ? 'my-posts.html' : 'my-applications.html';
+          location.href = AUTH.dashboardFor(profile.role).href;
           return Promise.reject(new Error('wrong-role'));
         }
         return { user: user, profile: profile };
@@ -95,8 +102,9 @@
       }
       return AUTH.getProfile().then(function (profile) {
         var role = (profile && profile.role) || 'seeker';
-        var dashHref = role === 'employer' ? 'my-posts.html' : 'my-applications.html';
-        var dashLabel = role === 'employer' ? 'My Job Posts' : 'My Applications';
+        var d = AUTH.dashboardFor(role);
+        var dashHref = d.href;
+        var dashLabel = d.label;
 
         var dash = document.createElement('a');
         dash.href = dashHref;

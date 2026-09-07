@@ -15,7 +15,7 @@
   // If already logged in, send them to their dashboard
   if (window.LEBOKHU_AUTH && window.LEBOKHU_AUTH.configured()) {
     window.LEBOKHU_AUTH.getProfile().then(function (p) {
-      if (p) location.href = p.role === 'employer' ? 'my-posts.html' : 'my-applications.html';
+      if (p) location.href = window.LEBOKHU_AUTH.dashboardFor(p.role).href;
     });
   } else {
     document.getElementById('notConfigured').hidden = false;
@@ -79,7 +79,7 @@
       // If email confirmation is ON, there is no active session yet.
       var hasSession = res.data && res.data.session;
       if (hasSession) {
-        location.href = role === 'employer' ? 'my-posts.html' : 'my-applications.html';
+        location.href = window.LEBOKHU_AUTH.dashboardFor(role).href;
       } else {
         status.innerHTML = 'Account created! Please check your email (<strong>' + email +
           '</strong>) and click the confirmation link, then <a href="login.html">log in</a>.';
