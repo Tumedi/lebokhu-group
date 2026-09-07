@@ -107,6 +107,16 @@
         var dashHref = d.href;
         var dashLabel = d.label;
 
+        // Homeowners get a quick "Request a Service" shortcut in the header.
+        if (role === 'homeowner') {
+          var req = document.createElement('a');
+          req.href = 'services-directory.html';
+          req.className = 'nav-cta';
+          req.textContent = '＋ Request a Service';
+          req.setAttribute('data-auth-node', '');
+          nav.appendChild(req);
+        }
+
         var dash = document.createElement('a');
         dash.href = dashHref;
         dash.textContent = dashLabel;
