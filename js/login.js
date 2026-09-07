@@ -78,7 +78,7 @@
         return;
       }
       client.auth.resetPasswordForEmail(email, {
-        redirectTo: location.origin + location.pathname
+        redirectTo: location.origin + location.pathname.replace(/login\.html$/, 'reset-password.html')
       }).then(function (res) {
         if (res.error) throw new Error(res.error.message);
         status.textContent = 'Password reset link sent to ' + email + '. Check your inbox.';
