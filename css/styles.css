@@ -204,15 +204,31 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 @media (max-width:720px){
   .nav-toggle{display:flex}
   .main-nav{position:fixed;inset:72px 0 auto 0;background:var(--ink);flex-direction:column;
-    gap:0;padding:12px 0;transform:translateY(-120%);transition:.35s;box-shadow:var(--shadow-lg)}
+    align-items:stretch;gap:0;padding:8px 0 14px;transform:translateY(-120%);transition:.35s;
+    box-shadow:var(--shadow-lg);max-height:calc(100vh - 72px);overflow-y:auto}
   .main-nav.open{transform:translateY(0)}
-  .main-nav a{color:#fff;width:100%;padding:14px 24px}
+  .main-nav a{color:#fff;width:100%;padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.06)}
   .main-nav a:not(.nav-cta):after{display:none}
-  .nav-cta{margin:10px 24px;text-align:center}
+  .main-nav a:not(.nav-cta).active{color:var(--gold-light);background:rgba(255,255,255,.06)}
+  /* CTA & role shortcut buttons become full-width pills inside the menu */
+  .nav-cta{margin:12px 24px 4px;text-align:center;border-radius:999px;padding:14px 20px!important}
+  /* Logged-in user name shown as a subtle label */
+  .admin-user{color:#9fb2c4;padding:10px 24px 4px;font-size:.8rem;text-transform:uppercase;letter-spacing:1px;border:none}
   .hero-stats{gap:28px}
   .cards-3,.impact-grid{grid-template-columns:1fr}
   .row{grid-template-columns:1fr}
   .section{padding:60px 0}
+}
+
+/* Dashboard headers (admin-header) — wrap nav neatly on small screens */
+@media (max-width:720px){
+  .admin-header .nav-inner{flex-wrap:wrap;height:auto;gap:8px;padding-top:12px;padding-bottom:12px}
+  .admin-header .brand{flex:1 1 auto}
+  .admin-header .main-nav{position:static;transform:none;flex-direction:row;flex-wrap:wrap;
+    background:none;box-shadow:none;padding:0;gap:8px;width:100%;max-height:none;align-items:center}
+  .admin-header .main-nav a{color:var(--ink);width:auto;padding:8px 12px;border:none;font-size:.9rem}
+  .admin-header .main-nav a.nav-cta{color:#fff;width:auto;margin:0}
+  .admin-header .admin-user{color:var(--slate);padding:0 6px;text-transform:none;letter-spacing:0;font-size:.82rem}
 }
 
 

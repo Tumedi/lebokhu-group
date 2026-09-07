@@ -35,13 +35,14 @@
       toggle.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-    // Close menu when a link is clicked (mobile)
-    nav.querySelectorAll('a').forEach(function (link) {
-      link.addEventListener('click', function () {
+    // Close menu when any link is clicked (delegated, so it also covers
+    // links injected later by renderHeader — dashboard, Log Out, shortcuts).
+    nav.addEventListener('click', function (e) {
+      if (e.target.closest('a')) {
         nav.classList.remove('open');
         toggle.classList.remove('open');
         toggle.setAttribute('aria-expanded', 'false');
-      });
+      }
     });
   }
 
