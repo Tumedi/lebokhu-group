@@ -113,6 +113,18 @@
         <p class="form-status" id="serviceStatus" role="status" aria-live="polite"></p>
         <p class="hint center">* Required fields</p>
       </form>
+
+      <!-- Portfolio gallery (shown once a listing exists) -->
+      <div class="reg-form" id="galleryCard" hidden style="margin-top:22px">
+        <h3 class="form-section-title">Portfolio gallery</h3>
+        <p class="hint" style="margin-top:0">Show off your work! Add photos of jobs you've done — homeowners see these on your profile.</p>
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <div class="field" style="margin-top:14px">
+          <label for="galleryFile" class="btn btn-outline btn-sm" style="cursor:pointer;display:inline-block">➕ Add photo</label>
+          <input type="file" id="galleryFile" accept="image/*" hidden>
+          <p class="form-status" id="galleryStatus" role="status" aria-live="polite"></p>
+        </div>
+      </div>
     </div>
   </section>
 

@@ -79,6 +79,7 @@
       var s = form.querySelector('button[type="submit"]'); if (s) s.textContent = 'Update Listing';
       status.textContent = 'You already have a listing (' + (p.status || 'pending') + '). Edit and resubmit below.';
       status.className = 'form-status';
+      initGallery(p.id);   // show + manage the portfolio gallery
     }
   }).catch(function () { /* requireAuth redirected, or no listing */ });
 
@@ -143,4 +144,75 @@
     });
     }); // end uploadPhoto
   });
+
+  /* ---- Portfolio gallery ---- */
+  function initGallery(providerId) {
+    var card = document.getElementById('galleryCard');
+    var grid = document.getElementById('galleryGrid');
+    var fileInput = document.getElementById('galleryFile');
+    var gStatus = document.getElementById('galleryStatus');
+    if (!card || !grid) return;
+    card.hidden = false;
+
+    function esc2(s) {
+      return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+      });
+    }
+
+    function loadGallery() {
+      client.from(CFG.GALLERY_TABLE).select('*').eq('provider_id', providerId)
+        .order('created_at', { ascending: false })
+        .then(function (res) {
+          var rows = (res && res.data) || [];
+          if (!rows.length) { grid.innerHTML = '<p class="muted">No photos yet. Add your first!</p>'; return; }
+          grid.innerHTML = rows.map(function (g) {
+            return '<div class="gallery-item">' +
+              '<img src="' + esc2(g.image_url) + '" alt="Portfolio photo" loading="lazy">' +
+              '<button type="button" class="gallery-del" data-del="' + esc2(g.id) + '" title="Remove">&times;</button>' +
+            '</div>';
+          }).join('');
+          grid.querySelectorAll('[data-del]').forEach(function (b) {
+            b.addEventListener('click', function () { delImage(b.getAttribute('data-del')); });
+          });
+        });
+    }
+
+    function delImage(id) {
+      if (!confirm('Remove this photo from your gallery?')) return;
+      client.from(CFG.GALLERY_TABLE).delete().eq('id', id).then(function (res) {
+        if (res.error) { alert('Could not remove: ' + res.error.message); return; }
+        loadGallery();
+      });
+    }
+
+    if (fileInput) {
+      fileInput.addEventListener('change', function () {
+        var f = fileInput.files && fileInput.files[0];
+        if (!f) return;
+        if (f.size > 5 * 1024 * 1024) { gStatus.textContent = 'Image is larger than 5 MB.'; gStatus.className = 'form-status bad'; fileInput.value = ''; return; }
+        gStatus.textContent = 'Uploading…'; gStatus.className = 'form-status';
+        var safe = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        var path = providerId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '_' + safe;
+        client.storage.from(CFG.GALLERY_BUCKET).upload(path, f, { cacheControl: '3600', upsert: false })
+          .then(function (res) {
+            if (res.error) throw new Error(res.error.message);
+            var pub = client.storage.from(CFG.GALLERY_BUCKET).getPublicUrl(path);
+            return client.from(CFG.GALLERY_TABLE).insert([{
+              provider_id: providerId,
+              image_url: (pub.data && pub.data.publicUrl) || ''
+            }]);
+          })
+          .then(function (res) {
+            if (res && res.error) throw new Error(res.error.message);
+            gStatus.textContent = '✓ Photo added.'; gStatus.className = 'form-status ok';
+            loadGallery();
+          })
+          .catch(function (err) { gStatus.textContent = 'Upload failed: ' + err.message; gStatus.className = 'form-status bad'; })
+          .then(function () { fileInput.value = ''; });
+      });
+    }
+
+    loadGallery();
+  }
 })();

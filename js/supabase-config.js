@@ -18,7 +18,9 @@ window.LEBOKHU_SUPABASE = {
   MESSAGES_TABLE: 'messages',
   BUCKET: 'cvs',
   PHOTO_BUCKET: 'provider-photos',
-  CHAT_MEDIA_BUCKET: 'chat-media'
+  CHAT_MEDIA_BUCKET: 'chat-media',
+  GALLERY_TABLE: 'provider_gallery',
+  GALLERY_BUCKET: 'provider-gallery'
 };
 
 // Helper: is Supabase configured yet?

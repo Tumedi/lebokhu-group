@@ -59,7 +59,18 @@
     container.innerHTML =
       '<div class="chat-box">' +
         '<div class="chat-messages" data-chat-messages><p class="muted">Loading messages…</p></div>' +
+        '<div class="chat-typing" data-chat-typing hidden></div>' +
         (readOnly ? '' :
+        '<div class="chat-preview" data-chat-preview hidden>' +
+          '<img class="chat-preview-img" data-chat-preview-img alt="Preview">' +
+          '<div class="chat-preview-body">' +
+            '<input type="text" class="chat-preview-cap" data-chat-preview-cap placeholder="Add a caption (optional)…" autocomplete="off">' +
+            '<div class="chat-preview-actions">' +
+              '<button type="button" class="btn btn-outline btn-sm" data-chat-preview-cancel>Cancel</button>' +
+              '<button type="button" class="btn btn-primary btn-sm" data-chat-preview-send>Send photo</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
         '<form class="chat-input" data-chat-form>' +
           '<button type="button" class="chat-tool" data-chat-photo title="Share a photo">📷</button>' +
           '<button type="button" class="chat-tool" data-chat-loc title="Share my location">📍</button>' +
@@ -173,28 +184,57 @@
         insertMessage({ body: body });
       });
 
-      // Photo: open file picker, upload to storage, send as image message
+      // Photo: pick → PREVIEW (with caption, confirm/cancel) → upload & send
+      var previewEl = container.querySelector('[data-chat-preview]');
+      var previewImg = container.querySelector('[data-chat-preview-img]');
+      var previewCap = container.querySelector('[data-chat-preview-cap]');
+      var previewSend = container.querySelector('[data-chat-preview-send]');
+      var previewCancel = container.querySelector('[data-chat-preview-cancel]');
+      var pendingFile = null;
+      var previewObjUrl = null;
+
+      function clearPreview() {
+        pendingFile = null;
+        if (previewObjUrl) { URL.revokeObjectURL(previewObjUrl); previewObjUrl = null; }
+        if (previewEl) previewEl.hidden = true;
+        if (previewCap) previewCap.value = '';
+        if (fileInput) fileInput.value = '';
+      }
+
       if (photoBtn && fileInput) {
         photoBtn.addEventListener('click', function () { fileInput.click(); });
         fileInput.addEventListener('change', function () {
           var f = fileInput.files && fileInput.files[0];
           if (!f) return;
           if (f.size > 5 * 1024 * 1024) { alert('Image is larger than 5 MB. Please choose a smaller one.'); fileInput.value = ''; return; }
-          photoBtn.disabled = true; photoBtn.textContent = '⏳';
-          var safe = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          pendingFile = f;
+          previewObjUrl = URL.createObjectURL(f);
+          previewImg.src = previewObjUrl;
+          previewEl.hidden = false;
+          previewCap.focus();
+        });
+      }
+      if (previewCancel) previewCancel.addEventListener('click', clearPreview);
+      if (previewSend) {
+        previewSend.addEventListener('click', function () {
+          if (!pendingFile) return;
+          var caption = (previewCap.value || '').trim();
+          previewSend.disabled = true; previewSend.textContent = 'Sending…';
+          var safe = pendingFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
           var path = requestId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '_' + safe;
-          client.storage.from(CFG.CHAT_MEDIA_BUCKET).upload(path, f, { cacheControl: '3600', upsert: false })
+          client.storage.from(CFG.CHAT_MEDIA_BUCKET).upload(path, pendingFile, { cacheControl: '3600', upsert: false })
             .then(function (res) {
               if (res.error) throw new Error(res.error.message);
               var pub = client.storage.from(CFG.CHAT_MEDIA_BUCKET).getPublicUrl(path);
               return insertMessage({
-                body: '[photo]',
+                body: caption || '[photo]',
                 attachment_url: (pub.data && pub.data.publicUrl) || '',
                 attachment_type: 'image'
               }, '📷 Photo');
             })
+            .then(function () { clearPreview(); })
             .catch(function (err) { alert('Could not share photo: ' + err.message); })
-            .then(function () { photoBtn.disabled = false; photoBtn.textContent = '📷'; fileInput.value = ''; });
+            .then(function () { previewSend.disabled = false; previewSend.textContent = 'Send photo'; });
         });
       }
 
@@ -216,11 +256,49 @@
       }
     }
 
+    /* ---- Typing indicator (Supabase Realtime broadcast) ---- */
+    var typingEl = container.querySelector('[data-chat-typing]');
+    var typingChannel = null;
+    var typingHideTimer = null;
+    var lastBroadcast = 0;
+    try {
+      if (client.channel) {
+        typingChannel = client.channel('typing:' + requestId, { config: { broadcast: { self: false } } });
+        typingChannel.on('broadcast', { event: 'typing' }, function (payload) {
+          var who = (payload && payload.payload && payload.payload.name) || 'Someone';
+          if (typingEl) {
+            typingEl.textContent = who + ' is typing…';
+            typingEl.hidden = false;
+            clearTimeout(typingHideTimer);
+            typingHideTimer = setTimeout(function () { if (typingEl) typingEl.hidden = true; }, 3000);
+          }
+        });
+        typingChannel.subscribe();
+      }
+    } catch (e) { /* realtime optional */ }
+
+    function broadcastTyping() {
+      if (!typingChannel) return;
+      var now = Date.now();
+      if (now - lastBroadcast < 1500) return; // throttle
+      lastBroadcast = now;
+      try {
+        typingChannel.send({ type: 'broadcast', event: 'typing', payload: { name: senderName || 'Someone' } });
+      } catch (e) { /* ignore */ }
+    }
+    if (form) {
+      var textInput = form.querySelector('[data-chat-text]');
+      if (textInput) textInput.addEventListener('input', broadcastTyping);
+    }
+
     load();
     var timer = setInterval(load, 4000);
 
     return {
-      stop: function () { stopped = true; clearInterval(timer); },
+      stop: function () {
+        stopped = true; clearInterval(timer);
+        if (typingChannel) { try { client.removeChannel(typingChannel); } catch (e) {} }
+      },
       reload: function () { lastCount = -1; load(); }
     };
   }

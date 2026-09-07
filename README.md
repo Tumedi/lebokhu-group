@@ -273,3 +273,12 @@ the `chat-media` storage bucket.
   work). Images upload to the `chat-media` bucket (max 5 MB) and appear inline.
 - **📍 Location** button — shares the sender's current GPS location as a Google Maps link
   (great for homeowners giving directions). Requires the browser's location permission.
+- **Image preview** — a chosen photo is shown with an optional caption + Send/Cancel before it uploads.
+- **Typing indicator** — "…is typing" shows live via Supabase Realtime broadcast (no setup needed).
+
+### Provider portfolio gallery
+Run **`supabase-portfolio.sql`** (after `supabase-services.sql`) to add the `provider_gallery`
+table + `provider-gallery` storage bucket.
+- On **`list-service.html`** (once a listing exists), providers get a **Portfolio gallery** card to
+  add/remove work photos.
+- Homeowners see up to 4 gallery thumbnails on each provider card in the **directory** (click to enlarge).

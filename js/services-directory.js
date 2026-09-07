@@ -67,12 +67,38 @@
           (p.experience ? '<span>🧰 ' + esc(p.experience) + '</span>' : '') +
         '</p>' +
         (p.bio ? '<p class="prov-bio">' + esc(p.bio) + '</p>' : '') +
+        '<div class="prov-gallery" data-gallery="' + esc(p.id) + '" hidden></div>' +
         '<div class="prov-actions">' +
           phone + wa +
           '<button class="btn btn-outline btn-sm" data-rev="' + idx + '">★ Reviews</button>' +
           '<button class="btn btn-primary btn-sm" data-req="' + idx + '">Request Service</button>' +
         '</div>' +
       '</article>';
+  }
+
+  // Load portfolio galleries for the visible providers and fill the strips.
+  function loadGalleries() {
+    var ids = VIEW.map(function (p) { return p.id; });
+    if (!ids.length) return;
+    var client = CFG.client();
+    client.from(CFG.GALLERY_TABLE).select('provider_id, image_url')
+      .in('provider_id', ids).order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error || !res.data) return;
+        var byProvider = {};
+        res.data.forEach(function (g) {
+          (byProvider[g.provider_id] = byProvider[g.provider_id] || []).push(g.image_url);
+        });
+        Object.keys(byProvider).forEach(function (pid) {
+          var strip = listEl.querySelector('[data-gallery="' + pid + '"]');
+          if (!strip) return;
+          var imgs = byProvider[pid].slice(0, 4);
+          strip.innerHTML = imgs.map(function (u) {
+            return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img src="' + esc(u) + '" alt="Work photo" loading="lazy"></a>';
+          }).join('');
+          strip.hidden = false;
+        });
+      }).catch(function () {});
   }
 
   function render() {
@@ -97,6 +123,8 @@
     listEl.querySelectorAll('[data-rev]').forEach(function (btn) {
       btn.addEventListener('click', function () { openReviews(VIEW[parseInt(btn.getAttribute('data-rev'), 10)]); });
     });
+
+    loadGalleries();
   }
 
   function load() {
