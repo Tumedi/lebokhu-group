@@ -8,8 +8,8 @@
    ============================================================ */
 'use strict';
 
-var CACHE_VERSION = 'lebokhu-v2';
-var CACHE_NAME = 'lebokhu-cache-' + CACHE_VERSION;
+var CACHE_VERSION = 'lekhubo-v3';
+var CACHE_NAME = 'lekhubo-cache-' + CACHE_VERSION;
 
 // Paths are relative so the SW works whether the site is served from
 // the domain root or a sub-path (e.g. /lebokhu-group/ on GitHub Pages).
@@ -81,7 +81,23 @@ self.addEventListener('fetch', function (event) {
     return;
   }
 
-  // Cache-first for static assets, refresh in background
+  // Code (JS/CSS/JSON): NETWORK-FIRST so updates load immediately when online,
+  // falling back to cache when offline. Prevents stale code being served.
+  var path = new URL(req.url).pathname;
+  if (/\.(js|css|json|webmanifest)$/i.test(path)) {
+    event.respondWith(
+      fetch(req).then(function (res) {
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(CACHE_NAME).then(function (cache) { cache.put(req, copy); });
+        }
+        return res;
+      }).catch(function () { return caches.match(req); })
+    );
+    return;
+  }
+
+  // Everything else (images/svg/fonts): cache-first, refresh in background.
   event.respondWith(
     caches.match(req).then(function (cached) {
       var network = fetch(req).then(function (res) {
