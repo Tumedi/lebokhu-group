@@ -25,6 +25,7 @@
   AUTH.dashboardFor = function (role) {
     if (role === 'employer') return { href: 'my-posts.html', label: 'My Job Posts' };
     if (role === 'provider') return { href: 'my-services.html', label: 'My Services' };
+    if (role === 'homeowner') return { href: 'my-requests.html', label: 'My Requests' };
     return { href: 'my-applications.html', label: 'My Applications' };
   };
 

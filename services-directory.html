@@ -98,6 +98,10 @@
       <button class="modal-close" data-rclose aria-label="Close">&times;</button>
       <h3 id="reqTitle">Request a Service</h3>
       <p class="modal-role">Provider: <strong id="reqProvider"></strong></p>
+      <div class="notice" id="reqLoginNudge" hidden>
+        💡 <a href="login.html">Log in</a> or <a href="signup.html">create a free account</a>
+        to save this request and keep your chat with the provider.
+      </div>
       <form id="reqForm" novalidate>
         <div class="row">
           <div class="field">
@@ -197,6 +201,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/chat.js"></script>
   <script src="js/main.js"></script>
   <script src="js/services-directory.js"></script>

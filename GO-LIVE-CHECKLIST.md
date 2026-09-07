@@ -26,6 +26,7 @@ file wasn't run yet.
 - [ ] `supabase-chat-notify.sql` — chat read-tracking (unread badges)
 - [ ] `supabase-chat-media.sql` — chat image sharing + location (chat-media bucket)
 - [ ] `supabase-portfolio.sql` — provider portfolio gallery (provider-gallery bucket)
+- [ ] `supabase-homeowner.sql` — optional homeowner accounts (saved requests + chats)
 
 ✅ After each: you should see **"Success. No rows returned."**
 

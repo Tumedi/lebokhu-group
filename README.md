@@ -282,3 +282,23 @@ table + `provider-gallery` storage bucket.
 - On **`list-service.html`** (once a listing exists), providers get a **Portfolio gallery** card to
   add/remove work photos.
 - Homeowners see up to 4 gallery thumbnails on each provider card in the **directory** (click to enlarge).
+
+
+## 🏠 Homeowner Accounts (optional)
+
+Homeowners can request services **without an account** (via a private chat link). But if they
+**sign up as a Homeowner**, their requests and chats are saved to their account so they never
+lose a conversation.
+
+### One-time setup
+Run **`supabase-homeowner.sql`** (after `supabase-services.sql` and `supabase-chat.sql`). It adds
+`service_requests.homeowner_id` + RLS so a homeowner can read their own requests and messages.
+
+### How it works
+- **Sign up → "Homeowner"** role (4th option on `signup.html`).
+- On the services directory, a logged-in homeowner's request form is **pre-filled**, and the
+  request is **linked to their account**.
+- Not logged in? A gentle nudge invites them to log in/sign up to save the chat — but they can
+  still request anonymously.
+- **`my-requests.html`** — a dashboard listing all their requests with a **💬 Chat** button to
+  reopen any conversation anytime (no private link needed).

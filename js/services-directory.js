@@ -18,6 +18,15 @@
 
   var PROVIDERS = [];
   var VIEW = [];
+  var homeownerProfile = null;   // set if a logged-in homeowner is browsing
+
+  // Detect a logged-in homeowner (for prefill + linking + saved chats).
+  if (window.LEBOKHU_AUTH && window.LEBOKHU_AUTH.configured()) {
+    window.LEBOKHU_AUTH.renderHeader('#mainNav');
+    window.LEBOKHU_AUTH.getProfile().then(function (p) {
+      if (p && p.role === 'homeowner') homeownerProfile = p;
+    });
+  }
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -167,6 +176,18 @@
     reqForm.style.display = '';
     var chatArea = document.getElementById('reqChatArea');
     if (chatArea) { chatArea.hidden = true; chatArea.innerHTML = ''; }
+
+    // Logged-in homeowner: prefill their details and hide the login nudge.
+    var nudge = document.getElementById('reqLoginNudge');
+    if (homeownerProfile) {
+      var n = document.getElementById('hName'); if (n && homeownerProfile.full_name) n.value = homeownerProfile.full_name;
+      var e = document.getElementById('hEmail'); if (e && homeownerProfile.email) e.value = homeownerProfile.email;
+      var ph = document.getElementById('hPhone'); if (ph && homeownerProfile.phone) ph.value = homeownerProfile.phone;
+      if (nudge) nudge.hidden = true;
+    } else if (nudge) {
+      nudge.hidden = false;
+    }
+
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
   }
@@ -208,7 +229,8 @@
       homeowner_phone: phone.value.trim(),
       location: loc.value.trim(),
       details: details.value.trim(),
-      status: 'new'
+      status: 'new',
+      homeowner_id: homeownerProfile ? homeownerProfile.id : null
     };
 
     var btn = reqForm.querySelector('button[type="submit"]');
