@@ -177,19 +177,36 @@
     var chatArea = document.getElementById('reqChatArea');
     if (chatArea) { chatArea.hidden = true; chatArea.innerHTML = ''; }
 
-    // Logged-in homeowner: prefill their details and hide the login nudge.
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    // Auto-populate for a logged-in homeowner. Resolve the profile fresh so it
+    // works even if the modal is opened before the initial lookup finished.
+    applyHomeownerPrefill();
+  }
+
+  // Fill the form from the homeowner's profile (and hide the login nudge).
+  function fillFromProfile(p) {
     var nudge = document.getElementById('reqLoginNudge');
-    if (homeownerProfile) {
-      var n = document.getElementById('hName'); if (n && homeownerProfile.full_name) n.value = homeownerProfile.full_name;
-      var e = document.getElementById('hEmail'); if (e && homeownerProfile.email) e.value = homeownerProfile.email;
-      var ph = document.getElementById('hPhone'); if (ph && homeownerProfile.phone) ph.value = homeownerProfile.phone;
+    if (p && p.role === 'homeowner') {
+      homeownerProfile = p;
+      var n = document.getElementById('hName'); if (n && p.full_name) n.value = p.full_name;
+      var e = document.getElementById('hEmail'); if (e && p.email) e.value = p.email;
+      var ph = document.getElementById('hPhone'); if (ph && p.phone) ph.value = p.phone;
+      var lo = document.getElementById('hLocation'); if (lo && !lo.value && p.location) lo.value = p.location;
       if (nudge) nudge.hidden = true;
     } else if (nudge) {
       nudge.hidden = false;
     }
+  }
 
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
+  function applyHomeownerPrefill() {
+    if (homeownerProfile) { fillFromProfile(homeownerProfile); return; }
+    if (window.LEBOKHU_AUTH && window.LEBOKHU_AUTH.configured()) {
+      window.LEBOKHU_AUTH.getProfile().then(fillFromProfile);
+    } else {
+      fillFromProfile(null);
+    }
   }
   function closeRequest() { modal.hidden = true; document.body.style.overflow = ''; }
   modal.querySelectorAll('[data-rclose]').forEach(function (el) { el.addEventListener('click', closeRequest); });
