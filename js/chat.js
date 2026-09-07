@@ -61,22 +61,18 @@
         '<div class="chat-messages" data-chat-messages><p class="muted">Loading messages…</p></div>' +
         '<div class="chat-typing" data-chat-typing hidden></div>' +
         (readOnly ? '' :
-        '<div class="chat-preview" data-chat-preview hidden>' +
-          '<img class="chat-preview-img" data-chat-preview-img alt="Preview">' +
-          '<div class="chat-preview-body">' +
-            '<input type="text" class="chat-preview-cap" data-chat-preview-cap placeholder="Add a caption (optional)…" autocomplete="off">' +
-            '<div class="chat-preview-actions">' +
-              '<button type="button" class="btn btn-outline btn-sm" data-chat-preview-cancel>Cancel</button>' +
-              '<button type="button" class="btn btn-primary btn-sm" data-chat-preview-send>Send photo</button>' +
-            '</div>' +
-          '</div>' +
-        '</div>' +
         '<form class="chat-input" data-chat-form>' +
           '<button type="button" class="chat-tool" data-chat-photo title="Share a photo">📷</button>' +
           '<button type="button" class="chat-tool" data-chat-loc title="Share my location">📍</button>' +
           '<input type="file" accept="image/*" data-chat-file hidden>' +
-          '<input type="text" placeholder="Type a message…" data-chat-text autocomplete="off">' +
-          '<button type="submit" class="btn btn-primary btn-sm">Send</button>' +
+          '<div class="chat-input-field">' +
+            '<div class="chat-thumb" data-chat-thumb hidden>' +
+              '<img data-chat-thumb-img alt="Selected photo">' +
+              '<button type="button" class="chat-thumb-x" data-chat-thumb-remove title="Remove photo">&times;</button>' +
+            '</div>' +
+            '<input type="text" placeholder="Type a message…" data-chat-text autocomplete="off">' +
+          '</div>' +
+          '<button type="submit" class="btn btn-primary btn-sm" data-chat-send>Send</button>' +
         '</form>') +
       '</div>';
 
@@ -174,33 +170,23 @@
       var fileInput = form.querySelector('[data-chat-file]');
       var photoBtn = form.querySelector('[data-chat-photo]');
       var locBtn = form.querySelector('[data-chat-loc]');
+      var sendBtn = form.querySelector('[data-chat-send]');
+      var thumbEl = form.querySelector('[data-chat-thumb]');
+      var thumbImg = form.querySelector('[data-chat-thumb-img]');
+      var thumbRemove = form.querySelector('[data-chat-thumb-remove]');
 
-      // Text send
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var body = (input.value || '').trim();
-        if (!body) return;
-        input.value = '';
-        insertMessage({ body: body });
-      });
+      var pendingFile = null;   // a chosen photo waiting to be sent
+      var thumbObjUrl = null;
 
-      // Photo: pick → PREVIEW (with caption, confirm/cancel) → upload & send
-      var previewEl = container.querySelector('[data-chat-preview]');
-      var previewImg = container.querySelector('[data-chat-preview-img]');
-      var previewCap = container.querySelector('[data-chat-preview-cap]');
-      var previewSend = container.querySelector('[data-chat-preview-send]');
-      var previewCancel = container.querySelector('[data-chat-preview-cancel]');
-      var pendingFile = null;
-      var previewObjUrl = null;
-
-      function clearPreview() {
+      function clearPhoto() {
         pendingFile = null;
-        if (previewObjUrl) { URL.revokeObjectURL(previewObjUrl); previewObjUrl = null; }
-        if (previewEl) previewEl.hidden = true;
-        if (previewCap) previewCap.value = '';
+        if (thumbObjUrl) { URL.revokeObjectURL(thumbObjUrl); thumbObjUrl = null; }
+        if (thumbEl) thumbEl.hidden = true;
         if (fileInput) fileInput.value = '';
+        if (input) input.placeholder = 'Type a message…';
       }
 
+      // Pick a photo → show a small thumbnail chip inside the input bar.
       if (photoBtn && fileInput) {
         photoBtn.addEventListener('click', function () { fileInput.click(); });
         fileInput.addEventListener('change', function () {
@@ -208,21 +194,27 @@
           if (!f) return;
           if (f.size > 5 * 1024 * 1024) { alert('Image is larger than 5 MB. Please choose a smaller one.'); fileInput.value = ''; return; }
           pendingFile = f;
-          previewObjUrl = URL.createObjectURL(f);
-          previewImg.src = previewObjUrl;
-          previewEl.hidden = false;
-          previewCap.focus();
+          thumbObjUrl = URL.createObjectURL(f);
+          if (thumbImg) thumbImg.src = thumbObjUrl;
+          if (thumbEl) thumbEl.hidden = false;
+          if (input) { input.placeholder = 'Add a caption (optional)…'; input.focus(); }
         });
       }
-      if (previewCancel) previewCancel.addEventListener('click', clearPreview);
-      if (previewSend) {
-        previewSend.addEventListener('click', function () {
-          if (!pendingFile) return;
-          var caption = (previewCap.value || '').trim();
-          previewSend.disabled = true; previewSend.textContent = 'Sending…';
-          var safe = pendingFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      if (thumbRemove) thumbRemove.addEventListener('click', clearPhoto);
+
+      // One Send button: sends the photo (with the text as caption) if one is
+      // selected, otherwise sends the text message.
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var body = (input.value || '').trim();
+
+        if (pendingFile) {
+          var file = pendingFile;
+          var caption = body;
+          sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
+          var safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
           var path = requestId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '_' + safe;
-          client.storage.from(CFG.CHAT_MEDIA_BUCKET).upload(path, pendingFile, { cacheControl: '3600', upsert: false })
+          client.storage.from(CFG.CHAT_MEDIA_BUCKET).upload(path, file, { cacheControl: '3600', upsert: false })
             .then(function (res) {
               if (res.error) throw new Error(res.error.message);
               var pub = client.storage.from(CFG.CHAT_MEDIA_BUCKET).getPublicUrl(path);
@@ -232,11 +224,16 @@
                 attachment_type: 'image'
               }, '📷 Photo');
             })
-            .then(function () { clearPreview(); })
+            .then(function () { input.value = ''; clearPhoto(); })
             .catch(function (err) { alert('Could not share photo: ' + err.message); })
-            .then(function () { previewSend.disabled = false; previewSend.textContent = 'Send photo'; });
-        });
-      }
+            .then(function () { sendBtn.disabled = false; sendBtn.textContent = 'Send'; });
+          return;
+        }
+
+        if (!body) return;      // nothing to send
+        input.value = '';
+        insertMessage({ body: body });
+      });
 
       // Location: get GPS coords → Google Maps link, send as location message
       if (locBtn) {

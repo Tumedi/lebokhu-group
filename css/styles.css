@@ -531,9 +531,7 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .chat-msg.mine .chat-bubble{background:linear-gradient(135deg,var(--teal),var(--teal-light));color:#fff;border-bottom-right-radius:4px}
 .chat-msg.theirs .chat-bubble{background:#fff;border:1px solid var(--line);color:var(--ink);border-bottom-left-radius:4px}
 .chat-meta{font-size:.72rem;color:var(--slate-light);margin-top:3px}
-.chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff}
-.chat-input input{flex:1;padding:10px 12px;border:1px solid var(--line);border-radius:999px;font-family:inherit;font-size:.92rem}
-.chat-input input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px rgba(12,107,87,.12)}
+.chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--line);background:#fff;align-items:center}
 .chat-input .btn{flex:0 0 auto}
 /* Chat attach tools (photo / location) */
 .chat-tool{flex:0 0 auto;background:none;border:1px solid var(--line);border-radius:50%;width:38px;height:38px;
@@ -555,12 +553,15 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 /* Typing indicator */
 .chat-typing{padding:2px 14px 6px;font-size:.8rem;color:var(--slate);font-style:italic}
 
-/* Image preview before sending */
-.chat-preview{display:flex;gap:12px;padding:12px;border-top:1px solid var(--line);background:#fff;align-items:flex-start}
-.chat-preview-img{width:80px;height:80px;object-fit:cover;border-radius:10px;flex:none}
-.chat-preview-body{flex:1;display:flex;flex-direction:column;gap:8px}
-.chat-preview-cap{padding:9px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);font-family:inherit;font-size:.9rem}
-.chat-preview-actions{display:flex;gap:8px;justify-content:flex-end}
+/* Single-bar input field with an inline photo thumbnail chip */
+.chat-input-field{flex:1;display:flex;align-items:center;gap:8px;border:1px solid var(--line);
+  border-radius:999px;background:#fff;padding:4px 6px 4px 14px}
+.chat-input-field:focus-within{border-color:var(--teal);box-shadow:0 0 0 3px rgba(12,107,87,.12)}
+.chat-input-field input{flex:1;border:none;outline:none;background:none;padding:6px 0;font-family:inherit;font-size:.92rem}
+.chat-thumb{position:relative;flex:none}
+.chat-thumb img{width:38px;height:38px;object-fit:cover;border-radius:8px;display:block}
+.chat-thumb-x{position:absolute;top:-6px;right:-6px;width:18px;height:18px;border:none;border-radius:50%;
+  background:#c0392b;color:#fff;font-size:.85rem;line-height:1;cursor:pointer;display:grid;place-items:center}
 
 /* Provider gallery — manage (list-service) */
 .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px}
