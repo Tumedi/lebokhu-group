@@ -92,22 +92,50 @@
     // Remove any previously injected auth nodes
     nav.querySelectorAll('[data-auth-node]').forEach(function (n) { n.remove(); });
 
+    var currentPage = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+
+    // Show/hide the static guest links (Register / Sign Up / Log In in the page HTML)
+    // depending on auth state.
+    function setGuestLinksVisible(visible) {
+      nav.querySelectorAll('a[href]').forEach(function (a) {
+        if (a.hasAttribute('data-auth-node')) return; // skip injected ones
+        var target = (a.getAttribute('href') || '').split('#')[0].split('?')[0].toLowerCase();
+        if (target === 'register.html' || target === 'signup.html' || target === 'login.html') {
+          a.style.display = visible ? '' : 'none';
+        }
+      });
+    }
+
     return AUTH.getUser().then(function (user) {
       if (!user) {
-        var login = document.createElement('a');
-        login.href = 'login.html';
-        login.textContent = 'Log In';
-        login.setAttribute('data-auth-node', '');
-        nav.appendChild(login);
+        setGuestLinksVisible(true);
+        // Only add a "Log In" link if the page doesn't already have a login/signup link.
+        var hasGuestLink = false;
+        nav.querySelectorAll('a[href]').forEach(function (a) {
+          var t = (a.getAttribute('href') || '').split('#')[0].split('?')[0].toLowerCase();
+          if (t === 'login.html' || t === 'signup.html' || t === 'register.html') hasGuestLink = true;
+        });
+        if (!hasGuestLink) {
+          var login = document.createElement('a');
+          login.href = 'login.html';
+          login.textContent = 'Log In';
+          login.setAttribute('data-auth-node', '');
+          nav.appendChild(login);
+        }
         return;
       }
+
+      // Logged in: hide guest-only links (Register / Sign Up / Log In).
+      setGuestLinksVisible(false);
+
       return AUTH.getProfile().then(function (profile) {
         var role = (profile && profile.role) || 'seeker';
         var d = AUTH.dashboardFor(role);
         var dashHref = d.href;
         var dashLabel = d.label;
 
-        // Each role gets a quick primary action shortcut in the header.
+        // Each role gets a quick primary action shortcut in the header —
+        // but not if it just points to the page they're already on.
         var shortcuts = {
           homeowner: { href: 'services-directory.html', label: '＋ Request a Service' },
           employer:  { href: 'post-job.html',           label: '＋ Post a Job' },
@@ -115,7 +143,7 @@
           provider:  { href: 'list-service.html',        label: 'Edit My Listing' }
         };
         var sc = shortcuts[role];
-        if (sc) {
+        if (sc && sc.href.toLowerCase() !== currentPage) {
           var scLink = document.createElement('a');
           scLink.href = sc.href;
           scLink.className = 'nav-cta';
