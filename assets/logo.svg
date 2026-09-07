@@ -1,4 +1,4 @@
-<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LeBoKhu Group logo">
+<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LeKhuBo Connect logo">
   <defs>
     <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#F6C453"/>
@@ -34,7 +34,7 @@
 
   <!-- Wordmark -->
   <g font-family="Georgia, 'Times New Roman', serif">
-    <text x="82" y="42" font-size="30" font-weight="700" fill="url(#ink)">Le<tspan fill="url(#teal)">Bo</tspan><tspan fill="url(#gold)">Khu</tspan></text>
-    <text x="83" y="62" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="600" fill="#5a6b7b" letter-spacing="2">GROUP</text>
+    <text x="82" y="42" font-size="30" font-weight="700" fill="url(#ink)">Le<tspan fill="url(#gold)">Khu</tspan><tspan fill="url(#teal)">Bo</tspan></text>
+    <text x="83" y="62" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="600" fill="#5a6b7b" letter-spacing="2">CONNECT</text>
   </g>
 </svg>

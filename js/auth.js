@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — auth.js (shared authentication helper)
+   LeKhuBo Connect — auth.js (shared authentication helper)
    Requires: supabase-js CDN + js/supabase-config.js loaded first.
 
    Exposes window.LEBOKHU_AUTH with:

@@ -1,8 +1,8 @@
-# LeBoKhu Group — Business Website
+# LeKhuBo Connect — Business Website
 
 **Connecting People, Resources & Opportunity.**
 
-A responsive, single-page business website for LeBoKhu Group — a 100% black youth-owned
+A responsive, single-page business website for LeKhuBo Connect — a 100% black youth-owned
 South African resourcing & recruitment company that outsources resources for companies and
 connects job seekers (qualified or not) with job opportunities.
 
@@ -88,7 +88,7 @@ and works offline.
 ### How users install it
 **Android (Chrome/Edge):** open the site → tap the **"Install App"** button (or
 browser menu ⋮ → *Install app / Add to Home screen*). It launches full-screen with
-the LeBoKhu icon.
+the LeKhuBo icon.
 
 **iPhone/iPad (Safari):** open the site → tap **Share** → **Add to Home Screen**.
 (iOS doesn't support the automatic install button, so this manual step is normal.)

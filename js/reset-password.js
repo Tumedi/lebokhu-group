@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — reset-password.js
+   LeKhuBo Connect — reset-password.js
    Handles the password-recovery flow. The user arrives here from
    the link in their reset email; Supabase establishes a temporary
    recovery session, then we let them set a new password.

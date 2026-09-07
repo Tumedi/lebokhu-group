@@ -1,5 +1,5 @@
 // ============================================================
-// LeBoKhu Group — Supabase Edge Function: send-welcome-email
+// LeKhuBo Connect — Supabase Edge Function: send-welcome-email
 // ------------------------------------------------------------
 // Sends a "thanks for registering" confirmation email to a job
 // seeker via Resend. The Resend API key is stored as a secret
@@ -7,7 +7,7 @@
 //
 // Deploy:  supabase functions deploy send-welcome-email --no-verify-jwt
 // Secret:  supabase secrets set RESEND_API_KEY=re_xxx
-//          supabase secrets set WELCOME_FROM="LeBoKhu Group <onboarding@resend.dev>"
+//          supabase secrets set WELCOME_FROM="LeKhuBo Connect <onboarding@resend.dev>"
 //          supabase secrets set WELCOME_BCC="Tbmadihlaba@gmail.com"
 //
 // NOTE: Registrations come from anonymous (not-logged-in) visitors,
@@ -44,7 +44,7 @@ serve(async (req: Request) => {
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const FROM =
-      Deno.env.get("WELCOME_FROM") ?? "LeBoKhu Group <onboarding@resend.dev>";
+      Deno.env.get("WELCOME_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
     const BCC = Deno.env.get("WELCOME_BCC") ?? "Tbmadihlaba@gmail.com";
 
     if (!RESEND_API_KEY) {
@@ -84,12 +84,12 @@ serve(async (req: Request) => {
     const html = `
       <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#0B2038">
         <div style="background:#0B2038;padding:20px 24px;border-radius:12px 12px 0 0">
-          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeBoKhu Group</span>
+          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeKhuBo Connect</span>
           <div style="color:#9fb2c4;font-size:12px;margin-top:2px">Connecting People, Resources &amp; Opportunity</div>
         </div>
         <div style="border:1px solid #e6ebf0;border-top:none;border-radius:0 0 12px 12px;padding:24px">
           <p>Hi ${esc(name)},</p>
-          <p>Thank you for registering with <strong>LeBoKhu Group</strong>! We've received your
+          <p>Thank you for registering with <strong>LeKhuBo Connect</strong>! We've received your
           details and added you to our talent pool.</p>
           ${roleLine || sectorLine ? `<table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px">${roleLine}${sectorLine}</table>` : ""}
           <p><strong style="color:#0C6B57">What happens next?</strong> Our team reviews new
@@ -98,7 +98,7 @@ serve(async (req: Request) => {
           <p>In the meantime, you can browse current openings on our
           <a href="https://tumedi.github.io/lebokhu-group/jobs.html" style="color:#0C6B57">Jobs page</a>.</p>
           <p>Qualified or not — we're here to help you take the next step. 💪</p>
-          <p style="margin-top:20px">Kind regards,<br><strong>LeBoKhu Group</strong><br>
+          <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
           <a href="mailto:Tbmadihlaba@gmail.com" style="color:#0C6B57">Tbmadihlaba@gmail.com</a> &middot; 081 798 6359</p>
         </div>
         <div style="text-align:center;color:#8496a6;font-size:11px;padding:14px">
@@ -108,7 +108,7 @@ serve(async (req: Request) => {
 
     const text =
       `Hi ${name},\n\n` +
-      `Thank you for registering with LeBoKhu Group! We've received your details and added you to our talent pool.\n\n` +
+      `Thank you for registering with LeKhuBo Connect! We've received your details and added you to our talent pool.\n\n` +
       (applying_for ? `Applied for: ${applying_for}\n` : "") +
       (preferred_sector ? `Preferred work: ${preferred_sector}\n` : "") +
       `\nWhat happens next? Our team reviews new registrations and matches candidates to suitable opportunities. ` +
@@ -116,7 +116,7 @@ serve(async (req: Request) => {
       (has_cv ? "We've received your CV.\n\n" : "If you have a CV, reply to this email with it attached.\n\n") +
       `Browse current openings: https://tumedi.github.io/lebokhu-group/jobs.html\n\n` +
       `Qualified or not — we're here to help you take the next step.\n\n` +
-      `Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -129,7 +129,7 @@ serve(async (req: Request) => {
         to: [email],
         bcc: BCC ? [BCC] : undefined,
         reply_to: "Tbmadihlaba@gmail.com",
-        subject: "Thanks for registering — LeBoKhu Group",
+        subject: "Thanks for registering — LeKhuBo Connect",
         html,
         text,
       }),

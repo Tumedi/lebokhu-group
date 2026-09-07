@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — my-posts.js
+   LeKhuBo Connect — my-posts.js
    Employer dashboard: requires a logged-in employer; lists their
    own job posts with status + applicant counts, and lets them
    close / reopen / delete their posts.

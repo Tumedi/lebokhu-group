@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — my-services.js
+   LeKhuBo Connect — my-services.js
    Provider dashboard: requires a logged-in 'provider'. Shows
    their listing (with status) and the service requests sent to it.
    ============================================================ */

@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — list-service.js
+   LeKhuBo Connect — list-service.js
    Service provider lists/updates their service. Requires a
    logged-in 'provider'. Saves to service_providers (status pending).
    If the provider already has a listing, it loads it for editing.

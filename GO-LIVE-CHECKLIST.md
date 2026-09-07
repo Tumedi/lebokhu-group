@@ -1,4 +1,4 @@
-# 🚀 LeBoKhu Group — Go-Live Checklist
+# 🚀 LeKhuBo Connect — Go-Live Checklist
 
 Work through this top to bottom. Tick each box as you go. Most of it is one-time setup.
 
@@ -76,15 +76,15 @@ supabase secrets set RESEND_API_KEY=re_your_key_here
 
 **Point all emails at your verified domain (optional but recommended):**
 ```bash
-supabase secrets set APPROVAL_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set DECLINED_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set MATCH_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set STATUS_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set PROVIDER_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set WELCOME_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set POST_RECEIVED_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set SERVICE_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
-supabase secrets set CHAT_FROM="LeBoKhu Group <jobs@lebokhu-group.co.za>"
+supabase secrets set APPROVAL_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set DECLINED_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set MATCH_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set STATUS_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set PROVIDER_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set WELCOME_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set POST_RECEIVED_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set SERVICE_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set CHAT_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
 ```
 
 ---

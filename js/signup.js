@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — signup.js
+   LeKhuBo Connect — signup.js
    Creates a Supabase auth user with a role (seeker | employer).
    Profile is auto-created by the DB trigger from user metadata.
    ============================================================ */

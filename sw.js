@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — Service Worker
+   LeKhuBo Connect — Service Worker
    Offline support via app-shell caching.
    Strategy:
      - Navigations (HTML): network-first, fall back to cache, then offline page.

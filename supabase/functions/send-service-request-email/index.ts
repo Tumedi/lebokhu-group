@@ -1,5 +1,5 @@
 // ============================================================
-// LeBoKhu Group — Edge Function: send-service-request-email
+// LeKhuBo Connect — Edge Function: send-service-request-email
 // ------------------------------------------------------------
 // Notifies the admin (and the provider, if we have their email)
 // when a homeowner submits a service request. Called by anonymous
@@ -35,7 +35,7 @@ serve(async (req: Request) => {
 
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
-    const FROM = Deno.env.get("SERVICE_FROM") ?? "LeBoKhu Group <onboarding@resend.dev>";
+    const FROM = Deno.env.get("SERVICE_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
     const ADMIN = Deno.env.get("SERVICE_ADMIN") ?? "Tbmadihlaba@gmail.com";
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ error: "RESEND_API_KEY is not configured" }),
@@ -51,7 +51,7 @@ serve(async (req: Request) => {
     const html = `
       <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#0B2038">
         <div style="background:#0B2038;padding:20px 24px;border-radius:12px 12px 0 0">
-          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeBoKhu Group</span>
+          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeKhuBo Connect</span>
           <div style="color:#9fb2c4;font-size:12px;margin-top:2px">Home Services</div>
         </div>
         <div style="border:1px solid #e6ebf0;border-top:none;border-radius:0 0 12px 12px;padding:24px">
@@ -87,7 +87,7 @@ serve(async (req: Request) => {
         from: FROM,
         to: to,
         reply_to: homeowner_email || ADMIN,
-        subject: "New service request — LeBoKhu Group",
+        subject: "New service request — LeKhuBo Connect",
         html, text,
       }),
     });

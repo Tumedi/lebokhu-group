@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — featured-providers.js
+   LeKhuBo Connect — featured-providers.js
    Homepage: shows the top-rated approved service providers.
    Silently does nothing if the DB isn't configured or none exist.
    ============================================================ */

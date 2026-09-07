@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — Supabase configuration
+   LeKhuBo Connect — Supabase configuration
    ------------------------------------------------------------
    Replace the two placeholder values below with YOUR project's
    values from: Supabase Dashboard → Project Settings → API

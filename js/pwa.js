@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — pwa.js
+   LeKhuBo Connect — pwa.js
    Registers the service worker and shows a custom install button.
    ============================================================ */
 (function () {
@@ -24,7 +24,7 @@
     installBtn = document.createElement('button');
     installBtn.type = 'button';
     installBtn.className = 'pwa-install-btn';
-    installBtn.setAttribute('aria-label', 'Install the LeBoKhu app');
+    installBtn.setAttribute('aria-label', 'Install the LeKhuBo app');
     installBtn.innerHTML = '<span class="pwa-install-icon">⬇</span> Install App';
     installBtn.addEventListener('click', function () {
       if (!deferredPrompt) return;

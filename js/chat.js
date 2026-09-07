@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — chat.js (shared chat widget)
+   LeKhuBo Connect — chat.js (shared chat widget)
    Renders a chat thread for a service request and handles
    loading, sending, polling, read-tracking and email notifications.
 
@@ -134,7 +134,7 @@
       if (!opts.recipientEmail || !client.functions) return;
       lastNotified = now;
       var label = sender === 'homeowner' ? (senderName || 'A homeowner')
-        : (sender === 'provider' ? (senderName || 'A service provider') : 'LeBoKhu Group');
+        : (sender === 'provider' ? (senderName || 'A service provider') : 'LeKhuBo Connect');
       client.functions.invoke('send-chat-notification', {
         body: {
           recipient_email: opts.recipientEmail,

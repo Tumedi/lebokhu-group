@@ -1,5 +1,5 @@
 // ============================================================
-// LeBoKhu Group — Supabase Edge Function: send-approval-email
+// LeKhuBo Connect — Supabase Edge Function: send-approval-email
 // ------------------------------------------------------------
 // Securely sends an "your job post is approved" email to an
 // employer via Resend. The Resend API key is stored as a secret
@@ -7,7 +7,7 @@
 //
 // Deploy:  supabase functions deploy send-approval-email
 // Secret:  supabase secrets set RESEND_API_KEY=re_xxx
-//          supabase secrets set APPROVAL_FROM="LeBoKhu Group <onboarding@resend.dev>"
+//          supabase secrets set APPROVAL_FROM="LeKhuBo Connect <onboarding@resend.dev>"
 // ============================================================
 
 // deno-lint-ignore-file no-explicit-any
@@ -43,11 +43,11 @@ serve(async (req: Request) => {
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     // Until you verify your own domain in Resend, use their test sender:
-    //   "LeBoKhu Group <onboarding@resend.dev>"
+    //   "LeKhuBo Connect <onboarding@resend.dev>"
     // After verifying lebokhugroup.co.za, set APPROVAL_FROM to e.g.
-    //   "LeBoKhu Group <jobs@lebokhugroup.co.za>"
+    //   "LeKhuBo Connect <jobs@lebokhugroup.co.za>"
     const FROM =
-      Deno.env.get("APPROVAL_FROM") ?? "LeBoKhu Group <onboarding@resend.dev>";
+      Deno.env.get("APPROVAL_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
     const BCC = Deno.env.get("APPROVAL_BCC") ?? "Tbmadihlaba@gmail.com";
 
     if (!RESEND_API_KEY) {
@@ -80,12 +80,12 @@ serve(async (req: Request) => {
     const html = `
       <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#0B2038">
         <div style="background:#0B2038;padding:20px 24px;border-radius:12px 12px 0 0">
-          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeBoKhu Group</span>
+          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeKhuBo Connect</span>
           <div style="color:#9fb2c4;font-size:12px;margin-top:2px">Connecting People, Resources &amp; Opportunity</div>
         </div>
         <div style="border:1px solid #e6ebf0;border-top:none;border-radius:0 0 12px 12px;padding:24px">
           <p>Hi ${esc(name)},</p>
-          <p><strong style="color:#0C6B57">Good news!</strong> Your job post with LeBoKhu Group has been
+          <p><strong style="color:#0C6B57">Good news!</strong> Your job post with LeKhuBo Connect has been
           <strong>approved</strong> and is now live on our Jobs page.</p>
           <table style="width:100%;border-collapse:collapse;margin:16px 0;font-size:14px">
             <tr><td style="padding:6px 0;color:#5a6b7b">Job title</td><td style="padding:6px 0;font-weight:bold">${esc(title)}</td></tr>
@@ -96,17 +96,17 @@ serve(async (req: Request) => {
           </table>
           <p>Job seekers can now view and apply for this role. We'll be in touch as suitable candidates come through.</p>
           <p>Thank you for partnering with us to fight youth unemployment in South Africa.</p>
-          <p style="margin-top:20px">Kind regards,<br><strong>LeBoKhu Group</strong><br>
+          <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
           <a href="mailto:Tbmadihlaba@gmail.com" style="color:#0C6B57">Tbmadihlaba@gmail.com</a> &middot; 081 798 6359</p>
         </div>
       </div>`;
 
     const text =
       `Hi ${name},\n\n` +
-      `Good news! Your job post with LeBoKhu Group has been APPROVED and is now live on our Jobs page.\n\n` +
+      `Good news! Your job post with LeKhuBo Connect has been APPROVED and is now live on our Jobs page.\n\n` +
       `Job title: ${title}\nCompany: ${company}\nSector: ${sector}\nLocation: ${location}\nType: ${job_type}\n\n` +
       `Job seekers can now view and apply for this role. We'll be in touch as suitable candidates come through.\n\n` +
-      `Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -119,7 +119,7 @@ serve(async (req: Request) => {
         to: [contact_email],
         bcc: BCC ? [BCC] : undefined,
         reply_to: "Tbmadihlaba@gmail.com",
-        subject: "Your job post has been approved — LeBoKhu Group",
+        subject: "Your job post has been approved — LeKhuBo Connect",
         html,
         text,
       }),

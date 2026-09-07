@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — login.js
+   LeKhuBo Connect — login.js
    Email/password login. Redirects to ?next= or the role dashboard.
    Also handles "forgot password".
    ============================================================ */

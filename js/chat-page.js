@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — chat-page.js
+   LeKhuBo Connect — chat-page.js
    Standalone chat page opened by a homeowner via their private
    link: chat.html?r=<request_id>&t=<access_token>
    Validates the token, then mounts the shared chat widget.

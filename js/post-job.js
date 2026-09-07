@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — post-job.js
+   LeKhuBo Connect — post-job.js
    Employer job posting. On submit:
      1. Save the post to the Supabase job_posts table (status: pending)
      2. Send a Web3Forms email alert

@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — main.js
+   LeKhuBo Connect — main.js
    Mobile nav · reveal-on-scroll · counters · form validation
    ============================================================ */
 (function () {

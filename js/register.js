@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — register.js
+   LeKhuBo Connect — register.js
    On submit:
      1. Upload CV to Supabase Storage (if provided)
      2. Save the registration row to the Supabase database

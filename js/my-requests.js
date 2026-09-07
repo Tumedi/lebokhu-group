@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — my-requests.js
+   LeKhuBo Connect — my-requests.js
    Homeowner dashboard: requires a logged-in 'homeowner'. Lists
    their service requests and lets them reopen each chat anytime
    (so they never lose a conversation with a provider).

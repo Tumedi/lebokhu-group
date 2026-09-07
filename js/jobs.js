@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — jobs.js
+   LeKhuBo Connect — jobs.js
    Loads LIVE approved job posts from Supabase (job_posts table)
    and merges them with the built-in SAMPLE_JOBS below so the page
    is never empty. Live posts appear first and are tagged "Live".

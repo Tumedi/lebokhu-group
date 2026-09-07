@@ -1,7 +1,7 @@
 {
-  "name": "LeBoKhu Group",
-  "short_name": "LeBoKhu",
-  "description": "Connecting People, Resources & Opportunity. Browse jobs and register as a job seeker with LeBoKhu Group.",
+  "name": "LeKhuBo Connect",
+  "short_name": "LeKhuBo",
+  "description": "Connecting People, Resources & Opportunity. Browse jobs and register as a job seeker with LeKhuBo Connect.",
   "lang": "en-ZA",
   "dir": "ltr",
   "start_url": "./index.html",

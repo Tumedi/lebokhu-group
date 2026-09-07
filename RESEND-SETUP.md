@@ -35,11 +35,11 @@ supabase link --project-ref efupodoraphybvzttrjj
 ```bash
 supabase secrets set RESEND_API_KEY=re_your_key_here
 # Optional overrides (defaults shown):
-supabase secrets set APPROVAL_FROM="LeBoKhu Group <onboarding@resend.dev>"
+supabase secrets set APPROVAL_FROM="LeKhuBo Connect <onboarding@resend.dev>"
 supabase secrets set APPROVAL_BCC="Tbmadihlaba@gmail.com"
 ```
 After you verify your domain in Resend, change `APPROVAL_FROM` to e.g.
-`"LeBoKhu Group <jobs@lebokhugroup.co.za>"` for the best deliverability.
+`"LeKhuBo Connect <jobs@lebokhugroup.co.za>"` for the best deliverability.
 
 ## Step 5 — Deploy the functions
 There are **two** functions:
@@ -84,9 +84,9 @@ or the browser call will be rejected.
 
 Optional sender overrides (defaults shown):
 ```bash
-supabase secrets set WELCOME_FROM="LeBoKhu Group <onboarding@resend.dev>"
+supabase secrets set WELCOME_FROM="LeKhuBo Connect <onboarding@resend.dev>"
 supabase secrets set WELCOME_BCC="Tbmadihlaba@gmail.com"
-supabase secrets set POST_RECEIVED_FROM="LeBoKhu Group <onboarding@resend.dev>"
+supabase secrets set POST_RECEIVED_FROM="LeKhuBo Connect <onboarding@resend.dev>"
 supabase secrets set POST_RECEIVED_BCC="Tbmadihlaba@gmail.com"
 ```
 

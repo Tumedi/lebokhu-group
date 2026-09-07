@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — services-directory.js
+   LeKhuBo Connect — services-directory.js
    Public directory of APPROVED service providers. Homeowners
    search/filter, view contact details, and submit a request
    (open — no login required). Requests save to the DB and

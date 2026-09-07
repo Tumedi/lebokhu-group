@@ -1,12 +1,12 @@
 // ============================================================
-// LeBoKhu Group — Supabase Edge Function: send-status-email
+// LeKhuBo Connect — Supabase Edge Function: send-status-email
 // ------------------------------------------------------------
 // Notifies a job seeker when their application status changes.
 // Called by the logged-in admin from the dashboard.
 //
 // Deploy:  supabase functions deploy send-status-email
 // Secret:  supabase secrets set RESEND_API_KEY=re_xxx
-//          supabase secrets set STATUS_FROM="LeBoKhu Group <onboarding@resend.dev>"
+//          supabase secrets set STATUS_FROM="LeKhuBo Connect <onboarding@resend.dev>"
 //          supabase secrets set STATUS_BCC="Tbmadihlaba@gmail.com"
 // ============================================================
 
@@ -49,7 +49,7 @@ function statusCopy(status: string, title: string, company: string) {
       return {
         headline: "Congratulations — you got the job! 🎉",
         body: "Wonderful news — you've been selected for " + role +
-          "! Our team will be in touch with all the details. Congratulations from all of us at LeBoKhu Group.",
+          "! Our team will be in touch with all the details. Congratulations from all of us at LeKhuBo Connect.",
         tone: "#0C6B57",
       };
     case "rejected":
@@ -82,7 +82,7 @@ serve(async (req: Request) => {
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const FROM =
-      Deno.env.get("STATUS_FROM") ?? "LeBoKhu Group <onboarding@resend.dev>";
+      Deno.env.get("STATUS_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
     const BCC = Deno.env.get("STATUS_BCC") ?? "Tbmadihlaba@gmail.com";
 
     if (!RESEND_API_KEY) {
@@ -109,7 +109,7 @@ serve(async (req: Request) => {
     const html = `
       <div style="font-family:Arial,Helvetica,sans-serif;max-width:560px;margin:0 auto;color:#0B2038">
         <div style="background:#0B2038;padding:20px 24px;border-radius:12px 12px 0 0">
-          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeBoKhu Group</span>
+          <span style="color:#F6C453;font-size:20px;font-weight:bold;font-family:Georgia,serif">LeKhuBo Connect</span>
           <div style="color:#9fb2c4;font-size:12px;margin-top:2px">Connecting People, Resources &amp; Opportunity</div>
         </div>
         <div style="border:1px solid #e6ebf0;border-top:none;border-radius:0 0 12px 12px;padding:24px">
@@ -120,7 +120,7 @@ serve(async (req: Request) => {
             <a href="https://tumedi.github.io/lebokhu-group/my-applications.html"
                style="background:#E4A020;color:#3a2600;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:999px;display:inline-block">View My Applications</a>
           </p>
-          <p style="margin-top:20px">Kind regards,<br><strong>LeBoKhu Group</strong><br>
+          <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
           <a href="mailto:Tbmadihlaba@gmail.com" style="color:#0C6B57">Tbmadihlaba@gmail.com</a> &middot; 081 798 6359</p>
         </div>
       </div>`;
@@ -130,7 +130,7 @@ serve(async (req: Request) => {
       `${copy.headline}\n\n` +
       copy.body.replace(/<[^>]+>/g, "") + "\n\n" +
       `View your applications: https://tumedi.github.io/lebokhu-group/my-applications.html\n\n` +
-      `Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -143,7 +143,7 @@ serve(async (req: Request) => {
         to: [seeker_email],
         bcc: BCC ? [BCC] : undefined,
         reply_to: "Tbmadihlaba@gmail.com",
-        subject: copy.headline + " — LeBoKhu Group",
+        subject: copy.headline + " — LeKhuBo Connect",
         html,
         text,
       }),

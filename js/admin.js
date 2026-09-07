@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — admin.js
+   LeKhuBo Connect — admin.js
    Password-protected dashboard (Supabase Auth).
    - Login / logout
    - Load all job_seekers
@@ -434,17 +434,17 @@
 
   // Build a pre-filled approval email (opens in the admin's own mail app).
   // This is free and reliable — it sends from YOUR real address, so the
-  // employer sees it genuinely comes from LeBoKhu Group.
+  // employer sees it genuinely comes from LeKhuBo Connect.
   function openApprovalEmail(post) {
     if (!post || !post.contact_email) {
       alert('This post has no contact email on record, so no email could be prepared.');
       return;
     }
     var name = post.contact_name || post.company || 'there';
-    var subject = 'Your job post has been approved — LeBoKhu Group';
+    var subject = 'Your job post has been approved — LeKhuBo Connect';
     var body =
       'Hi ' + name + ',\n\n' +
-      'Good news! Your job post with LeBoKhu Group has been APPROVED and is now live on our Jobs page.\n\n' +
+      'Good news! Your job post with LeKhuBo Connect has been APPROVED and is now live on our Jobs page.\n\n' +
       'Post details:\n' +
       '- Job title: ' + (post.title || '') + '\n' +
       '- Company: ' + (post.company || '') + '\n' +
@@ -454,7 +454,7 @@
       'Job seekers can now view and apply for this role. We will be in touch as suitable candidates come through.\n\n' +
       'Thank you for partnering with us to connect people, resources and opportunity.\n\n' +
       'Kind regards,\n' +
-      'LeBoKhu Group\n' +
+      'LeKhuBo Connect\n' +
       'Tbmadihlaba@gmail.com | 081 798 6359';
 
     var href = 'mailto:' + encodeURIComponent(post.contact_email) +
@@ -564,16 +564,16 @@
 
   function openDeclinedEmail(post, reason) {
     var name = post.contact_name || post.company || 'there';
-    var subject = 'Update on your job post — LeBoKhu Group';
+    var subject = 'Update on your job post — LeKhuBo Connect';
     var body =
       'Hi ' + name + ',\n\n' +
       'Thank you for submitting your job post "' + (post.title || '') + '"' +
-      (post.company ? ' for ' + post.company : '') + ' with LeBoKhu Group.\n\n' +
+      (post.company ? ' for ' + post.company : '') + ' with LeKhuBo Connect.\n\n' +
       'After review, we\'re unable to publish this post in its current form.\n' +
       (reason ? '\nNote from our team: ' + reason + '\n' : '') +
       '\nWe\'d love to help you find the right people. Please feel free to submit an updated post ' +
       'or reply to this email and our team will assist you.\n\n' +
-      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(post.contact_email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
@@ -745,10 +745,10 @@
       rejected: 'Thank you for your interest in ' + role + '. This role has moved forward with other candidates, but we will keep your details for future opportunities.',
       submitted: 'Your application for ' + role + ' has been received.'
     };
-    var subject = 'Update on your application — LeBoKhu Group';
+    var subject = 'Update on your application — LeKhuBo Connect';
     var body = 'Hi ' + name + ',\n\n' + (lines[status] || lines.submitted) +
       '\n\nView your applications: https://tumedi.github.io/lebokhu-group/my-applications.html\n\n' +
-      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(app.seeker_email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
@@ -892,7 +892,7 @@
   }
 
   function openMatchMailto(seeker, job) {
-    var subject = 'A job matching your profile — LeBoKhu Group';
+    var subject = 'A job matching your profile — LeKhuBo Connect';
     var applyUrl = 'https://tumedi.github.io/lebokhu-group/register.html?role=' + encodeURIComponent(job.title || '');
     var body =
       'Hi ' + (seeker.first_name || 'there') + ',\n\n' +
@@ -905,7 +905,7 @@
       (job.job_type ? 'Type: ' + job.job_type + '\n' : '') +
       (job.description ? '\n' + job.description + '\n' : '') +
       '\nInterested? Apply / confirm here: ' + applyUrl + '\nOr reply to this email.\n\n' +
-      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(seeker.email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
@@ -1020,12 +1020,12 @@
   }
 
   function openProviderApprovedMailto(p) {
-    var subject = 'Your service listing is approved — LeBoKhu Group';
+    var subject = 'Your service listing is approved — LeKhuBo Connect';
     var body = 'Hi ' + (p.full_name || 'there') + ',\n\n' +
       'Great news! Your service listing (' + (p.service || '') + ') has been approved and is now ' +
-      'live in the LeBoKhu Group directory. Homeowners in your area can now find and contact you.\n\n' +
+      'live in the LeKhuBo Connect directory. Homeowners in your area can now find and contact you.\n\n' +
       'View the directory: https://tumedi.github.io/lebokhu-group/services-directory.html\n\n' +
-      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(p.email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
@@ -1147,7 +1147,7 @@
       container: admChatMount,
       requestId: requestId,
       sender: 'admin',
-      senderName: 'LeBoKhu Group'
+      senderName: 'LeKhuBo Connect'
     });
   }
   function closeAdminChat() {

@@ -1,5 +1,5 @@
 /* ============================================================
-   LeBoKhu Group — my-applications.js
+   LeKhuBo Connect — my-applications.js
    Seeker dashboard: requires a logged-in seeker; lists their
    application history with statuses.
    ============================================================ */

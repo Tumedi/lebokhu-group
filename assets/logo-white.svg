@@ -1,4 +1,4 @@
-<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LeBoKhu Group logo">
+<svg width="360" height="80" viewBox="0 0 360 80" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LeKhuBo Connect logo">
   <defs>
     <linearGradient id="goldW" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#FBD57E"/>
@@ -25,7 +25,7 @@
     <circle cx="34" cy="34" r="4.5" fill="#0B2038"/>
   </g>
   <g font-family="Georgia, 'Times New Roman', serif">
-    <text x="82" y="42" font-size="30" font-weight="700" fill="#FFFFFF">Le<tspan fill="url(#tealW)">Bo</tspan><tspan fill="url(#goldW)">Khu</tspan></text>
-    <text x="83" y="62" font-size="13" font-family="Arial, Helvetica, sans-serif" font-weight="600" fill="#9fb2c4" letter-spacing="2">GROUP</text>
+    <text x="82" y="42" font-size="30" font-weight="700" fill="#FFFFFF">Le<tspan fill="url(#goldW)">Khu</tspan><tspan fill="url(#tealW)">Bo</tspan></text>
+    <text x="83" y="62" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="600" fill="#9fb2c4" letter-spacing="2">CONNECT</text>
   </g>
 </svg>
