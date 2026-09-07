@@ -231,7 +231,11 @@
         container: document.getElementById('reqChatMount'),
         requestId: requestId,
         sender: 'homeowner',
-        senderName: name || 'Homeowner'
+        senderName: name || 'Homeowner',
+        recipientEmail: (currentProvider && currentProvider.email) || '',
+        recipientName: (currentProvider && currentProvider.full_name) || '',
+        service: (currentProvider && currentProvider.service) || '',
+        chatUrl: link
       });
     }
   }

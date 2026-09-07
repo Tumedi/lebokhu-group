@@ -71,6 +71,10 @@ supabase functions deploy send-post-received-email --no-verify-jwt
 # 4) Service request email (called by anonymous homeowners requesting a service)
 #    Also public/anonymous, so deploy WITHOUT jwt verification:
 supabase functions deploy send-service-request-email --no-verify-jwt
+
+# 5) Chat new-message notification (called by anonymous homeowners + providers)
+#    Also public/anonymous, so deploy WITHOUT jwt verification:
+supabase functions deploy send-chat-notification --no-verify-jwt
 ```
 
 Why the difference? The **admin** is logged in, so `send-approval-email` can keep JWT

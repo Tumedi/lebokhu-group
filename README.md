@@ -254,3 +254,14 @@ lookup for the homeowner's private link.
 
 Privacy: the homeowner's thread is protected by an unguessable token in their link, so
 conversations stay private without requiring the homeowner to create an account.
+
+### Unread badges + email notifications
+Run **`supabase-chat-notify.sql`** (after `supabase-chat.sql`) to add read-tracking columns.
+- **Providers** see a red **unread badge** on the 💬 Chat button for requests with new
+  messages, plus a total on the count line. Opening a chat marks its messages read.
+- **New-message emails**: when someone sends a chat message, the other party is emailed a
+  short preview + a link to open the chat (throttled to at most one email per 30s per thread).
+  Deploy the function:
+  ```bash
+  supabase functions deploy send-chat-notification --no-verify-jwt
+  ```

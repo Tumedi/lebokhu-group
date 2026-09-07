@@ -1,17 +1,26 @@
 /* ============================================================
    LeBoKhu Group — chat.js (shared chat widget)
    Renders a chat thread for a service request and handles
-   loading, sending and polling for new messages.
+   loading, sending, polling, read-tracking and email notifications.
 
    Usage:
      var chat = window.LEBOKHU_CHAT.mount({
-       container: element,       // where to render
-       requestId: '<uuid>',      // service_requests.id
-       sender: 'homeowner',      // 'homeowner' | 'provider' | 'admin'
-       senderName: 'Jane',       // display name (optional)
-       readOnly: false           // admin can be read-only
+       container: element,
+       requestId: '<uuid>',
+       sender: 'homeowner',        // 'homeowner' | 'provider' | 'admin'
+       senderName: 'Jane',
+       readOnly: false,
+       // for email notifications to the OTHER party (all optional):
+       recipientEmail: '...',
+       recipientName: '...',
+       service: 'Plumbing',
+       chatUrl: 'https://.../chat.html?r=..&t=..'  // link included in emails
      });
-     // later: chat.stop();  to stop polling
+     chat.stop();  // stop polling
+
+   Helpers:
+     window.LEBOKHU_CHAT.unreadCounts(requestIds, forRole) -> Promise<{id:count}>
+     window.LEBOKHU_CHAT.getRequestByToken(id, token) -> Promise<request|null>
    ============================================================ */
 (function () {
   'use strict';
@@ -41,6 +50,11 @@
       return { stop: function () {} };
     }
     var client = CFG.client();
+    var lastNotified = 0;
+
+    // Which "read" column this viewer clears, and which senders are "incoming".
+    var readCol = (sender === 'homeowner') ? 'read_by_homeowner' : 'read_by_provider';
+    function isIncoming(m) { return m.sender !== sender; }
 
     container.innerHTML =
       '<div class="chat-box">' +
@@ -57,8 +71,19 @@
     var lastCount = -1;
     var stopped = false;
 
+    function markRead(rows) {
+      // Mark any incoming, not-yet-read messages as read for this viewer.
+      var toMark = rows.filter(function (m) { return isIncoming(m) && !m[readCol]; })
+        .map(function (m) { return m.id; });
+      if (!toMark.length) return;
+      var patch = {}; patch[readCol] = true;
+      client.from(CFG.MESSAGES_TABLE).update(patch).in('id', toMark)
+        .then(function () {}).catch(function () {});
+    }
+
     function render(rows) {
-      if (rows.length === lastCount) return; // no change, skip re-render
+      markRead(rows);
+      if (rows.length === lastCount) return;
       lastCount = rows.length;
       if (!rows.length) {
         msgsEl.innerHTML = '<p class="muted">No messages yet. Say hello 👋</p>';
@@ -81,6 +106,26 @@
         .then(function (res) { if (!res.error && res.data) render(res.data); });
     }
 
+    function notify(body) {
+      // Throttle: at most one email per 30s per open thread.
+      var now = Date.now();
+      if (now - lastNotified < 30000) return;
+      if (!opts.recipientEmail || !client.functions) return;
+      lastNotified = now;
+      var label = sender === 'homeowner' ? (senderName || 'A homeowner')
+        : (sender === 'provider' ? (senderName || 'A service provider') : 'LeBoKhu Group');
+      client.functions.invoke('send-chat-notification', {
+        body: {
+          recipient_email: opts.recipientEmail,
+          recipient_name: opts.recipientName || '',
+          sender_label: label,
+          service: opts.service || '',
+          preview: body.length > 120 ? body.slice(0, 117) + '…' : body,
+          chat_url: opts.chatUrl || ''
+        }
+      }).catch(function () {});
+    }
+
     if (form) {
       form.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -96,12 +141,13 @@
         }]).then(function (res) {
           if (res.error) { alert('Message failed: ' + res.error.message); input.value = body; return; }
           lastCount = -1; load();
+          notify(body);
         });
       });
     }
 
     load();
-    var timer = setInterval(load, 4000); // poll for near-real-time
+    var timer = setInterval(load, 4000);
 
     return {
       stop: function () { stopped = true; clearInterval(timer); },
@@ -109,7 +155,27 @@
     };
   }
 
-  // Look up a request by its private token (for the homeowner link).
+  // Count unread messages for a set of requests, from a role's perspective.
+  //   forRole 'provider' -> messages sent by homeowner, read_by_provider = false
+  //   forRole 'homeowner' -> messages sent by provider/admin, read_by_homeowner = false
+  function unreadCounts(requestIds, forRole) {
+    var result = {};
+    if (!CFG || !CFG.isConfigured() || !requestIds || !requestIds.length) return Promise.resolve(result);
+    var client = CFG.client();
+    var q = client.from(CFG.MESSAGES_TABLE).select('request_id, sender, read_by_provider, read_by_homeowner')
+      .in('request_id', requestIds);
+    return q.then(function (res) {
+      if (res.error || !res.data) return result;
+      res.data.forEach(function (m) {
+        var unread = (forRole === 'provider')
+          ? (m.sender === 'homeowner' && !m.read_by_provider)
+          : (m.sender !== 'homeowner' && !m.read_by_homeowner);
+        if (unread) result[m.request_id] = (result[m.request_id] || 0) + 1;
+      });
+      return result;
+    }).catch(function () { return result; });
+  }
+
   function getRequestByToken(requestId, token) {
     if (!CFG || !CFG.isConfigured()) return Promise.resolve(null);
     var client = CFG.client();
@@ -118,5 +184,5 @@
       .catch(function () { return null; });
   }
 
-  window.LEBOKHU_CHAT = { mount: mount, getRequestByToken: getRequestByToken };
+  window.LEBOKHU_CHAT = { mount: mount, getRequestByToken: getRequestByToken, unreadCounts: unreadCounts };
 })();

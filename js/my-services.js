@@ -122,15 +122,37 @@
         '<td>' + esc(r.location || '—') + '</td>' +
         '<td class="skills-cell">' + esc(r.details || '') + '</td>' +
         '<td>' + reqStatusBadge(r.status) + '</td>' +
-        '<td><button class="mini-btn" data-chat="' + esc(r.id) + '" data-name="' + esc(r.homeowner_name || 'Homeowner') + '">💬 Chat</button></td>' +
+        '<td><button class="mini-btn" data-chat="' + esc(r.id) + '" data-name="' + esc(r.homeowner_name || 'Homeowner') +
+          '" data-email="' + esc(r.homeowner_email || '') + '" data-service="' + esc(r.service || '') +
+          '">💬 Chat<span class="unread-badge" data-badge="' + esc(r.id) + '" hidden></span></button></td>' +
       '</tr>';
     }).join('');
 
     tbody.querySelectorAll('[data-chat]').forEach(function (b) {
       b.addEventListener('click', function () {
-        openChat(b.getAttribute('data-chat'), b.getAttribute('data-name'));
+        openChat(b.getAttribute('data-chat'), b.getAttribute('data-name'),
+          b.getAttribute('data-email'), b.getAttribute('data-service'));
+        // Clear the badge optimistically after opening
+        var badge = b.querySelector('[data-badge]');
+        if (badge) { badge.hidden = true; }
       });
     });
+
+    // Load unread counts and show badges
+    if (window.LEBOKHU_CHAT && rows.length) {
+      var ids = rows.map(function (r) { return r.id; });
+      window.LEBOKHU_CHAT.unreadCounts(ids, 'provider').then(function (counts) {
+        var totalUnread = 0;
+        Object.keys(counts).forEach(function (id) {
+          var n = counts[id]; totalUnread += n;
+          var badge = tbody.querySelector('[data-badge="' + id + '"]');
+          if (badge && n > 0) { badge.textContent = n; badge.hidden = false; }
+        });
+        // reflect total in the count line
+        var c = document.getElementById('count');
+        if (totalUnread > 0 && c) c.textContent += ' · ' + totalUnread + ' unread message' + (totalUnread === 1 ? '' : 's');
+      });
+    }
   }
 
   /* ---- Chat modal (provider side) ---- */
@@ -142,7 +164,7 @@
 
   AUTH.getProfile().then(function (p) { providerName = (p && (p.company || p.full_name)) || 'Provider'; });
 
-  function openChat(requestId, homeownerName) {
+  function openChat(requestId, homeownerName, homeownerEmail, service) {
     if (chatWidget) chatWidget.stop();
     chatWith.textContent = 'Conversation with ' + (homeownerName || 'homeowner');
     chatMount.innerHTML = '';
@@ -153,7 +175,10 @@
         container: chatMount,
         requestId: requestId,
         sender: 'provider',
-        senderName: providerName
+        senderName: providerName,
+        recipientEmail: homeownerEmail || '',
+        recipientName: homeownerName || '',
+        service: service || ''
       });
     }
   }

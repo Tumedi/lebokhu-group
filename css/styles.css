@@ -540,3 +540,7 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .chat-link input{flex:1;padding:9px 12px;border:1px solid var(--line);border-radius:var(--radius-sm);font-size:.82rem;background:#fbfcfd;color:var(--slate)}
 .chat-provider{margin-bottom:14px}
 .chat-provider h3{margin:0 0 2px}
+/* Unread message badge */
+.unread-badge{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 5px;margin-left:6px;
+  border-radius:999px;background:#c0392b;color:#fff;font-size:.7rem;font-weight:800;line-height:1;vertical-align:middle}
+.tab .unread-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c0392b;margin-left:6px;vertical-align:middle}
