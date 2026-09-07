@@ -221,7 +221,8 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
    ============================================================ */
 
 /* Active nav link */
-.main-nav a.active{color:var(--teal)}
+.main-nav a.active{color:var(--teal);font-weight:700}
+.main-nav a:not(.nav-cta).active:after{width:100%}
 .main-nav a.nav-cta.active{color:#fff!important;background:var(--teal)}
 
 /* Page hero (smaller than homepage hero) */

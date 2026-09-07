@@ -9,6 +9,23 @@
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+  /* ---- Highlight the active page in the nav ---- */
+  (function () {
+    var navEl = document.getElementById('mainNav');
+    if (!navEl) return;
+    // Current page filename (default to index.html for "/" root)
+    var current = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+    navEl.querySelectorAll('a[href]').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      // Ignore external, anchor-only, mailto/tel and JS links
+      if (/^(https?:|mailto:|tel:|#|javascript:)/i.test(href)) return;
+      // Compare just the page part (strip any #anchor or ?query)
+      var target = href.split('#')[0].split('?')[0].toLowerCase();
+      if (!target) return;               // pure "#..." link on same page
+      if (target === current) a.classList.add('active');
+    });
+  })();
+
   /* ---- Mobile nav toggle ---- */
   var toggle = document.getElementById('navToggle');
   var nav = document.getElementById('mainNav');
