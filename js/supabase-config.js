@@ -15,6 +15,7 @@ window.LEBOKHU_SUPABASE = {
   PROVIDERS_TABLE: 'service_providers',
   REQUESTS_TABLE: 'service_requests',
   REVIEWS_TABLE: 'reviews',
+  MESSAGES_TABLE: 'messages',
   BUCKET: 'cvs',
   PHOTO_BUCKET: 'provider-photos'
 };

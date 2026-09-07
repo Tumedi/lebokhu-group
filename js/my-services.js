@@ -112,7 +112,8 @@
       return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
     }).join('');
 
-    document.getElementById('tbody').innerHTML = rows.map(function (r) {
+    var tbody = document.getElementById('tbody');
+    tbody.innerHTML = rows.map(function (r) {
       return '<tr>' +
         '<td class="nowrap">' + esc(fmtDate(r.created_at)) + '</td>' +
         '<td>' + esc(r.homeowner_name || '—') + '</td>' +
@@ -121,7 +122,47 @@
         '<td>' + esc(r.location || '—') + '</td>' +
         '<td class="skills-cell">' + esc(r.details || '') + '</td>' +
         '<td>' + reqStatusBadge(r.status) + '</td>' +
+        '<td><button class="mini-btn" data-chat="' + esc(r.id) + '" data-name="' + esc(r.homeowner_name || 'Homeowner') + '">💬 Chat</button></td>' +
       '</tr>';
     }).join('');
+
+    tbody.querySelectorAll('[data-chat]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        openChat(b.getAttribute('data-chat'), b.getAttribute('data-name'));
+      });
+    });
+  }
+
+  /* ---- Chat modal (provider side) ---- */
+  var chatModal = document.getElementById('chatModal');
+  var chatWith = document.getElementById('chatWith');
+  var chatMount = document.getElementById('chatMount');
+  var chatWidget = null;
+  var providerName = '';
+
+  AUTH.getProfile().then(function (p) { providerName = (p && (p.company || p.full_name)) || 'Provider'; });
+
+  function openChat(requestId, homeownerName) {
+    if (chatWidget) chatWidget.stop();
+    chatWith.textContent = 'Conversation with ' + (homeownerName || 'homeowner');
+    chatMount.innerHTML = '';
+    chatModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    if (window.LEBOKHU_CHAT) {
+      chatWidget = window.LEBOKHU_CHAT.mount({
+        container: chatMount,
+        requestId: requestId,
+        sender: 'provider',
+        senderName: providerName
+      });
+    }
+  }
+  function closeChat() {
+    if (chatWidget) { chatWidget.stop(); chatWidget = null; }
+    chatModal.hidden = true; document.body.style.overflow = '';
+  }
+  if (chatModal) {
+    chatModal.querySelectorAll('[data-cclose]').forEach(function (el) { el.addEventListener('click', closeChat); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeChat(); });
   }
 })();

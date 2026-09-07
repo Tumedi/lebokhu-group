@@ -280,7 +280,7 @@
             <thead>
               <tr>
                 <th>Date</th><th>Homeowner</th><th>Contact</th><th>Service</th>
-                <th>Provider</th><th>Area</th><th>Details</th><th>Status</th><th>Update</th>
+                <th>Provider</th><th>Area</th><th>Details</th><th>Status</th><th>Update</th><th>Chat</th>
               </tr>
             </thead>
             <tbody id="reqTbody"></tbody>
@@ -347,8 +347,20 @@
     </div>
   </div>
 
+  <!-- ===== CHAT MODAL (admin view) ===== -->
+  <div class="modal" id="admChatModal" hidden>
+    <div class="modal-backdrop" data-acclose></div>
+    <div class="modal-card match-card" role="dialog" aria-modal="true" aria-labelledby="admChatTitle">
+      <button class="modal-close" data-acclose aria-label="Close">&times;</button>
+      <h3 id="admChatTitle">Conversation</h3>
+      <p class="modal-role" id="admChatWith"></p>
+      <div id="admChatMount"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
+  <script src="js/chat.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

@@ -135,6 +135,10 @@
     reqProvider.textContent = (p.full_name || '') + ' — ' + (p.service || '');
     reqStatus.textContent = ''; reqStatus.className = 'form-status';
     reqForm.reset();
+    // Reset any previous chat state (form was hidden after a prior submission)
+    reqForm.style.display = '';
+    var chatArea = document.getElementById('reqChatArea');
+    if (chatArea) { chatArea.hidden = true; chatArea.innerHTML = ''; }
     modal.hidden = false;
     document.body.style.overflow = 'hidden';
   }
@@ -183,16 +187,14 @@
     var original = btn.textContent;
     btn.disabled = true; btn.textContent = 'Sending…';
 
-    client.from(CFG.REQUESTS_TABLE).insert([record]).then(function (res) {
+    client.from(CFG.REQUESTS_TABLE).insert([record]).select('id, access_token').then(function (res) {
       if (res.error) throw new Error(res.error.message);
       // Fire notification email (optional Edge Function) — non-blocking
       sendRequestEmail(record, currentProvider);
-      reqStatus.textContent = 'Thank you, ' + record.homeowner_name +
-        '! Your request has been sent. ' + (currentProvider.full_name || 'The provider') +
-        ' or our team will contact you soon.';
+      var row = res.data && res.data[0];
+      reqStatus.textContent = 'Thank you, ' + record.homeowner_name + '! Your request has been sent.';
       reqStatus.className = 'form-status ok';
-      reqForm.reset();
-      setTimeout(closeRequest, 2500);
+      if (row && row.id && row.access_token) openChat(row.id, row.access_token, record.homeowner_name);
     }).catch(function (err) {
       reqStatus.textContent = 'Sorry, could not send: ' + err.message +
         '. Please try again or call ' + (currentProvider.phone || 'us') + '.';
@@ -201,6 +203,38 @@
       btn.disabled = false; btn.textContent = original;
     });
   });
+
+  // After a request is sent, reveal an inline chat with the provider + a private link.
+  var reqFormWrap = reqForm;
+  function openChat(requestId, token, name) {
+    var link = location.origin + location.pathname.replace(/services-directory\.html$/, 'chat.html') +
+      '?r=' + encodeURIComponent(requestId) + '&t=' + encodeURIComponent(token);
+    // Hide the form; show chat + link inside the modal
+    reqFormWrap.style.display = 'none';
+    var host = document.getElementById('reqChatArea');
+    host.hidden = false;
+    host.innerHTML =
+      '<p class="chat-intro">💬 You can now chat directly with <strong>' + esc(currentProvider.full_name || 'your provider') + '</strong>. ' +
+      'Bookmark this private link to return to the conversation:</p>' +
+      '<div class="chat-link"><input type="text" readonly value="' + esc(link) + '" id="chatLinkInput">' +
+      '<button type="button" class="btn btn-outline btn-sm" id="copyChatLink">Copy</button></div>' +
+      '<div id="reqChatMount"></div>';
+    var copyBtn = document.getElementById('copyChatLink');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      var inp = document.getElementById('chatLinkInput');
+      inp.select();
+      try { navigator.clipboard.writeText(inp.value); copyBtn.textContent = 'Copied ✓'; }
+      catch (e) { document.execCommand && document.execCommand('copy'); copyBtn.textContent = 'Copied ✓'; }
+    });
+    if (window.LEBOKHU_CHAT) {
+      window.LEBOKHU_CHAT.mount({
+        container: document.getElementById('reqChatMount'),
+        requestId: requestId,
+        sender: 'homeowner',
+        senderName: name || 'Homeowner'
+      });
+    }
+  }
 
   /* ---- Reviews modal ---- */
   var revModal = document.getElementById('revModal');

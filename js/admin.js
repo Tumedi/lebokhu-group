@@ -1117,11 +1117,46 @@
         '<td class="skills-cell">' + esc(r.details || '') + '</td>' +
         '<td>' + reqBadge(r.status) + '</td>' +
         '<td><select class="status-select" data-rq="' + esc(r.id) + '">' + opts + '</select></td>' +
+        '<td><button class="mini-btn" data-rq-chat="' + esc(r.id) + '" data-rq-who="' +
+          esc((r.homeowner_name || 'homeowner') + ' ↔ ' + (r.provider_name || 'provider')) + '">💬 Chat</button></td>' +
       '</tr>';
     }).join('');
     tbody.querySelectorAll('[data-rq]').forEach(function (sel) {
       sel.addEventListener('change', function () { setReqStatus(sel.getAttribute('data-rq'), sel.value); });
     });
+    tbody.querySelectorAll('[data-rq-chat]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        openAdminChat(b.getAttribute('data-rq-chat'), b.getAttribute('data-rq-who'));
+      });
+    });
+  }
+
+  /* ---- Admin chat modal ---- */
+  var admChatModal = document.getElementById('admChatModal');
+  var admChatWith = document.getElementById('admChatWith');
+  var admChatMount = document.getElementById('admChatMount');
+  var admChatWidget = null;
+  function openAdminChat(requestId, who) {
+    if (!admChatModal || !window.LEBOKHU_CHAT) return;
+    if (admChatWidget) admChatWidget.stop();
+    admChatWith.textContent = who || '';
+    admChatMount.innerHTML = '';
+    admChatModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    admChatWidget = window.LEBOKHU_CHAT.mount({
+      container: admChatMount,
+      requestId: requestId,
+      sender: 'admin',
+      senderName: 'LeBoKhu Group'
+    });
+  }
+  function closeAdminChat() {
+    if (admChatWidget) { admChatWidget.stop(); admChatWidget = null; }
+    if (admChatModal) admChatModal.hidden = true;
+    document.body.style.overflow = '';
+  }
+  if (admChatModal) {
+    admChatModal.querySelectorAll('[data-acclose]').forEach(function (el) { el.addEventListener('click', closeAdminChat); });
   }
   function setReqStatus(id, status) {
     client.from(CFG.REQUESTS_TABLE).update({ status: status }).eq('id', id).then(function (res) {

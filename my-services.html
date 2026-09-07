@@ -49,7 +49,7 @@
         <table class="data-table" id="table">
           <thead>
             <tr>
-              <th>Date</th><th>Homeowner</th><th>Contact</th><th>Area</th><th>Details</th><th>Status</th>
+              <th>Date</th><th>Homeowner</th><th>Contact</th><th>Area</th><th>Details</th><th>Status</th><th>Chat</th>
             </tr>
           </thead>
           <tbody id="tbody"></tbody>
@@ -61,9 +61,21 @@
     </div>
   </main>
 
+  <!-- ===== CHAT MODAL ===== -->
+  <div class="modal" id="chatModal" hidden>
+    <div class="modal-backdrop" data-cclose></div>
+    <div class="modal-card match-card" role="dialog" aria-modal="true" aria-labelledby="chatTitle">
+      <button class="modal-close" data-cclose aria-label="Close">&times;</button>
+      <h3 id="chatTitle">Chat</h3>
+      <p class="modal-role" id="chatWith"></p>
+      <div id="chatMount"></div>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase-config.js"></script>
   <script src="js/auth.js"></script>
+  <script src="js/chat.js"></script>
   <script src="js/my-services.js"></script>
 </body>
 </html>

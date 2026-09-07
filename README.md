@@ -233,3 +233,24 @@ Moving/Transport · Tiling · Carpentry · Security/Fencing · Other
 supabase functions deploy send-service-request-email --no-verify-jwt
 ```
 (Homeowners submit without logging in, so this one needs `--no-verify-jwt`.)
+
+
+## 💬 Homeowner ↔ Provider Chat
+
+Each service request now has a private conversation thread so homeowners and providers can
+message each other directly.
+
+### One-time setup
+Run **`supabase-chat.sql`** in Supabase → SQL Editor (after `supabase-services.sql`). It adds a
+`messages` table, an `access_token` on `service_requests`, RLS, and a `get_request_by_token()`
+lookup for the homeowner's private link.
+
+### How it works
+- **Homeowner** submits a service request → an inline chat opens immediately, plus a **private
+  link** (`chat.html?r=<id>&t=<token>`) they can bookmark to return to the conversation. No login needed.
+- **Provider** sees a **💬 Chat** button per request in `my-services.html` and replies from there.
+- **Admin** can open any conversation from the **Service Requests** tab (💬 Chat button).
+- Messages poll every ~4 seconds for near real-time updates.
+
+Privacy: the homeowner's thread is protected by an unguessable token in their link, so
+conversations stay private without requiring the homeowner to create an account.
