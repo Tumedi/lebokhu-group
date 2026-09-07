@@ -61,7 +61,10 @@
         '<div class="chat-messages" data-chat-messages><p class="muted">Loading messages…</p></div>' +
         (readOnly ? '' :
         '<form class="chat-input" data-chat-form>' +
-          '<input type="text" placeholder="Type a message…" data-chat-text autocomplete="off" required>' +
+          '<button type="button" class="chat-tool" data-chat-photo title="Share a photo">📷</button>' +
+          '<button type="button" class="chat-tool" data-chat-loc title="Share my location">📍</button>' +
+          '<input type="file" accept="image/*" data-chat-file hidden>' +
+          '<input type="text" placeholder="Type a message…" data-chat-text autocomplete="off">' +
           '<button type="submit" class="btn btn-primary btn-sm">Send</button>' +
         '</form>') +
       '</div>';
@@ -91,8 +94,19 @@
       }
       msgsEl.innerHTML = rows.map(function (m) {
         var mine = m.sender === sender;
+        var inner;
+        if (m.attachment_type === 'image' && m.attachment_url) {
+          inner = '<a href="' + esc(m.attachment_url) + '" target="_blank" rel="noopener">' +
+            '<img class="chat-img" src="' + esc(m.attachment_url) + '" alt="Shared photo" loading="lazy"></a>' +
+            (m.body && m.body !== '[photo]' ? '<div class="chat-cap">' + esc(m.body) + '</div>' : '');
+        } else if (m.attachment_type === 'location') {
+          var url = m.attachment_url || m.body;
+          inner = '<a class="chat-loc" href="' + esc(url) + '" target="_blank" rel="noopener">📍 View shared location</a>';
+        } else {
+          inner = esc(m.body);
+        }
         return '<div class="chat-msg ' + (mine ? 'mine' : 'theirs') + '">' +
-          '<div class="chat-bubble">' + esc(m.body) + '</div>' +
+          '<div class="chat-bubble">' + inner + '</div>' +
           '<div class="chat-meta">' + esc(m.sender_name || m.sender) + ' · ' + esc(fmtTime(m.created_at)) + '</div>' +
         '</div>';
       }).join('');
@@ -126,24 +140,80 @@
       }).catch(function () {});
     }
 
+    // Insert a message (text, image, or location) and refresh.
+    function insertMessage(fields, previewText) {
+      var record = {
+        request_id: requestId,
+        sender: sender,
+        sender_name: senderName,
+        body: fields.body || '',
+        attachment_url: fields.attachment_url || null,
+        attachment_type: fields.attachment_type || null
+      };
+      return client.from(CFG.MESSAGES_TABLE).insert([record]).then(function (res) {
+        if (res.error) { alert('Message failed: ' + res.error.message); return false; }
+        lastCount = -1; load();
+        notify(previewText || fields.body || '');
+        return true;
+      });
+    }
+
     if (form) {
+      var input = form.querySelector('[data-chat-text]');
+      var fileInput = form.querySelector('[data-chat-file]');
+      var photoBtn = form.querySelector('[data-chat-photo]');
+      var locBtn = form.querySelector('[data-chat-loc]');
+
+      // Text send
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-        var input = form.querySelector('[data-chat-text]');
         var body = (input.value || '').trim();
         if (!body) return;
         input.value = '';
-        client.from(CFG.MESSAGES_TABLE).insert([{
-          request_id: requestId,
-          sender: sender,
-          sender_name: senderName,
-          body: body
-        }]).then(function (res) {
-          if (res.error) { alert('Message failed: ' + res.error.message); input.value = body; return; }
-          lastCount = -1; load();
-          notify(body);
-        });
+        insertMessage({ body: body });
       });
+
+      // Photo: open file picker, upload to storage, send as image message
+      if (photoBtn && fileInput) {
+        photoBtn.addEventListener('click', function () { fileInput.click(); });
+        fileInput.addEventListener('change', function () {
+          var f = fileInput.files && fileInput.files[0];
+          if (!f) return;
+          if (f.size > 5 * 1024 * 1024) { alert('Image is larger than 5 MB. Please choose a smaller one.'); fileInput.value = ''; return; }
+          photoBtn.disabled = true; photoBtn.textContent = '⏳';
+          var safe = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+          var path = requestId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '_' + safe;
+          client.storage.from(CFG.CHAT_MEDIA_BUCKET).upload(path, f, { cacheControl: '3600', upsert: false })
+            .then(function (res) {
+              if (res.error) throw new Error(res.error.message);
+              var pub = client.storage.from(CFG.CHAT_MEDIA_BUCKET).getPublicUrl(path);
+              return insertMessage({
+                body: '[photo]',
+                attachment_url: (pub.data && pub.data.publicUrl) || '',
+                attachment_type: 'image'
+              }, '📷 Photo');
+            })
+            .catch(function (err) { alert('Could not share photo: ' + err.message); })
+            .then(function () { photoBtn.disabled = false; photoBtn.textContent = '📷'; fileInput.value = ''; });
+        });
+      }
+
+      // Location: get GPS coords → Google Maps link, send as location message
+      if (locBtn) {
+        locBtn.addEventListener('click', function () {
+          if (!navigator.geolocation) { alert('Location sharing is not supported on this device.'); return; }
+          locBtn.disabled = true; locBtn.textContent = '⏳';
+          navigator.geolocation.getCurrentPosition(function (pos) {
+            var lat = pos.coords.latitude.toFixed(6), lng = pos.coords.longitude.toFixed(6);
+            var mapUrl = 'https://www.google.com/maps?q=' + lat + ',' + lng;
+            insertMessage({ body: mapUrl, attachment_url: mapUrl, attachment_type: 'location' }, '📍 Location')
+              .then(function () { locBtn.disabled = false; locBtn.textContent = '📍'; });
+          }, function (err) {
+            alert('Could not get your location: ' + err.message + '. Please allow location access.');
+            locBtn.disabled = false; locBtn.textContent = '📍';
+          }, { enableHighAccuracy: true, timeout: 10000 });
+        });
+      }
     }
 
     load();

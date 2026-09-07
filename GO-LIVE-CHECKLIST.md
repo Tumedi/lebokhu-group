@@ -24,6 +24,7 @@ file wasn't run yet.
 - [ ] `supabase-services-enhance.sql` — provider photos, star ratings, reviews
 - [ ] `supabase-chat.sql` — messages table + private chat token
 - [ ] `supabase-chat-notify.sql` — chat read-tracking (unread badges)
+- [ ] `supabase-chat-media.sql` — chat image sharing + location (chat-media bucket)
 
 ✅ After each: you should see **"Success. No rows returned."**
 

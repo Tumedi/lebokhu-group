@@ -265,3 +265,11 @@ Run **`supabase-chat-notify.sql`** (after `supabase-chat.sql`) to add read-track
   ```bash
   supabase functions deploy send-chat-notification --no-verify-jwt
   ```
+
+### Sharing photos & location in chat
+Run **`supabase-chat-media.sql`** (after `supabase-chat.sql`) to add attachment columns +
+the `chat-media` storage bucket.
+- **📷 Photo** button — anyone in a chat can share an image (e.g. a provider showing their
+  work). Images upload to the `chat-media` bucket (max 5 MB) and appear inline.
+- **📍 Location** button — shares the sender's current GPS location as a Google Maps link
+  (great for homeowners giving directions). Requires the browser's location permission.
