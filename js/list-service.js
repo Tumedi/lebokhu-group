@@ -26,6 +26,39 @@
   function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
   function setVal(id, v) { var el = document.getElementById(id); if (el && v != null) el.value = v; }
 
+  var MAX_PHOTO = 2 * 1024 * 1024; // 2 MB
+  var existingPhotoUrl = null;
+  var photoInput = document.getElementById('photo');
+  var photoPreview = document.getElementById('photoPreview');
+  if (photoInput) {
+    photoInput.addEventListener('change', function () {
+      var f = photoInput.files && photoInput.files[0];
+      if (!f) return;
+      if (f.size > MAX_PHOTO) {
+        status.textContent = 'Photo is larger than 2 MB. Please choose a smaller image.';
+        status.className = 'form-status bad';
+        photoInput.value = '';
+        return;
+      }
+      photoPreview.src = URL.createObjectURL(f);
+      photoPreview.hidden = false;
+    });
+  }
+
+  function uploadPhoto() {
+    var f = photoInput && photoInput.files && photoInput.files[0];
+    if (!f) return Promise.resolve(existingPhotoUrl);   // keep existing if none chosen
+    var safe = f.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    var path = profile.id + '/' + Date.now() + '_' + safe;
+    return client.storage.from(CFG.PHOTO_BUCKET)
+      .upload(path, f, { cacheControl: '3600', upsert: true })
+      .then(function (res) {
+        if (res.error) { console.warn('photo upload failed:', res.error.message); return existingPhotoUrl; }
+        var pub = client.storage.from(CFG.PHOTO_BUCKET).getPublicUrl(path);
+        return (pub.data && pub.data.publicUrl) || existingPhotoUrl;
+      }).catch(function () { return existingPhotoUrl; });
+  }
+
   AUTH.requireAuth('provider').then(function (ctx) {
     profile = ctx.profile;
     AUTH.renderHeader('#mainNav');
@@ -41,6 +74,8 @@
       setVal('fullName', p.full_name); setVal('service', p.service); setVal('location', p.location);
       setVal('phone', p.phone); setVal('whatsapp', p.whatsapp); setVal('rate', p.rate);
       setVal('experience', p.experience); setVal('bio', p.bio);
+      existingPhotoUrl = p.photo_url || null;
+      if (existingPhotoUrl && photoPreview) { photoPreview.src = existingPhotoUrl; photoPreview.hidden = false; }
       var s = form.querySelector('button[type="submit"]'); if (s) s.textContent = 'Update Listing';
       status.textContent = 'You already have a listing (' + (p.status || 'pending') + '). Edit and resubmit below.';
       status.className = 'form-status';
@@ -71,6 +106,11 @@
       return;
     }
 
+    var btn = form.querySelector('button[type="submit"]');
+    var original = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Submitting…';
+
+    uploadPhoto().then(function (photoUrl) {
     var record = {
       user_id: profile.id,
       full_name: val('fullName'),
@@ -82,12 +122,9 @@
       rate: val('rate'),
       experience: val('experience'),
       bio: val('bio'),
+      photo_url: photoUrl || null,
       status: 'pending'  // resubmitting sends it back to review
     };
-
-    var btn = form.querySelector('button[type="submit"]');
-    var original = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Submitting…';
 
     var op = existingId
       ? client.from(CFG.PROVIDERS_TABLE).update(record).eq('id', existingId)
@@ -104,5 +141,6 @@
       status.className = 'form-status bad';
       btn.disabled = false; btn.textContent = original;
     });
+    }); // end uploadPhoto
   });
 })();

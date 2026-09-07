@@ -26,18 +26,41 @@
   }
   function digits(s) { return String(s || '').replace(/[^0-9+]/g, ''); }
 
+  // Render stars for an average rating (0–5), supporting halves.
+  function starsHtml(avg) {
+    avg = Number(avg) || 0;
+    var out = '';
+    for (var i = 1; i <= 5; i++) {
+      if (avg >= i) out += '<span class="star full">★</span>';
+      else if (avg >= i - 0.5) out += '<span class="star half">★</span>';
+      else out += '<span class="star empty">★</span>';
+    }
+    return out;
+  }
+  function ratingLine(p) {
+    var n = p.rating_count || 0;
+    if (!n) return '<div class="prov-rating"><span class="stars">' + starsHtml(0) + '</span>' +
+      '<span class="rating-text">No reviews yet</span></div>';
+    return '<div class="prov-rating"><span class="stars">' + starsHtml(p.rating_avg) + '</span>' +
+      '<span class="rating-text">' + Number(p.rating_avg).toFixed(1) + ' (' + n + (n === 1 ? ' review' : ' reviews') + ')</span></div>';
+  }
+
   function providerCard(p, idx) {
     var phone = p.phone ? '<a class="prov-contact" href="tel:' + esc(digits(p.phone)) + '">📞 ' + esc(p.phone) + '</a>' : '';
     var wa = p.whatsapp ? '<a class="prov-contact" target="_blank" rel="noopener" href="https://wa.me/' + esc(digits(p.whatsapp).replace(/^0/, '27')) + '">💬 WhatsApp</a>' : '';
+    var avatar = p.photo_url
+      ? '<img class="prov-photo" src="' + esc(p.photo_url) + '" alt="' + esc(p.full_name) + '">'
+      : '<span class="prov-avatar">' + esc((p.full_name || '?').charAt(0).toUpperCase()) + '</span>';
     return '' +
       '<article class="provider-card">' +
         '<div class="prov-head">' +
-          '<span class="prov-avatar">' + esc((p.full_name || '?').charAt(0).toUpperCase()) + '</span>' +
+          avatar +
           '<div>' +
             '<h3>' + esc(p.full_name) + '</h3>' +
             '<span class="badge badge-level">' + esc(p.service) + '</span>' +
           '</div>' +
         '</div>' +
+        ratingLine(p) +
         '<p class="prov-meta">' +
           (p.location ? '<span>📍 ' + esc(p.location) + '</span>' : '') +
           (p.rate ? '<span>💰 ' + esc(p.rate) + '</span>' : '') +
@@ -46,6 +69,7 @@
         (p.bio ? '<p class="prov-bio">' + esc(p.bio) + '</p>' : '') +
         '<div class="prov-actions">' +
           phone + wa +
+          '<button class="btn btn-outline btn-sm" data-rev="' + idx + '">★ Reviews</button>' +
           '<button class="btn btn-primary btn-sm" data-req="' + idx + '">Request Service</button>' +
         '</div>' +
       '</article>';
@@ -69,6 +93,9 @@
 
     listEl.querySelectorAll('[data-req]').forEach(function (btn) {
       btn.addEventListener('click', function () { openRequest(VIEW[parseInt(btn.getAttribute('data-req'), 10)]); });
+    });
+    listEl.querySelectorAll('[data-rev]').forEach(function (btn) {
+      btn.addEventListener('click', function () { openReviews(VIEW[parseInt(btn.getAttribute('data-rev'), 10)]); });
     });
   }
 
@@ -174,6 +201,98 @@
       btn.disabled = false; btn.textContent = original;
     });
   });
+
+  /* ---- Reviews modal ---- */
+  var revModal = document.getElementById('revModal');
+  var revProviderEl = document.getElementById('revProvider');
+  var revListEl = document.getElementById('revList');
+  var revForm = document.getElementById('revForm');
+  var revStatus = document.getElementById('revStatus');
+  var revStarsEl = document.getElementById('revStars');
+  var currentRevProvider = null;
+  var chosenRating = 0;
+
+  function paintStarInput() {
+    if (!revStarsEl) return;
+    var spans = revStarsEl.querySelectorAll('.star');
+    spans.forEach(function (s, i) { s.classList.toggle('full', i < chosenRating); s.classList.toggle('empty', i >= chosenRating); });
+  }
+  if (revStarsEl) {
+    revStarsEl.querySelectorAll('.star').forEach(function (s, i) {
+      s.addEventListener('click', function () { chosenRating = i + 1; paintStarInput(); });
+    });
+  }
+
+  function openReviews(p) {
+    currentRevProvider = p;
+    chosenRating = 0; paintStarInput();
+    revProviderEl.textContent = (p.full_name || '') + ' — ' + (p.service || '');
+    revStatus.textContent = ''; revStatus.className = 'form-status';
+    if (revForm) revForm.reset();
+    revListEl.innerHTML = '<p class="muted">Loading reviews…</p>';
+    revModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+
+    var client = CFG.client();
+    client.from(CFG.REVIEWS_TABLE).select('*').eq('provider_id', p.id)
+      .order('created_at', { ascending: false }).limit(50)
+      .then(function (res) {
+        var rows = (res && res.data) || [];
+        if (!rows.length) { revListEl.innerHTML = '<p class="muted">No reviews yet. Be the first to leave one!</p>'; return; }
+        revListEl.innerHTML = rows.map(function (r) {
+          return '<div class="review-item">' +
+            '<div class="review-top"><span class="stars">' + starsHtml(r.rating) + '</span>' +
+            '<strong>' + esc(r.reviewer_name || 'Anonymous') + '</strong></div>' +
+            (r.comment ? '<p>' + esc(r.comment) + '</p>' : '') +
+          '</div>';
+        }).join('');
+      });
+  }
+  function closeReviews() { revModal.hidden = true; document.body.style.overflow = ''; }
+  if (revModal) {
+    revModal.querySelectorAll('[data-vclose]').forEach(function (el) { el.addEventListener('click', closeReviews); });
+  }
+
+  if (revForm) {
+    revForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      revStatus.textContent = ''; revStatus.className = 'form-status';
+      if (!currentRevProvider) return;
+      if (!chosenRating) {
+        revStatus.textContent = 'Please tap a star to choose a rating.';
+        revStatus.className = 'form-status bad';
+        return;
+      }
+      var name = document.getElementById('revName').value.trim();
+      var comment = document.getElementById('revComment').value.trim();
+      var client = CFG.client();
+      var btn = revForm.querySelector('button[type="submit"]');
+      var original = btn.textContent; btn.disabled = true; btn.textContent = 'Posting…';
+
+      client.from(CFG.REVIEWS_TABLE).insert([{
+        provider_id: currentRevProvider.id,
+        rating: chosenRating,
+        reviewer_name: name,
+        comment: comment
+      }]).then(function (res) {
+        if (res.error) throw new Error(res.error.message);
+        revStatus.textContent = '✓ Thank you for your review!';
+        revStatus.className = 'form-status ok';
+        revForm.reset(); chosenRating = 0; paintStarInput();
+        // Refresh directory (updated averages) + this list after a moment
+        setTimeout(function () { load(); openReviewsRefresh(currentRevProvider.id); }, 800);
+      }).catch(function (err) {
+        revStatus.textContent = 'Could not post review: ' + err.message;
+        revStatus.className = 'form-status bad';
+      }).then(function () { btn.disabled = false; btn.textContent = original; });
+    });
+  }
+  // Re-open the review list for the same provider after posting (fetch fresh row)
+  function openReviewsRefresh(providerId) {
+    var client = CFG.client();
+    client.from(CFG.PROVIDERS_TABLE).select('*').eq('id', providerId).single()
+      .then(function (res) { if (res.data) openReviews(res.data); });
+  }
 
   function sendRequestEmail(record, provider) {
     var client = CFG.client();

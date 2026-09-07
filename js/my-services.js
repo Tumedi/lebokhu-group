@@ -63,9 +63,12 @@
             '<a href="list-service.html">Create your listing</a> to appear in the directory.</div>';
         } else {
           box.innerHTML = listings.map(function (p) {
+            var photo = p.photo_url ? '<img src="' + esc(p.photo_url) + '" alt="" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)">' : '';
+            var rating = p.rating_count ? ' &middot; ⭐ ' + Number(p.rating_avg).toFixed(1) + ' (' + p.rating_count + ')' : '';
             return '<div class="about-card" style="margin-bottom:16px">' +
               '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">' +
-                '<h3 style="margin:0">' + esc(p.service) + ' — ' + esc(p.full_name) + '</h3>' +
+                '<h3 style="margin:0;display:flex;align-items:center;gap:10px">' + photo +
+                  '<span>' + esc(p.service) + ' — ' + esc(p.full_name) + rating + '</span></h3>' +
                 provStatusBadge(p.status) +
               '</div>' +
               '<p class="prov-meta" style="margin-top:10px">' +

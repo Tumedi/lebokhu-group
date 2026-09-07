@@ -14,7 +14,9 @@ window.LEBOKHU_SUPABASE = {
   POSTS_TABLE: 'job_posts',
   PROVIDERS_TABLE: 'service_providers',
   REQUESTS_TABLE: 'service_requests',
-  BUCKET: 'cvs'
+  REVIEWS_TABLE: 'reviews',
+  BUCKET: 'cvs',
+  PHOTO_BUCKET: 'provider-photos'
 };
 
 // Helper: is Supabase configured yet?

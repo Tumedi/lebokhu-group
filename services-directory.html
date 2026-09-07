@@ -129,6 +129,42 @@
     </div>
   </div>
 
+  <!-- ===== REVIEWS MODAL ===== -->
+  <div class="modal" id="revModal" hidden>
+    <div class="modal-backdrop" data-vclose></div>
+    <div class="modal-card match-card" role="dialog" aria-modal="true" aria-labelledby="revTitle">
+      <button class="modal-close" data-vclose aria-label="Close">&times;</button>
+      <h3 id="revTitle">Reviews</h3>
+      <p class="modal-role">Provider: <strong id="revProvider"></strong></p>
+
+      <div class="review-list" id="revList"></div>
+
+      <h4 class="form-section-title" style="margin-top:18px">Leave a review</h4>
+      <form id="revForm" novalidate>
+        <div class="field">
+          <label>Your rating *</label>
+          <div class="star-input" id="revStars" aria-label="Choose a rating">
+            <span class="star empty" role="button" tabindex="0">★</span>
+            <span class="star empty" role="button" tabindex="0">★</span>
+            <span class="star empty" role="button" tabindex="0">★</span>
+            <span class="star empty" role="button" tabindex="0">★</span>
+            <span class="star empty" role="button" tabindex="0">★</span>
+          </div>
+        </div>
+        <div class="field">
+          <label for="revName">Your name (optional)</label>
+          <input type="text" id="revName">
+        </div>
+        <div class="field">
+          <label for="revComment">Comment (optional)</label>
+          <textarea id="revComment" rows="3" placeholder="Share your experience with this provider."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Post Review</button>
+        <p class="form-status" id="revStatus" role="status" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="container footer-inner">
       <div class="footer-brand">

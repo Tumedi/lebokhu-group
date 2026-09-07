@@ -988,7 +988,41 @@
       var p = PROVIDERS.filter(function (x) { return x.id === id; })[0];
       if (p) p.status = status;
       applyProvFilters(); renderProvStats();
+
+      // On approval, offer to notify the provider their listing is live
+      if (status === 'approved' && p && p.email &&
+          confirm('Provider approved ✓\n\nEmail ' + p.email + ' to let them know their listing is live?')) {
+        sendProviderApprovedAuto(p).then(function (r) {
+          if (r.sent) alert('✓ ' + p.email + ' has been notified.');
+          else openProviderApprovedMailto(p);
+        });
+      }
     });
+  }
+
+  function sendProviderApprovedAuto(p) {
+    if (!p || !p.email || !client.functions) return Promise.resolve({ sent: false });
+    return client.functions.invoke('send-provider-approved', {
+      body: {
+        provider_email: p.email,
+        provider_name: p.full_name || '',
+        service: p.service || '',
+        location: p.location || ''
+      }
+    }).then(function (res) {
+      return { sent: !!(res && !res.error && res.data && res.data.success) };
+    }).catch(function () { return { sent: false }; });
+  }
+
+  function openProviderApprovedMailto(p) {
+    var subject = 'Your service listing is approved — LeBoKhu Group';
+    var body = 'Hi ' + (p.full_name || 'there') + ',\n\n' +
+      'Great news! Your service listing (' + (p.service || '') + ') has been approved and is now ' +
+      'live in the LeBoKhu Group directory. Homeowners in your area can now find and contact you.\n\n' +
+      'View the directory: https://tumedi.github.io/lebokhu-group/services-directory.html\n\n' +
+      'Kind regards,\nLeBoKhu Group\nTbmadihlaba@gmail.com | 081 798 6359';
+    window.location.href = 'mailto:' + encodeURIComponent(p.email) +
+      '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
   function delProvider(id) {
     if (!confirm('Delete this provider listing permanently?')) return;

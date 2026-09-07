@@ -477,3 +477,27 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .prov-contact{font-weight:700;font-size:.86rem;color:var(--teal);text-decoration:none;
   border:1px solid var(--line);padding:8px 12px;border-radius:999px}
 .prov-contact:hover{background:var(--bg-alt)}
+.prov-photo{width:52px;height:52px;border-radius:50%;object-fit:cover;flex:none;border:2px solid var(--gold)}
+
+/* Photo upload (list-service) */
+.photo-upload{display:flex;align-items:center;gap:14px}
+.photo-preview{width:72px;height:72px;border-radius:50%;object-fit:cover;border:2px solid var(--gold)}
+
+/* Star ratings */
+.prov-rating{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.stars{letter-spacing:1px;font-size:1rem;line-height:1}
+.star{color:#d8dee5}
+.star.full{color:#E4A020}
+.star.half{background:linear-gradient(90deg,#E4A020 50%,#d8dee5 50%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rating-text{font-size:.82rem;color:var(--slate);font-weight:600}
+
+/* Star input (review form) */
+.star-input{display:flex;gap:6px;font-size:1.9rem;cursor:pointer}
+.star-input .star{transition:transform .1s}
+.star-input .star:hover{transform:scale(1.15)}
+
+/* Reviews list */
+.review-list{max-height:220px;overflow-y:auto;margin:6px 0 4px;display:grid;gap:12px}
+.review-item{border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px}
+.review-top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.review-item p{color:var(--slate);font-size:.9rem;margin:0}
