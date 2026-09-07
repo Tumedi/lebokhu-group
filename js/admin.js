@@ -19,6 +19,9 @@
   var logoutBtn = document.getElementById('logoutBtn');
   var adminUser = document.getElementById('adminUser');
 
+  // Always start with Log out hidden — only shown once a session is confirmed.
+  if (logoutBtn) logoutBtn.hidden = true;
+
   var ALL = [];      // all rows
   var VIEW = [];     // filtered rows
 
