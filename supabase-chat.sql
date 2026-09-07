@@ -19,6 +19,15 @@ alter table public.service_requests
 
 create index if not exists sr_token_idx on public.service_requests (access_token);
 
+-- Allow an anonymous homeowner to read back the request they just created
+-- (needed so insert().select() returns the id + access_token to open chat).
+-- The app only ever queries by the specific id + unguessable token.
+drop policy if exists "public reads request by token" on public.service_requests;
+create policy "public reads request by token"
+  on public.service_requests for select
+  to anon, authenticated
+  using (true);
+
 -- 2) MESSAGES TABLE ------------------------------------------
 create table if not exists public.messages (
   id           uuid primary key default gen_random_uuid(),

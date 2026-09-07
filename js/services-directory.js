@@ -191,10 +191,19 @@
       if (res.error) throw new Error(res.error.message);
       // Fire notification email (optional Edge Function) — non-blocking
       sendRequestEmail(record, currentProvider);
-      var row = res.data && res.data[0];
       reqStatus.textContent = 'Thank you, ' + record.homeowner_name + '! Your request has been sent.';
       reqStatus.className = 'form-status ok';
-      if (row && row.id && row.access_token) openChat(row.id, row.access_token, record.homeowner_name);
+      var row = res.data && res.data[0];
+      if (row && row.id && row.access_token) {
+        openChat(row.id, row.access_token, record.homeowner_name);
+      } else {
+        // RLS may block reading the row back for anon — the request still
+        // saved. Show a clear success without breaking.
+        reqStatus.textContent = 'Thank you, ' + record.homeowner_name +
+          '! Your request has been sent — ' + (currentProvider.full_name || 'the provider') +
+          ' or our team will contact you soon.';
+        setTimeout(closeRequest, 2500);
+      }
     }).catch(function (err) {
       reqStatus.textContent = 'Sorry, could not send: ' + err.message +
         '. Please try again or call ' + (currentProvider.phone || 'us') + '.';
