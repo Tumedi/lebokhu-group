@@ -56,11 +56,16 @@
   }
 
   function denyAccess() {
-    // Not an admin — hide dashboard, show the login view with a clear message,
-    // and sign this session out of the admin context.
+    // Not an admin (e.g. a job seeker or homeowner account) — never show the
+    // dashboard. Hide it, show the login view with a clear message, clear the
+    // form, and sign this session out of the admin context.
     showLogin();
-    loginStatus.textContent = 'This account does not have admin access. ' +
-      'Please log in with an administrator account.';
+    var email = document.getElementById('loginEmail');
+    var pwd = document.getElementById('loginPassword');
+    if (email) email.value = '';
+    if (pwd) pwd.value = '';
+    loginStatus.textContent = 'Access denied: this account is not an administrator. ' +
+      'Job seeker and homeowner accounts cannot open the admin dashboard.';
     loginStatus.className = 'form-status bad';
     client.auth.signOut().catch(function () {});
   }
