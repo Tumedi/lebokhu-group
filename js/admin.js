@@ -40,6 +40,31 @@
   var client = CFG.client();
 
   /* ---------- Session handling ---------- */
+  // Verify the logged-in user is actually an admin before showing the
+  // dashboard. Non-admins are refused (and signed out of this page).
+  function gateAndShow(user) {
+    return client.from('profiles').select('role').eq('id', user.id).single()
+      .then(function (res) {
+        var role = res.data && res.data.role;
+        if (role === 'admin') {
+          showDashboard(user);
+        } else {
+          denyAccess();
+        }
+      })
+      .catch(function () { denyAccess(); });
+  }
+
+  function denyAccess() {
+    // Not an admin — hide dashboard, show the login view with a clear message,
+    // and sign this session out of the admin context.
+    showLogin();
+    loginStatus.textContent = 'This account does not have admin access. ' +
+      'Please log in with an administrator account.';
+    loginStatus.className = 'form-status bad';
+    client.auth.signOut().catch(function () {});
+  }
+
   function showDashboard(user) {
     loginView.hidden = true;
     dashView.hidden = false;
@@ -61,7 +86,7 @@
 
   client.auth.getSession().then(function (res) {
     var session = res.data && res.data.session;
-    if (session) showDashboard(session.user); else showLogin();
+    if (session) gateAndShow(session.user); else showLogin();
   });
 
   loginForm.addEventListener('submit', function (e) {
@@ -80,7 +105,7 @@
     client.auth.signInWithPassword({ email: email, password: password })
       .then(function (res) {
         if (res.error) throw new Error(res.error.message);
-        showDashboard(res.data.user);
+        return gateAndShow(res.data.user);
       })
       .catch(function (err) {
         loginStatus.textContent = 'Login failed: ' + err.message;
