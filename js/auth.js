@@ -26,7 +26,11 @@
     if (role === 'employer') return { href: 'my-posts.html', label: 'My Job Posts' };
     if (role === 'provider') return { href: 'my-services.html', label: 'My Services' };
     if (role === 'homeowner') return { href: 'my-requests.html', label: 'My Requests' };
-    return { href: 'my-applications.html', label: 'My Applications' };
+    if (role === 'admin') return { href: 'admin.html', label: 'Admin Dashboard' };
+    if (role === 'seeker') return { href: 'my-applications.html', label: 'My Applications' };
+    // Unknown / missing role — don't guess a role-specific page (that can
+    // bounce the user back onto a page they're not allowed on). Send home.
+    return { href: 'index.html', label: 'Home' };
   };
 
   AUTH.getSession = function () {
@@ -66,9 +70,14 @@
       }
       return AUTH.getProfile().then(function (profile) {
         if (role && profile && profile.role !== role) {
-          // Logged in but wrong role — send them to their own dashboard
-          alert('This page is for ' + role + ' accounts. Redirecting you to your dashboard.');
-          location.href = AUTH.dashboardFor(profile.role).href;
+          // Logged in but wrong role — send them to their own dashboard.
+          var dest = AUTH.dashboardFor(profile.role);
+          var currentPage = (location.pathname.split('/').pop() || 'index.html').toLowerCase();
+          var destPage = (dest.href.split('/').pop() || '').toLowerCase();
+          // Never bounce the user back onto the SAME page (that caused an
+          // infinite alert loop for roles whose dashboard couldn't be resolved).
+          if (destPage === currentPage) dest = { href: 'index.html', label: 'Home' };
+          location.replace(dest.href);
           return Promise.reject(new Error('wrong-role'));
         }
         return { user: user, profile: profile };
