@@ -86,6 +86,8 @@
   }
 
   // Load portfolio galleries for the visible providers and fill the strips.
+  var galleryByProvider = {};   // providerId -> [image urls] (all of them)
+
   function loadGalleries() {
     var ids = VIEW.map(function (p) { return p.id; });
     if (!ids.length) return;
@@ -94,20 +96,77 @@
       .in('provider_id', ids).order('created_at', { ascending: false })
       .then(function (res) {
         if (res.error || !res.data) return;
-        var byProvider = {};
+        galleryByProvider = {};
         res.data.forEach(function (g) {
-          (byProvider[g.provider_id] = byProvider[g.provider_id] || []).push(g.image_url);
+          (galleryByProvider[g.provider_id] = galleryByProvider[g.provider_id] || []).push(g.image_url);
         });
-        Object.keys(byProvider).forEach(function (pid) {
+        Object.keys(galleryByProvider).forEach(function (pid) {
           var strip = listEl.querySelector('[data-gallery="' + pid + '"]');
           if (!strip) return;
-          var imgs = byProvider[pid].slice(0, 4);
-          strip.innerHTML = imgs.map(function (u) {
-            return '<a href="' + esc(u) + '" target="_blank" rel="noopener"><img src="' + esc(u) + '" alt="Work photo" loading="lazy"></a>';
+          var all = galleryByProvider[pid];
+          var shown = all.slice(0, 4);
+          strip.innerHTML = shown.map(function (u, i) {
+            var extra = (i === 3 && all.length > 4)
+              ? '<span class="gallery-more">+' + (all.length - 4) + '</span>' : '';
+            return '<button type="button" class="gallery-thumb" data-lightbox="' + esc(pid) + '" data-index="' + i + '">' +
+              '<img src="' + esc(u) + '" alt="Work photo" loading="lazy">' + extra + '</button>';
           }).join('');
           strip.hidden = false;
+          strip.querySelectorAll('[data-lightbox]').forEach(function (b) {
+            b.addEventListener('click', function () {
+              openLightbox(b.getAttribute('data-lightbox'), parseInt(b.getAttribute('data-index'), 10));
+            });
+          });
         });
       }).catch(function () {});
+  }
+
+  /* ---- Lightbox: scroll/swipe through a provider's full gallery ---- */
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lbImg');
+  var lbCounter = document.getElementById('lbCounter');
+  var lbImages = [];
+  var lbIndex = 0;
+
+  function showLb() {
+    if (!lbImages.length) return;
+    lbIndex = (lbIndex + lbImages.length) % lbImages.length;
+    if (lbImg) lbImg.src = lbImages[lbIndex];
+    if (lbCounter) lbCounter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
+  }
+  function openLightbox(providerId, index) {
+    lbImages = galleryByProvider[providerId] || [];
+    if (!lbImages.length || !lb) return;
+    lbIndex = index || 0;
+    showLb();
+    lb.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() { if (lb) lb.hidden = true; document.body.style.overflow = ''; }
+  function lbNext() { lbIndex++; showLb(); }
+  function lbPrev() { lbIndex--; showLb(); }
+
+  if (lb) {
+    lb.querySelectorAll('[data-lb-close]').forEach(function (el) { el.addEventListener('click', closeLightbox); });
+    var nextBtn = document.getElementById('lbNext');
+    var prevBtn = document.getElementById('lbPrev');
+    if (nextBtn) nextBtn.addEventListener('click', function (e) { e.stopPropagation(); lbNext(); });
+    if (prevBtn) prevBtn.addEventListener('click', function (e) { e.stopPropagation(); lbPrev(); });
+    document.addEventListener('keydown', function (e) {
+      if (lb.hidden) return;
+      if (e.key === 'Escape') closeLightbox();
+      else if (e.key === 'ArrowRight') lbNext();
+      else if (e.key === 'ArrowLeft') lbPrev();
+    });
+    // Swipe support (touch)
+    var touchX = null;
+    lb.addEventListener('touchstart', function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX;
+      if (dx > 40) lbPrev(); else if (dx < -40) lbNext();
+      touchX = null;
+    }, { passive: true });
   }
 
   function render() {

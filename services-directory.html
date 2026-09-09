@@ -171,6 +171,17 @@
     </div>
   </div>
 
+  <!-- ===== GALLERY LIGHTBOX ===== -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lb-close" data-lb-close aria-label="Close">&times;</button>
+    <button class="lb-nav lb-prev" id="lbPrev" aria-label="Previous">&#10094;</button>
+    <div class="lb-stage" data-lb-close>
+      <img id="lbImg" alt="Provider work photo" onclick="event.stopPropagation()">
+    </div>
+    <button class="lb-nav lb-next" id="lbNext" aria-label="Next">&#10095;</button>
+    <div class="lb-counter" id="lbCounter"></div>
+  </div>
+
   <footer class="site-footer">
     <div class="container footer-inner">
       <div class="footer-brand">
