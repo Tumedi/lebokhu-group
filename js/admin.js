@@ -76,7 +76,7 @@
     logoutBtn.hidden = false;
     adminUser.textContent = user && user.email ? user.email : '';
     loadData();
-    loadPosts();
+    // loadPosts();  // employer job-posting module temporarily disabled
     loadApps();
     loadProviders();
     loadRequests();

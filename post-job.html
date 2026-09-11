@@ -3,22 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Post a Job — LeKhuBo Connect</title>
-  <meta name="description" content="Employers: post a job with LeKhuBo Connect and reach skilled and entry-level job seekers across South Africa.">
+  <title>Job Posting Coming Soon — LeKhuBo Connect</title>
+  <meta name="robots" content="noindex,nofollow">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#0B2038">
-  <link rel="apple-touch-icon" href="assets/icon-192.svg">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="LeKhuBo">
-  <meta name="mobile-web-app-capable" content="yes">
+  <!-- Employer / company job-posting is temporarily disabled while we focus on
+       job seekers and service providers. Send visitors to the homepage. -->
+  <meta http-equiv="refresh" content="6; url=index.html">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-  <!-- ===== HEADER / NAV ===== -->
   <header class="site-header" id="top">
     <div class="container nav-inner">
       <a href="index.html" class="brand" aria-label="LeKhuBo Connect home">
@@ -26,181 +21,35 @@
       </a>
       <nav class="main-nav" id="mainNav" aria-label="Main navigation">
         <a href="index.html#about">About</a>
-        <a href="index.html#services">Services</a>
+        <a href="services-directory.html">Find a Service</a>
         <a href="jobs.html">Jobs</a>
-        <a href="index.html#companies">Companies</a>
-        <a href="index.html#impact">Impact</a>
-        <a href="post-job.html" class="nav-cta active">Post a Job</a>
       </nav>
-      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
     </div>
   </header>
 
-  <!-- ===== PAGE HERO ===== -->
-  <section class="page-hero">
-    <div class="hero-bg" aria-hidden="true"></div>
-    <div class="container">
-      <p class="eyebrow">For Employers</p>
-      <h1>Post a Job</h1>
-      <p class="lead">Tell us who you're looking for and reach our growing pool of skilled and
-        entry-level job seekers. We'll help you find the right people — and help fight youth
-        unemployment in South Africa.</p>
-    </div>
-  </section>
-
-  <!-- ===== POST A JOB FORM ===== -->
   <section class="section">
-    <div class="container narrow">
-      <form class="reg-form" id="jobForm" novalidate
-            action="https://api.web3forms.com/submit"
-            method="POST">
-        <!-- Web3Forms configuration (email alert) -->
-        <input type="hidden" name="access_key" value="bebe08dd-f50a-4a86-8e98-5b79d71df5dc">
-        <input type="hidden" name="subject" value="New Job Post — LeKhuBo Connect">
-        <input type="hidden" name="from_name" value="LeKhuBo Connect Website">
-        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
-
-        <h3 class="form-section-title">Company details</h3>
-        <div class="row">
-          <div class="field">
-            <label for="company">Company name *</label>
-            <input type="text" id="company" name="company" required>
-          </div>
-          <div class="field">
-            <label for="contactName">Contact person</label>
-            <input type="text" id="contactName" name="contact_name">
-          </div>
-        </div>
-        <div class="row">
-          <div class="field">
-            <label for="contactEmail">Contact email *</label>
-            <input type="email" id="contactEmail" name="contact_email" required>
-          </div>
-          <div class="field">
-            <label for="contactPhone">Contact phone</label>
-            <input type="tel" id="contactPhone" name="contact_phone">
-          </div>
-        </div>
-
-        <h3 class="form-section-title">The role</h3>
-        <div class="field">
-          <label for="title">Job title *</label>
-          <input type="text" id="title" name="title" required placeholder="e.g. Warehouse Assistant">
-        </div>
-        <div class="row">
-          <div class="field">
-            <label for="sector">Sector *</label>
-            <select id="sector" name="sector" required>
-              <option value="">Please choose…</option>
-              <option>Retail</option>
-              <option>Information Technology</option>
-              <option>Finance</option>
-              <option>Logistics &amp; Warehousing</option>
-              <option>Hospitality</option>
-              <option>Construction</option>
-              <option>Administration</option>
-              <option>Call Centre</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="level">Level *</label>
-            <select id="level" name="level" required>
-              <option value="">Please choose…</option>
-              <option>Entry-level / No experience</option>
-              <option>Skilled / Experienced</option>
-              <option>Graduate</option>
-            </select>
-          </div>
-        </div>
-        <div class="row">
-          <div class="field">
-            <label for="location">Location *</label>
-            <select id="location" name="location" required>
-              <option value="">Please choose…</option>
-              <option>Pretoria / Tshwane</option>
-              <option>Johannesburg</option>
-              <option>Cape Town</option>
-              <option>Durban</option>
-              <option>Kempton Park</option>
-              <option>Remote</option>
-              <option>Other</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="jobType">Job type</label>
-            <select id="jobType" name="job_type">
-              <option>Full-time</option>
-              <option>Part-time</option>
-              <option>Contract</option>
-              <option>Temporary</option>
-              <option>Internship / Learnership</option>
-            </select>
-          </div>
-        </div>
-        <div class="field">
-          <label for="description">Job description *</label>
-          <textarea id="description" name="description" rows="5" required
-            placeholder="Describe the role, duties and any requirements. Mention if no experience is needed."></textarea>
-        </div>
-        <div class="field">
-          <label for="closingDate">Closing date (optional)</label>
-          <input type="date" id="closingDate" name="closing_date">
-        </div>
-
-        <div class="notice" style="margin-bottom:18px">
-          ℹ️ Job posts are reviewed by our team before appearing publicly. We'll be in touch to confirm.
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block">Submit Job Post</button>
-        <p class="form-status" id="jobStatus" role="status" aria-live="polite"></p>
-        <p class="hint center">* Required fields</p>
-      </form>
+    <div class="container narrow" style="text-align:center">
+      <p class="kicker">Coming Soon</p>
+      <h1>Employer job posting is on the way</h1>
+      <p class="lead">
+        We're currently focused on connecting <strong>job seekers</strong> with local work and
+        helping <strong>homeowners</strong> find trusted <strong>service providers</strong>.
+        Employer job posting will return as LeKhuBo Connect grows.
+      </p>
+      <p style="margin-top:24px">
+        <a href="services-directory.html" class="btn btn-primary">Find a Service</a>
+        <a href="jobs.html" class="btn btn-ghost">Browse Jobs</a>
+      </p>
+      <p class="hint" style="margin-top:18px">Taking you to the homepage…</p>
     </div>
   </section>
 
-  <!-- ===== FOOTER ===== -->
   <footer class="site-footer">
-    <div class="container footer-inner">
-      <div class="footer-brand">
-        <img src="assets/logo-white.svg" alt="LeKhuBo Connect" class="logo">
-        <p>Connecting People, Resources &amp; Opportunity.</p>
-        <p class="small">100% Black youth-owned &bull; Proudly South African</p>
-      </div>
-      <div class="footer-cols">
-        <div>
-          <h4>Explore</h4>
-          <a href="index.html#about">About</a>
-          <a href="index.html#services">Services</a>
-          <a href="jobs.html">Jobs</a>
-          <a href="register.html">Register</a>
-        </div>
-        <div>
-          <h4>For You</h4>
-          <a href="post-job.html">Post a Job</a>
-          <a href="index.html#companies">Companies</a>
-          <a href="index.html#contact">Contact</a>
-        </div>
-        <div>
-          <h4>Contact</h4>
-          <a href="mailto:Tbmadihlaba@gmail.com">Tbmadihlaba@gmail.com</a>
-          <a href="tel:+27817986359">081 798 6359</a>
-          <a href="index.html#contact">Glen Marais, Kempton Park</a>
-        </div>
-      </div>
-    </div>
     <div class="footer-bottom">
-      <div class="container"><p>&copy; <span id="year"></span> LeKhuBo Connect. All rights reserved. &middot; <a href="admin.html">Admin</a></p></div>
+      <div class="container"><p>&copy; <span id="year"></span> LeKhuBo Connect. All rights reserved.</p></div>
     </div>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js"></script>
-  <script src="js/auth.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/post-job.js"></script>
-  <script src="js/pwa.js"></script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>

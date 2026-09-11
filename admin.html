@@ -67,7 +67,8 @@
       <!-- Tabs -->
       <div class="tabs" role="tablist">
         <button class="tab active" id="tabSeekers" role="tab" aria-selected="true">👤 Job Seekers</button>
-        <button class="tab" id="tabPosts" role="tab" aria-selected="false">💼 Job Posts</button>
+        <!-- Job Posts tab hidden while the employer module is disabled -->
+        <button class="tab" id="tabPosts" role="tab" aria-selected="false" hidden>💼 Job Posts</button>
         <button class="tab" id="tabApps" role="tab" aria-selected="false">📨 Applications</button>
         <button class="tab" id="tabProviders" role="tab" aria-selected="false">🛠️ Service Providers</button>
         <button class="tab" id="tabRequests" role="tab" aria-selected="false">🏠 Service Requests</button>
@@ -123,8 +124,8 @@
         </div>
       </div>
 
-      <!-- ===== JOB POSTS TAB ===== -->
-      <div class="tab-panel" id="panelPosts" hidden>
+      <!-- ===== JOB POSTS TAB (hidden while employer module is disabled) ===== -->
+      <div class="tab-panel" id="panelPosts" hidden data-disabled="employer-module">
         <div class="stat-cards" id="postStatCards"></div>
 
         <div class="job-filters admin-filters">

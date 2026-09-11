@@ -1,6 +1,6 @@
 /* ============================================================
    LeKhuBo Connect — signup.js
-   Creates a Supabase auth user with a role (seeker | employer).
+   Creates a Supabase auth user with a role (seeker | provider | homeowner).
    Profile is auto-created by the DB trigger from user metadata.
    ============================================================ */
 (function () {
@@ -9,7 +9,6 @@
   var form = document.getElementById('signupForm');
   if (!form) return;
   var status = document.getElementById('signupStatus');
-  var companyField = document.getElementById('companyField');
   var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // If already logged in, send them to their dashboard
@@ -23,16 +22,10 @@
     return;
   }
 
-  // Show the company field only for employers
   function roleValue() {
     var r = form.querySelector('input[name="role"]:checked');
     return r ? r.value : 'seeker';
   }
-  form.querySelectorAll('input[name="role"]').forEach(function (el) {
-    el.addEventListener('change', function () {
-      companyField.hidden = roleValue() !== 'employer';
-    });
-  });
 
   form.querySelectorAll('input').forEach(function (f) {
     f.addEventListener('input', function () { f.classList.remove('err'); });
@@ -44,7 +37,6 @@
 
     var role = roleValue();
     var fullName = document.getElementById('fullName').value.trim();
-    var company = document.getElementById('company').value.trim();
     var email = document.getElementById('email').value.trim();
     var phone = document.getElementById('phone').value.trim();
     var password = document.getElementById('password').value;
@@ -71,7 +63,7 @@
       email: email,
       password: password,
       options: {
-        data: { role: role, full_name: fullName, company: company, phone: phone },
+        data: { role: role, full_name: fullName, phone: phone },
         emailRedirectTo: location.origin + location.pathname.replace(/signup\.html$/, 'login.html')
       }
     }).then(function (res) {
@@ -85,7 +77,6 @@
           '</strong>) and click the confirmation link, then <a href="login.html">log in</a>.';
         status.className = 'form-status ok';
         form.reset();
-        companyField.hidden = true;
       }
     }).catch(function (err) {
       status.textContent = 'Sign up failed: ' + err.message;
