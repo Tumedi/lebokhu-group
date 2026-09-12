@@ -32,12 +32,46 @@ order by p.created_at desc
 limit 10;
 
 -- ------------------------------------------------------------
+-- 0b-JOIN) THE KEY CHECK: every auth user vs its profile.
+--     profile_id NULL  => the handle_new_user trigger did NOT create a
+--     profile for that account (the real "not in the database" bug).
+--     NOTE: the "role" you see in the auth.users table view is Postgres's
+--     built-in value ('authenticated') — your APP role lives in
+--     profiles.role (app_role below).
+-- ------------------------------------------------------------
+select u.email,
+       u.created_at,
+       u.confirmed_at,
+       p.id   as profile_id,
+       p.role as app_role
+from auth.users u
+left join public.profiles p on p.id = u.id
+order by u.created_at desc;
+
+-- ------------------------------------------------------------
 -- 0c) IS THE TRIGGER INSTALLED?
---     Should return one row named on_auth_user_created.
+--     No row => re-run supabase-auth.sql (function + trigger block).
 -- ------------------------------------------------------------
 select tgname, tgrelid::regclass as table_name, tgenabled
 from pg_trigger
 where tgname = 'on_auth_user_created';
+
+-- ------------------------------------------------------------
+-- 0c-FIX) BACKFILL missing profiles for existing auth users.
+--     Safe to run: only inserts profiles that are missing, reading the
+--     role/name/phone captured in the signup metadata. Run this if the
+--     0b-JOIN query shows any rows with a NULL profile_id, THEN re-run
+--     supabase-auth.sql so the trigger works for future signups.
+-- ------------------------------------------------------------
+insert into public.profiles (id, role, full_name, phone)
+select u.id,
+       coalesce(u.raw_user_meta_data->>'role', 'seeker'),
+       u.raw_user_meta_data->>'full_name',
+       u.raw_user_meta_data->>'phone'
+from auth.users u
+left join public.profiles p on p.id = u.id
+where p.id is null
+on conflict (id) do nothing;
 
 -- ------------------------------------------------------------
 -- 0d) LEGACY REGISTRATION TABLE (admin "Job Seekers" tab reads THIS).
