@@ -118,11 +118,16 @@
       }
     }).then(function (res) {
       if (res.error) throw new Error(res.error.message);
-      // If email confirmation is ON, there is no active session yet.
+      // When "Confirm email" is OFF, signUp returns an active session and would
+      // log the user straight in. We instead send them to the login page so they
+      // sign in with the password they just chose (confirms it works).
       var hasSession = res.data && res.data.session;
       if (hasSession) {
-        location.href = window.LEBOKHU_AUTH.dashboardFor(role).href;
+        window.LEBOKHU_AUTH.signOut().then(function () {
+          location.href = 'login.html?registered=1&email=' + encodeURIComponent(email);
+        });
       } else {
+        // "Confirm email" is ON — they must verify by email before logging in.
         status.innerHTML = 'Account created! Please check your email (<strong>' + email +
           '</strong>) and click the confirmation link, then <a href="login.html">log in</a>.' +
           '<br><span class="hint">Didn\'t get it? <a href="#" id="resendLink">Resend confirmation</a> ' +

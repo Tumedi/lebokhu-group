@@ -18,8 +18,23 @@
 
   var client = window.LEBOKHU_AUTH.client();
 
-  function nextParam() {
-    try { return new URLSearchParams(location.search).get('next'); } catch (e) { return null; }
+  function qp(name) {
+    try { return new URLSearchParams(location.search).get(name); } catch (e) { return null; }
+  }
+  function nextParam() { return qp('next'); }
+
+  // Coming from a fresh signup? Show a welcome banner and pre-fill the email so
+  // the user just types the password they chose (confirms it works).
+  if (qp('registered')) {
+    var justEmail = qp('email');
+    if (justEmail) {
+      var emailInput = document.getElementById('email');
+      if (emailInput) emailInput.value = justEmail;
+    }
+    status.textContent = 'Account created! Please log in with the password you just chose.';
+    status.className = 'form-status ok';
+    var pwd = document.getElementById('password');
+    if (pwd) pwd.focus();
   }
 
   // Already logged in? Go straight to destination.
