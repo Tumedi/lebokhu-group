@@ -138,10 +138,19 @@
       var m = err && err.message ? err.message : 'Please try again.';
       if (/signup.*disabled|not allowed/i.test(m)) {
         m = 'New sign-ups are currently disabled. Please contact us to get access.';
+      } else if (/sending.*(confirmation|email)|error sending/i.test(m)) {
+        // Supabase could not send the confirmation email, so it aborted the
+        // signup. This is a mail-delivery/config issue on the server side.
+        m = 'We could not send your confirmation email right now, so your account ' +
+            'was not created. Please try again shortly. If this keeps happening, ' +
+            'contact us at Tbmadihlaba@gmail.com.';
+      } else if (/rate limit/i.test(m)) {
+        m = 'Too many sign-ups from this address in a short time. Please wait a ' +
+            'few minutes and try again.';
       } else if (/database error/i.test(m)) {
         m = 'We could not create your account (server setup issue). Please try again later or contact us.';
-      } else if (/rate limit/i.test(m)) {
-        m = 'Too many attempts right now. Please wait a few minutes and try again.';
+      } else if (/already registered|already exists/i.test(m)) {
+        m = 'An account with this email already exists. Try logging in instead.';
       }
       status.textContent = 'Sign up failed: ' + m;
       status.className = 'form-status bad';
