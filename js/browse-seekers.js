@@ -43,7 +43,9 @@
     var who = document.getElementById('who');
     if (who) who.textContent = (ctx.profile && (ctx.profile.full_name || ctx.profile.email)) || '';
     var lo = document.getElementById('logoutBtn'); if (lo) lo.hidden = false;
-    AUTH.renderHeader('#mainNav');
+    // NOTE: do NOT call renderHeader here — this page has its own static nav +
+    // logout, like the other dashboards. renderHeader would inject a duplicate
+    // dashboard link and Log Out.
     load();
   }).catch(function () { /* requireAuth redirected */ });
 
