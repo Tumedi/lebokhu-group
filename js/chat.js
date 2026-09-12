@@ -393,5 +393,51 @@
       .catch(function () { return null; });
   }
 
-  window.LEBOKHU_CHAT = { mount: mount, getRequestByToken: getRequestByToken, unreadCounts: unreadCounts };
+  // Poll unread counts on a timer and call back with { counts, total } each tick.
+  // Also flashes the document title so a new message is noticed in a background tab.
+  //   getIds()  -> array of request ids to watch (re-read each tick so it stays fresh)
+  //   forRole   -> 'provider' | 'homeowner'
+  //   onUpdate(counts, total) -> called after every poll
+  // Returns { stop() } to cancel.
+  function watchUnread(getIds, forRole, onUpdate, intervalMs) {
+    var baseTitle = document.title;
+    var stopped = false;
+    var timer = null;
+
+    function setTitle(total) {
+      if (total > 0) document.title = '(' + total + ') ' + baseTitle;
+      else document.title = baseTitle;
+    }
+
+    function tick() {
+      if (stopped) return;
+      var ids = (typeof getIds === 'function' ? getIds() : getIds) || [];
+      if (!ids.length) { setTitle(0); if (onUpdate) onUpdate({}, 0); return; }
+      unreadCounts(ids, forRole).then(function (counts) {
+        if (stopped) return;
+        var total = 0;
+        Object.keys(counts).forEach(function (k) { total += counts[k]; });
+        setTitle(total);
+        if (onUpdate) onUpdate(counts, total);
+      });
+    }
+
+    tick();
+    timer = setInterval(tick, intervalMs || 8000);
+    return {
+      refresh: tick,
+      stop: function () {
+        stopped = true;
+        if (timer) clearInterval(timer);
+        document.title = baseTitle;
+      }
+    };
+  }
+
+  window.LEBOKHU_CHAT = {
+    mount: mount,
+    getRequestByToken: getRequestByToken,
+    unreadCounts: unreadCounts,
+    watchUnread: watchUnread
+  };
 })();

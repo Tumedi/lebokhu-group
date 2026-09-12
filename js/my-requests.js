@@ -18,6 +18,8 @@
   var CFG = window.LEBOKHU_SUPABASE;
   var client = AUTH.client();
   var profile = null;
+  var watchedIds = [];        // request ids currently shown (for the unread watcher)
+  var unreadWatcher = null;   // live unread poller (chat.js watchUnread)
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -84,15 +86,44 @@
         '<td>' + esc(r.service || '—') + '</td>' +
         '<td class="skills-cell">' + esc(r.details || '') + '</td>' +
         '<td>' + statusBadge(r.status) + '</td>' +
-        '<td><button class="mini-btn" data-chat="' + esc(r.id) + '" data-who="' + esc(r.provider_name || 'Provider') + '">💬 Chat</button></td>' +
+        '<td><button class="mini-btn" data-chat="' + esc(r.id) + '" data-who="' + esc(r.provider_name || 'Provider') +
+          '">💬 Chat<span class="unread-badge" data-badge="' + esc(r.id) + '" hidden></span></button></td>' +
       '</tr>';
     }).join('');
 
     tbody.querySelectorAll('[data-chat]').forEach(function (b) {
       b.addEventListener('click', function () {
         openChat(b.getAttribute('data-chat'), b.getAttribute('data-who'));
+        var badge = b.querySelector('[data-badge]');
+        if (badge) badge.hidden = true;   // clear optimistically on open
       });
     });
+
+    // Live unread badges for the homeowner (messages from the provider/admin).
+    watchedIds = rows.map(function (r) { return r.id; });
+    var baseCount = document.getElementById('count').textContent;
+    if (window.LEBOKHU_CHAT && window.LEBOKHU_CHAT.watchUnread) {
+      if (unreadWatcher) unreadWatcher.stop();
+      unreadWatcher = window.LEBOKHU_CHAT.watchUnread(
+        function () { return watchedIds; },
+        'homeowner',
+        function (counts, total) {
+          watchedIds.forEach(function (id) {
+            var badge = tbody.querySelector('[data-badge="' + id + '"]');
+            if (!badge) return;
+            var n = counts[id] || 0;
+            if (n > 0) { badge.textContent = n; badge.hidden = false; }
+            else { badge.hidden = true; }
+          });
+          var c = document.getElementById('count');
+          if (c) {
+            c.textContent = total > 0
+              ? baseCount + ' · ' + total + ' unread message' + (total === 1 ? '' : 's')
+              : baseCount;
+          }
+        }
+      );
+    }
   }
 
   /* ---- Chat modal ---- */
@@ -119,6 +150,7 @@
   function closeChat() {
     if (chatWidget) { chatWidget.stop(); chatWidget = null; }
     chatModal.hidden = true; document.body.style.overflow = '';
+    if (unreadWatcher) unreadWatcher.refresh();   // reading cleared unread — refresh badges
   }
   if (chatModal) {
     chatModal.querySelectorAll('[data-cclose]').forEach(function (el) { el.addEventListener('click', closeChat); });

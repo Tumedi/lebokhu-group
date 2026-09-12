@@ -17,6 +17,8 @@
   var CFG = window.LEBOKHU_SUPABASE;
   var client = AUTH.client();
   var myListingIds = [];
+  var watchedIds = [];        // request ids currently shown (for the unread watcher)
+  var unreadWatcher = null;   // live unread poller (chat.js watchUnread)
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -139,20 +141,35 @@
       });
     });
 
-    // Load unread counts and show badges
-    if (window.LEBOKHU_CHAT && rows.length) {
-      var ids = rows.map(function (r) { return r.id; });
-      window.LEBOKHU_CHAT.unreadCounts(ids, 'provider').then(function (counts) {
-        var totalUnread = 0;
-        Object.keys(counts).forEach(function (id) {
-          var n = counts[id]; totalUnread += n;
-          var badge = tbody.querySelector('[data-badge="' + id + '"]');
-          if (badge && n > 0) { badge.textContent = n; badge.hidden = false; }
-        });
-        // reflect total in the count line
-        var c = document.getElementById('count');
-        if (totalUnread > 0 && c) c.textContent += ' · ' + totalUnread + ' unread message' + (totalUnread === 1 ? '' : 's');
-      });
+    // Keep the list of request ids current for the unread watcher.
+    watchedIds = rows.map(function (r) { return r.id; });
+    var baseCount = document.getElementById('count').textContent;
+
+    // Live unread badges: refresh on a timer so new messages surface while the
+    // dashboard is open (and flash the browser tab title).
+    if (window.LEBOKHU_CHAT && window.LEBOKHU_CHAT.watchUnread) {
+      if (unreadWatcher) unreadWatcher.stop();
+      unreadWatcher = window.LEBOKHU_CHAT.watchUnread(
+        function () { return watchedIds; },
+        'provider',
+        function (counts, total) {
+          // Update each row badge.
+          watchedIds.forEach(function (id) {
+            var badge = tbody.querySelector('[data-badge="' + id + '"]');
+            if (!badge) return;
+            var n = counts[id] || 0;
+            if (n > 0) { badge.textContent = n; badge.hidden = false; }
+            else { badge.hidden = true; }
+          });
+          // Reflect the total on the count line.
+          var c = document.getElementById('count');
+          if (c) {
+            c.textContent = total > 0
+              ? baseCount + ' · ' + total + ' unread message' + (total === 1 ? '' : 's')
+              : baseCount;
+          }
+        }
+      );
     }
   }
 
@@ -186,6 +203,8 @@
   function closeChat() {
     if (chatWidget) { chatWidget.stop(); chatWidget = null; }
     chatModal.hidden = true; document.body.style.overflow = '';
+    // Reading the thread marked messages read — refresh badges right away.
+    if (unreadWatcher) unreadWatcher.refresh();
   }
   if (chatModal) {
     chatModal.querySelectorAll('[data-cclose]').forEach(function (el) { el.addEventListener('click', closeChat); });
