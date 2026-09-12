@@ -62,9 +62,11 @@
         '<div class="chat-typing" data-chat-typing hidden></div>' +
         (readOnly ? '' :
         '<form class="chat-input" data-chat-form>' +
+          '<button type="button" class="chat-tool" data-chat-emoji title="Add an emoji">😊</button>' +
           '<button type="button" class="chat-tool" data-chat-photo title="Share photos">📷</button>' +
           '<button type="button" class="chat-tool" data-chat-loc title="Share my location">📍</button>' +
           '<input type="file" accept="image/*" multiple data-chat-file hidden>' +
+          '<div class="chat-emoji-panel" data-chat-emoji-panel hidden></div>' +
           '<div class="chat-input-field">' +
             '<div class="chat-thumbs" data-chat-thumbs hidden></div>' +
             '<input type="text" placeholder="Type a message…" data-chat-text autocomplete="off">' +
@@ -169,6 +171,8 @@
       var locBtn = form.querySelector('[data-chat-loc]');
       var sendBtn = form.querySelector('[data-chat-send]');
       var thumbsEl = form.querySelector('[data-chat-thumbs]');
+      var emojiBtn = form.querySelector('[data-chat-emoji]');
+      var emojiPanel = form.querySelector('[data-chat-emoji-panel]');
 
       var MAX_PHOTOS = 10;
       var pendingFiles = [];    // chosen photos waiting to be sent
@@ -235,6 +239,52 @@
             alert('You can attach up to ' + MAX_PHOTOS + ' photos per message.');
           }
         });
+      }
+
+      /* ---- Emoji picker ---- */
+      var EMOJIS = ['😀','😁','😂','🤣','😊','😍','😘','😉','😎','🤩','🥳','😇',
+        '🙂','🙃','😌','😋','😛','🤔','🤗','🤝','👍','👎','👏','🙏','💪','🙌',
+        '👋','✌️','🤞','👌','🔥','✨','⭐','🎉','❤️','🧡','💛','💚','💙','💜',
+        '💯','✅','❌','⚠️','❓','❗','👀','😅','😢','😭','😤','😡','😴','🤦','🤷',
+        '💰','🛠️','🔧','🧹','🪴','🌿','🎨','🏠','🚗','📍','📅','⏰','☎️','📞'];
+      var emojiOpen = false;
+
+      function buildEmojiPanel() {
+        if (!emojiPanel || emojiPanel.childNodes.length) return;
+        emojiPanel.innerHTML = EMOJIS.map(function (e) {
+          return '<button type="button" class="chat-emoji-btn" data-emoji="' + e + '">' + e + '</button>';
+        }).join('');
+        emojiPanel.querySelectorAll('[data-emoji]').forEach(function (b) {
+          b.addEventListener('click', function () { insertAtCursor(b.getAttribute('data-emoji')); });
+        });
+      }
+
+      // Insert text at the caret position of the message input.
+      function insertAtCursor(text) {
+        if (!input) return;
+        var start = input.selectionStart, end = input.selectionEnd;
+        if (typeof start === 'number' && typeof end === 'number') {
+          input.value = input.value.slice(0, start) + text + input.value.slice(end);
+          var pos = start + text.length;
+          input.setSelectionRange(pos, pos);
+        } else {
+          input.value += text;
+        }
+        input.focus();
+      }
+
+      function toggleEmoji(show) {
+        if (!emojiPanel) return;
+        emojiOpen = (typeof show === 'boolean') ? show : !emojiOpen;
+        if (emojiOpen) { buildEmojiPanel(); emojiPanel.hidden = false; }
+        else { emojiPanel.hidden = true; }
+      }
+
+      if (emojiBtn && emojiPanel) {
+        emojiBtn.addEventListener('click', function (e) { e.stopPropagation(); toggleEmoji(); });
+        // Keep the panel open while clicking emojis; close when clicking elsewhere.
+        emojiPanel.addEventListener('click', function (e) { e.stopPropagation(); });
+        document.addEventListener('click', function () { if (emojiOpen) toggleEmoji(false); });
       }
 
       // One Send button: sends the photo (with the text as caption) if one is
