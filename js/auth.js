@@ -82,8 +82,8 @@
           location.replace(dest.href);
           return Promise.reject(new Error('wrong-role'));
         }
-        // Logged in and allowed → arm the 3-minute inactivity auto-logout.
-        AUTH.startIdleLogout(3);
+        // Logged in and allowed → arm the 2-minute inactivity auto-logout.
+        AUTH.startIdleLogout(2);
         return { user: user, profile: profile };
       });
     });
@@ -97,14 +97,14 @@
   };
 
   // ---- Idle auto-logout ----
-  // Signs the user out after a period of no activity (default 3 minutes) and
+  // Signs the user out after a period of no activity (default 2 minutes) and
   // sends them to the login page. Safe to call more than once (only arms once).
   var _idleTimer = null;
   var _idleArmed = false;
   AUTH.startIdleLogout = function (minutes) {
     if (_idleArmed) return;            // don't double-bind listeners
     _idleArmed = true;
-    var ms = (minutes || 3) * 60 * 1000;
+    var ms = (minutes || 2) * 60 * 1000;
 
     function doLogout() {
       _idleArmed = false;

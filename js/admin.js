@@ -75,9 +75,9 @@
     dashView.hidden = false;
     logoutBtn.hidden = false;
     adminUser.textContent = user && user.email ? user.email : '';
-    // Auto-logout the admin after 3 minutes of inactivity.
+    // Auto-logout the admin after 2 minutes of inactivity.
     if (window.LEBOKHU_AUTH && window.LEBOKHU_AUTH.startIdleLogout) {
-      window.LEBOKHU_AUTH.startIdleLogout(3);
+      window.LEBOKHU_AUTH.startIdleLogout(2);
     }
     loadData();
     // loadPosts();  // employer job-posting module temporarily disabled

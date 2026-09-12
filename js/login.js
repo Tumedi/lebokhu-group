@@ -36,7 +36,7 @@
     var pwd = document.getElementById('password');
     if (pwd) pwd.focus();
   } else if (qp('timeout')) {
-    status.textContent = 'You were logged out after 3 minutes of inactivity. Please log in again.';
+    status.textContent = 'You were logged out after 2 minutes of inactivity. Please log in again.';
     status.className = 'form-status';
   }
 
