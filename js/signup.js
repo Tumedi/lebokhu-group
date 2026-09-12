@@ -11,16 +11,37 @@
   var status = document.getElementById('signupStatus');
   var emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  // If already logged in, send them to their dashboard
-  if (window.LEBOKHU_AUTH && window.LEBOKHU_AUTH.configured()) {
-    window.LEBOKHU_AUTH.getProfile().then(function (p) {
-      if (p) location.href = window.LEBOKHU_AUTH.dashboardFor(p.role).href;
-    });
-  } else {
+  if (!(window.LEBOKHU_AUTH && window.LEBOKHU_AUTH.configured())) {
     document.getElementById('notConfigured').hidden = false;
     form.querySelectorAll('input,button').forEach(function (el) { el.disabled = true; });
     return;
   }
+
+  // If already logged in, DON'T silently redirect away (that made the signup
+  // page look like it "does nothing"). Instead show a clear notice and let the
+  // user go to their dashboard OR log out to create a different account.
+  var AUTH = window.LEBOKHU_AUTH;
+  AUTH.getUser().then(function (user) {
+    if (!user) return; // logged out — normal signup, leave the form as-is
+    var box = document.getElementById('alreadyLoggedIn');
+    var emailEl = document.getElementById('currentEmail');
+    if (emailEl) emailEl.textContent = user.email || 'your account';
+    if (box) box.hidden = false;
+
+    var go = document.getElementById('goDashboard');
+    if (go) go.addEventListener('click', function (e) {
+      e.preventDefault();
+      AUTH.getProfile().then(function (p) {
+        location.href = AUTH.dashboardFor(p && p.role).href;
+      });
+    });
+
+    var out = document.getElementById('logoutFirst');
+    if (out) out.addEventListener('click', function (e) {
+      e.preventDefault();
+      AUTH.signOut().then(function () { location.reload(); });
+    });
+  });
 
   function roleValue() {
     var r = form.querySelector('input[name="role"]:checked');

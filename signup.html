@@ -38,6 +38,11 @@
 
   <section class="section">
     <div class="container narrow">
+      <div class="notice" id="alreadyLoggedIn" hidden>
+        You're already logged in as <strong id="currentEmail"></strong>.
+        <a href="#" id="goDashboard">Go to your dashboard</a> or
+        <a href="#" id="logoutFirst">log out to create a new account</a>.
+      </div>
       <form class="reg-form" id="signupForm" novalidate>
         <div class="notice" id="notConfigured" hidden>
           ⚠️ Accounts aren't available yet — the database connection isn't configured.
