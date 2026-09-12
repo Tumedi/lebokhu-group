@@ -58,7 +58,23 @@
       .order('created_at', { ascending: false })
       .then(function (res) {
         if (res.error) { countEl.textContent = 'Error loading requests: ' + res.error.message; return; }
-        render(res.data || []);
+        var rows = res.data || [];
+        // Look up provider emails (approved listings are publicly readable) so
+        // that a homeowner's message can email the provider too. Best-effort.
+        var provIds = rows.map(function (r) { return r.provider_id; })
+          .filter(function (id, i, a) { return id && a.indexOf(id) === i; });
+        if (!provIds.length) { render(rows); return; }
+        client.from(CFG.PROVIDERS_TABLE).select('id, email, full_name').in('id', provIds)
+          .then(function (pr) {
+            var byId = {};
+            (pr.data || []).forEach(function (p) { byId[p.id] = p; });
+            rows.forEach(function (r) {
+              var p = r.provider_id && byId[r.provider_id];
+              r._provider_email = (p && p.email) || '';
+            });
+            render(rows);
+          })
+          .catch(function () { render(rows); });
       });
   }
 
@@ -87,13 +103,15 @@
         '<td class="skills-cell">' + esc(r.details || '') + '</td>' +
         '<td>' + statusBadge(r.status) + '</td>' +
         '<td><button class="mini-btn" data-chat="' + esc(r.id) + '" data-who="' + esc(r.provider_name || 'Provider') +
+          '" data-email="' + esc(r._provider_email || '') + '" data-service="' + esc(r.service || '') +
           '">💬 Chat<span class="unread-badge" data-badge="' + esc(r.id) + '" hidden></span></button></td>' +
       '</tr>';
     }).join('');
 
     tbody.querySelectorAll('[data-chat]').forEach(function (b) {
       b.addEventListener('click', function () {
-        openChat(b.getAttribute('data-chat'), b.getAttribute('data-who'));
+        openChat(b.getAttribute('data-chat'), b.getAttribute('data-who'),
+          b.getAttribute('data-email'), b.getAttribute('data-service'));
         var badge = b.querySelector('[data-badge]');
         if (badge) badge.hidden = true;   // clear optimistically on open
       });
@@ -121,7 +139,10 @@
               ? baseCount + ' · ' + total + ' unread message' + (total === 1 ? '' : 's')
               : baseCount;
           }
-        }
+        },
+        8000,
+        { notifyTitle: 'New message — LeKhuBo Connect',
+          notifyBody: 'Your service provider sent you a new chat message.' }
       );
     }
   }
@@ -132,7 +153,10 @@
   var chatMount = document.getElementById('chatMount');
   var chatWidget = null;
 
-  function openChat(requestId, providerName) {
+  function openChat(requestId, providerName, providerEmail, service) {
+    if (window.LEBOKHU_CHAT && window.LEBOKHU_CHAT.requestNotificationPermission) {
+      window.LEBOKHU_CHAT.requestNotificationPermission();
+    }
     if (chatWidget) chatWidget.stop();
     chatWith.textContent = 'Conversation with ' + (providerName || 'provider');
     chatMount.innerHTML = '';
@@ -143,7 +167,12 @@
         container: chatMount,
         requestId: requestId,
         sender: 'homeowner',
-        senderName: (profile && profile.full_name) || 'Homeowner'
+        senderName: (profile && profile.full_name) || 'Homeowner',
+        // Email the provider when the homeowner sends (makes chat email bidirectional).
+        recipientEmail: providerEmail || '',
+        recipientName: providerName || '',
+        service: service || '',
+        chatUrl: 'my-services.html'
       });
     }
   }

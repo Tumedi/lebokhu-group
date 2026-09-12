@@ -394,30 +394,54 @@
   }
 
   // Poll unread counts on a timer and call back with { counts, total } each tick.
-  // Also flashes the document title so a new message is noticed in a background tab.
+  // Also flashes the document title so a new message is noticed in a background tab,
+  // and fires a native browser notification when the unread total INCREASES.
   //   getIds()  -> array of request ids to watch (re-read each tick so it stays fresh)
   //   forRole   -> 'provider' | 'homeowner'
   //   onUpdate(counts, total) -> called after every poll
-  // Returns { stop() } to cancel.
-  function watchUnread(getIds, forRole, onUpdate, intervalMs) {
+  //   opts.notifyTitle / opts.notifyBody -> optional strings for the OS notification
+  // Returns { refresh(), stop() } to cancel.
+  function watchUnread(getIds, forRole, onUpdate, intervalMs, opts) {
+    opts = opts || {};
     var baseTitle = document.title;
     var stopped = false;
     var timer = null;
+    var prevTotal = null;   // null until the first poll completes (so we don't notify on load)
 
     function setTitle(total) {
       if (total > 0) document.title = '(' + total + ') ' + baseTitle;
       else document.title = baseTitle;
     }
 
+    // Fire an OS notification only if the tab isn't the one the user is looking at.
+    function maybeNotify(total) {
+      if (prevTotal === null || total <= prevTotal) return;   // no increase → no notify
+      if (typeof Notification === 'undefined' || Notification.permission !== 'granted') return;
+      // Don't nag if the user is actively viewing this tab.
+      if (document.visibilityState === 'visible' && document.hasFocus && document.hasFocus()) return;
+      var n = total - prevTotal;
+      try {
+        var note = new Notification(opts.notifyTitle || 'New message — LeKhuBo Connect', {
+          body: opts.notifyBody || (n === 1 ? 'You have a new chat message.'
+            : 'You have ' + n + ' new chat messages.'),
+          icon: 'assets/icon-192.svg',
+          tag: 'lekhubo-chat'   // collapse repeats into one
+        });
+        note.onclick = function () { window.focus(); this.close(); };
+      } catch (e) { /* some browsers block constructing Notification in bg */ }
+    }
+
     function tick() {
       if (stopped) return;
       var ids = (typeof getIds === 'function' ? getIds() : getIds) || [];
-      if (!ids.length) { setTitle(0); if (onUpdate) onUpdate({}, 0); return; }
+      if (!ids.length) { setTitle(0); prevTotal = 0; if (onUpdate) onUpdate({}, 0); return; }
       unreadCounts(ids, forRole).then(function (counts) {
         if (stopped) return;
         var total = 0;
         Object.keys(counts).forEach(function (k) { total += counts[k]; });
         setTitle(total);
+        maybeNotify(total);
+        prevTotal = total;
         if (onUpdate) onUpdate(counts, total);
       });
     }
@@ -434,10 +458,22 @@
     };
   }
 
+  // Ask the browser for permission to show notifications (call from a user click).
+  // Resolves to true if granted. Safe to call when unsupported/denied.
+  function requestNotificationPermission() {
+    if (typeof Notification === 'undefined') return Promise.resolve(false);
+    if (Notification.permission === 'granted') return Promise.resolve(true);
+    if (Notification.permission === 'denied') return Promise.resolve(false);
+    try {
+      return Notification.requestPermission().then(function (p) { return p === 'granted'; });
+    } catch (e) { return Promise.resolve(false); }
+  }
+
   window.LEBOKHU_CHAT = {
     mount: mount,
     getRequestByToken: getRequestByToken,
     unreadCounts: unreadCounts,
-    watchUnread: watchUnread
+    watchUnread: watchUnread,
+    requestNotificationPermission: requestNotificationPermission
   };
 })();

@@ -40,7 +40,13 @@
       container: mountEl,
       requestId: req.id,
       sender: 'homeowner',
-      senderName: req.homeowner_name || 'Homeowner'
+      senderName: req.homeowner_name || 'Homeowner',
+      // provider_email is only present if supabase-chat-provider-email.sql has
+      // been run; when absent the provider simply isn't emailed (no error).
+      recipientEmail: req.provider_email || '',
+      recipientName: req.provider_name || '',
+      service: req.service || '',
+      chatUrl: 'my-services.html'
     });
   });
 })();

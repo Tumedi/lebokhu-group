@@ -168,7 +168,10 @@
               ? baseCount + ' · ' + total + ' unread message' + (total === 1 ? '' : 's')
               : baseCount;
           }
-        }
+        },
+        8000,
+        { notifyTitle: 'New message — LeKhuBo Connect',
+          notifyBody: 'A homeowner sent you a new chat message.' }
       );
     }
   }
@@ -183,6 +186,10 @@
   AUTH.getProfile().then(function (p) { providerName = (p && (p.company || p.full_name)) || 'Provider'; });
 
   function openChat(requestId, homeownerName, homeownerEmail, service) {
+    // First chat opened this session is a good moment to ask for notifications.
+    if (window.LEBOKHU_CHAT && window.LEBOKHU_CHAT.requestNotificationPermission) {
+      window.LEBOKHU_CHAT.requestNotificationPermission();
+    }
     if (chatWidget) chatWidget.stop();
     chatWith.textContent = 'Conversation with ' + (homeownerName || 'homeowner');
     chatMount.innerHTML = '';
