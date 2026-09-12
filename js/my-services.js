@@ -171,7 +171,7 @@
         },
         8000,
         { notifyTitle: 'New message — LeKhuBo Connect',
-          notifyBody: 'A homeowner sent you a new chat message.' }
+          notifyBody: 'A potential employer sent you a new chat message.' }
       );
     }
   }

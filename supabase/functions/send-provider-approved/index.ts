@@ -65,7 +65,7 @@ serve(async (req: Request) => {
             ${service ? `<tr><td style="padding:5px 0;color:#5a6b7b">Service</td><td style="padding:5px 0;font-weight:bold">${esc(service)}</td></tr>` : ""}
             ${location ? `<tr><td style="padding:5px 0;color:#5a6b7b">Area</td><td style="padding:5px 0">${esc(location)}</td></tr>` : ""}
           </table>
-          <p>Homeowners in your area can now find you and request your services. Keep your phone
+          <p>Clients in your area can now find you and request your services. Keep your phone
           handy — enquiries may come through soon!</p>
           <p style="text-align:center;margin:22px 0">
             <a href="https://tumedi.github.io/lebokhu-group/services-directory.html"
@@ -83,7 +83,7 @@ serve(async (req: Request) => {
       `Great news! Your service listing has been approved and is now live in the LeKhuBo Connect directory.\n\n` +
       (service ? `Service: ${service}\n` : "") +
       (location ? `Area: ${location}\n` : "") +
-      `\nHomeowners in your area can now find you and request your services.\n` +
+      `\nClients in your area can now find you and request your services.\n` +
       `View the directory: https://tumedi.github.io/lebokhu-group/services-directory.html\n\n` +
       `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
 

@@ -132,7 +132,7 @@
       if (now - lastNotified < 30000) return;
       if (!opts.recipientEmail || !client.functions) return;
       lastNotified = now;
-      var label = sender === 'homeowner' ? (senderName || 'A homeowner')
+      var label = sender === 'homeowner' ? (senderName || 'A potential employer')
         : (sender === 'provider' ? (senderName || 'A service provider') : 'LeKhuBo Connect');
       client.functions.invoke('send-chat-notification', {
         body: {

@@ -65,7 +65,7 @@
     if (email) email.value = '';
     if (pwd) pwd.value = '';
     loginStatus.textContent = 'Access denied: this account is not an administrator. ' +
-      'Job seeker and homeowner accounts cannot open the admin dashboard.';
+      'Job seeker, provider and potential-employer accounts cannot open the admin dashboard.';
     loginStatus.className = 'form-status bad';
     client.auth.signOut().catch(function () {});
   }
@@ -1056,7 +1056,7 @@
     var subject = 'Your service listing is approved — LeKhuBo Connect';
     var body = 'Hi ' + (p.full_name || 'there') + ',\n\n' +
       'Great news! Your service listing (' + (p.service || '') + ') has been approved and is now ' +
-      'live in the LeKhuBo Connect directory. Homeowners in your area can now find and contact you.\n\n' +
+      'live in the LeKhuBo Connect directory. Clients in your area can now find and contact you.\n\n' +
       'View the directory: https://tumedi.github.io/lebokhu-group/services-directory.html\n\n' +
       'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(p.email) +

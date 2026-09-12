@@ -58,7 +58,7 @@ serve(async (req: Request) => {
           <p>A new <strong>service request</strong> has come in${provider_name ? " for <strong>" + esc(provider_name) + "</strong>" : ""}.</p>
           <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:14px">
             <tr><td style="padding:5px 0;color:#5a6b7b">Service</td><td style="padding:5px 0;font-weight:bold">${esc(service)}</td></tr>
-            <tr><td style="padding:5px 0;color:#5a6b7b">Homeowner</td><td style="padding:5px 0;font-weight:bold">${esc(homeowner_name)}</td></tr>
+            <tr><td style="padding:5px 0;color:#5a6b7b">Client</td><td style="padding:5px 0;font-weight:bold">${esc(homeowner_name)}</td></tr>
             <tr><td style="padding:5px 0;color:#5a6b7b">Phone</td><td style="padding:5px 0">${esc(homeowner_phone)}</td></tr>
             ${homeowner_email ? `<tr><td style="padding:5px 0;color:#5a6b7b">Email</td><td style="padding:5px 0">${esc(homeowner_email)}</td></tr>` : ""}
             ${location ? `<tr><td style="padding:5px 0;color:#5a6b7b">Area</td><td style="padding:5px 0">${esc(location)}</td></tr>` : ""}
