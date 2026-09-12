@@ -310,6 +310,7 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 .cv-upload-btn{display:inline-block}
 .form-status a{color:inherit;font-weight:800;text-decoration:underline}
 .hint.center{text-align:center}
+.resend-highlight{background:#fff4dc;border:1px solid var(--gold);border-radius:var(--radius-sm);padding:8px 12px}
 .field input[type=file]{padding:10px;background:#fbfcfd}
 .field.checkbox label{display:flex;gap:12px;align-items:flex-start;font-weight:500;font-size:.92rem;color:var(--slate)}
 .field.checkbox input{width:20px;height:20px;flex:none;margin-top:2px;accent-color:var(--teal)}

@@ -59,12 +59,51 @@
       .then(function (profile) { redirectAfterLogin(profile); })
       .catch(function (err) {
         var msg = err.message || 'Login failed';
-        if (/confirm/i.test(msg)) msg = 'Please confirm your email first (check your inbox), then log in.';
+        if (/confirm/i.test(msg)) {
+          msg = 'Please confirm your email first (check your inbox), then log in.';
+          // Nudge the user toward the resend link.
+          if (resendRow) resendRow.classList.add('resend-highlight');
+        }
         status.textContent = 'Login failed: ' + msg;
         status.className = 'form-status bad';
         btn.disabled = false; btn.textContent = original;
       });
   });
+
+  // Resend the sign-up confirmation email.
+  var resendRow = document.getElementById('resendRow');
+  var resend = document.getElementById('resendLink');
+  if (resend) {
+    resend.addEventListener('click', function (e) {
+      e.preventDefault();
+      var email = (document.getElementById('email').value || '').trim();
+      if (!email) {
+        status.textContent = 'Enter your email above first, then click "Resend confirmation".';
+        status.className = 'form-status bad';
+        return;
+      }
+      resend.textContent = 'Sending…';
+      client.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: location.origin + location.pathname.replace(/login\.html$/, 'login.html')
+        }
+      }).then(function (res) {
+        if (res.error) throw new Error(res.error.message);
+        status.textContent = 'Confirmation email sent to ' + email + '. Check your inbox (and spam folder).';
+        status.className = 'form-status ok';
+      }).catch(function (err) {
+        var m = err.message || 'Please try again';
+        // If the account is already confirmed, Supabase returns an error — make it friendly.
+        if (/already|confirmed/i.test(m)) m = 'This email is already confirmed — just log in above.';
+        status.textContent = 'Could not resend confirmation: ' + m;
+        status.className = 'form-status bad';
+      }).then(function () {
+        resend.textContent = 'Resend confirmation';
+      });
+    });
+  }
 
   // Forgot password
   var forgot = document.getElementById('forgotLink');

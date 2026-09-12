@@ -27,6 +27,35 @@
     return r ? r.value : 'seeker';
   }
 
+  // Wire up the "Resend confirmation" link that appears in the success message.
+  function wireResend(email) {
+    var link = document.getElementById('resendLink');
+    if (!link) return;
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      var client = window.LEBOKHU_AUTH.client();
+      if (!client) return;
+      link.textContent = 'Sending…';
+      client.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: location.origin + location.pathname.replace(/signup\.html$/, 'login.html')
+        }
+      }).then(function (res) {
+        if (res.error) throw new Error(res.error.message);
+        status.innerHTML = 'Confirmation email re-sent to <strong>' + email +
+          '</strong>. Check your inbox and spam folder, then <a href="login.html">log in</a>.';
+        status.className = 'form-status ok';
+      }).catch(function (err) {
+        var m = err.message || 'Please try again';
+        if (/already|confirmed/i.test(m)) m = 'This email is already confirmed — just log in.';
+        status.textContent = 'Could not resend: ' + m;
+        status.className = 'form-status bad';
+      });
+    });
+  }
+
   form.querySelectorAll('input').forEach(function (f) {
     f.addEventListener('input', function () { f.classList.remove('err'); });
   });
@@ -74,8 +103,11 @@
         location.href = window.LEBOKHU_AUTH.dashboardFor(role).href;
       } else {
         status.innerHTML = 'Account created! Please check your email (<strong>' + email +
-          '</strong>) and click the confirmation link, then <a href="login.html">log in</a>.';
+          '</strong>) and click the confirmation link, then <a href="login.html">log in</a>.' +
+          '<br><span class="hint">Didn\'t get it? <a href="#" id="resendLink">Resend confirmation</a> ' +
+          '(also check your spam folder).</span>';
         status.className = 'form-status ok';
+        wireResend(email, role);
         form.reset();
       }
     }).catch(function (err) {
