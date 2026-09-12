@@ -111,7 +111,18 @@
         form.reset();
       }
     }).catch(function (err) {
-      status.textContent = 'Sign up failed: ' + err.message;
+      // Log the raw error so the exact Supabase reason is visible in the console
+      // (e.g. "Signups not allowed", "Database error saving new user", rate limits).
+      try { console.error('[signup] Supabase signUp failed:', err); } catch (e) {}
+      var m = err && err.message ? err.message : 'Please try again.';
+      if (/signup.*disabled|not allowed/i.test(m)) {
+        m = 'New sign-ups are currently disabled. Please contact us to get access.';
+      } else if (/database error/i.test(m)) {
+        m = 'We could not create your account (server setup issue). Please try again later or contact us.';
+      } else if (/rate limit/i.test(m)) {
+        m = 'Too many attempts right now. Please wait a few minutes and try again.';
+      }
+      status.textContent = 'Sign up failed: ' + m;
       status.className = 'form-status bad';
     }).then(function () {
       btn.disabled = false; btn.textContent = original;
