@@ -62,14 +62,11 @@
         '<div class="chat-typing" data-chat-typing hidden></div>' +
         (readOnly ? '' :
         '<form class="chat-input" data-chat-form>' +
-          '<button type="button" class="chat-tool" data-chat-photo title="Share a photo">📷</button>' +
+          '<button type="button" class="chat-tool" data-chat-photo title="Share photos">📷</button>' +
           '<button type="button" class="chat-tool" data-chat-loc title="Share my location">📍</button>' +
-          '<input type="file" accept="image/*" data-chat-file hidden>' +
+          '<input type="file" accept="image/*" multiple data-chat-file hidden>' +
           '<div class="chat-input-field">' +
-            '<div class="chat-thumb" data-chat-thumb hidden>' +
-              '<img data-chat-thumb-img alt="Selected photo">' +
-              '<button type="button" class="chat-thumb-x" data-chat-thumb-remove title="Remove photo">&times;</button>' +
-            '</div>' +
+            '<div class="chat-thumbs" data-chat-thumbs hidden></div>' +
             '<input type="text" placeholder="Type a message…" data-chat-text autocomplete="off">' +
           '</div>' +
           '<button type="submit" class="btn btn-primary btn-sm" data-chat-send>Send</button>' +
@@ -171,61 +168,128 @@
       var photoBtn = form.querySelector('[data-chat-photo]');
       var locBtn = form.querySelector('[data-chat-loc]');
       var sendBtn = form.querySelector('[data-chat-send]');
-      var thumbEl = form.querySelector('[data-chat-thumb]');
-      var thumbImg = form.querySelector('[data-chat-thumb-img]');
-      var thumbRemove = form.querySelector('[data-chat-thumb-remove]');
+      var thumbsEl = form.querySelector('[data-chat-thumbs]');
 
-      var pendingFile = null;   // a chosen photo waiting to be sent
-      var thumbObjUrl = null;
+      var MAX_PHOTOS = 10;
+      var pendingFiles = [];    // chosen photos waiting to be sent
+      var thumbObjUrls = [];    // matching object URLs (index-aligned with pendingFiles)
 
-      function clearPhoto() {
-        pendingFile = null;
-        if (thumbObjUrl) { URL.revokeObjectURL(thumbObjUrl); thumbObjUrl = null; }
-        if (thumbEl) thumbEl.hidden = true;
-        if (fileInput) fileInput.value = '';
-        if (input) input.placeholder = 'Type a message…';
+      function renderThumbs() {
+        if (!thumbsEl) return;
+        if (!pendingFiles.length) {
+          thumbsEl.hidden = true;
+          thumbsEl.innerHTML = '';
+          if (input) input.placeholder = 'Type a message…';
+          return;
+        }
+        thumbsEl.hidden = false;
+        thumbsEl.innerHTML = pendingFiles.map(function (f, i) {
+          return '<div class="chat-thumb">' +
+            '<img src="' + thumbObjUrls[i] + '" alt="Selected photo">' +
+            '<button type="button" class="chat-thumb-x" data-remove="' + i + '" title="Remove photo">&times;</button>' +
+          '</div>';
+        }).join('');
+        // Wire each remove button.
+        thumbsEl.querySelectorAll('[data-remove]').forEach(function (b) {
+          b.addEventListener('click', function () {
+            removePhoto(parseInt(b.getAttribute('data-remove'), 10));
+          });
+        });
+        if (input) input.placeholder = 'Add a caption (optional)…';
       }
 
-      // Pick a photo → show a small thumbnail chip inside the input bar.
+      function removePhoto(i) {
+        if (i < 0 || i >= pendingFiles.length) return;
+        if (thumbObjUrls[i]) URL.revokeObjectURL(thumbObjUrls[i]);
+        pendingFiles.splice(i, 1);
+        thumbObjUrls.splice(i, 1);
+        renderThumbs();
+      }
+
+      function clearPhoto() {
+        thumbObjUrls.forEach(function (u) { if (u) URL.revokeObjectURL(u); });
+        pendingFiles = [];
+        thumbObjUrls = [];
+        if (fileInput) fileInput.value = '';
+        renderThumbs();
+      }
+
+      // Pick one or more photos → show a thumbnail chip for each in the input bar.
       if (photoBtn && fileInput) {
         photoBtn.addEventListener('click', function () { fileInput.click(); });
         fileInput.addEventListener('change', function () {
-          var f = fileInput.files && fileInput.files[0];
-          if (!f) return;
-          if (f.size > 5 * 1024 * 1024) { alert('Image is larger than 5 MB. Please choose a smaller one.'); fileInput.value = ''; return; }
-          pendingFile = f;
-          thumbObjUrl = URL.createObjectURL(f);
-          if (thumbImg) thumbImg.src = thumbObjUrl;
-          if (thumbEl) thumbEl.hidden = false;
-          if (input) { input.placeholder = 'Add a caption (optional)…'; input.focus(); }
+          var files = fileInput.files ? Array.prototype.slice.call(fileInput.files) : [];
+          if (!files.length) return;
+          var tooBig = false, roomLeft;
+          files.forEach(function (f) {
+            if (pendingFiles.length >= MAX_PHOTOS) return;
+            if (f.size > 5 * 1024 * 1024) { tooBig = true; return; }
+            pendingFiles.push(f);
+            thumbObjUrls.push(URL.createObjectURL(f));
+          });
+          fileInput.value = '';   // allow re-selecting the same file(s) later
+          renderThumbs();
+          if (input) input.focus();
+          if (tooBig) alert('Some images were larger than 5 MB and were skipped. Please choose smaller ones.');
+          if (files.length + (pendingFiles.length - files.length) > MAX_PHOTOS) {
+            alert('You can attach up to ' + MAX_PHOTOS + ' photos per message.');
+          }
         });
       }
-      if (thumbRemove) thumbRemove.addEventListener('click', clearPhoto);
 
       // One Send button: sends the photo (with the text as caption) if one is
       // selected, otherwise sends the text message.
+      // Upload one file to the chat-media bucket, resolving to its public URL.
+      function uploadOne(file) {
+        var safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        var path = requestId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '_' + safe;
+        return client.storage.from(CFG.CHAT_MEDIA_BUCKET).upload(path, file, { cacheControl: '3600', upsert: false })
+          .then(function (res) {
+            if (res.error) throw new Error(res.error.message);
+            var pub = client.storage.from(CFG.CHAT_MEDIA_BUCKET).getPublicUrl(path);
+            return (pub.data && pub.data.publicUrl) || '';
+          });
+      }
+
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var body = (input.value || '').trim();
 
-        if (pendingFile) {
-          var file = pendingFile;
+        if (pendingFiles.length) {
+          var files = pendingFiles.slice();     // snapshot
           var caption = body;
-          sendBtn.disabled = true; sendBtn.textContent = 'Sending…';
-          var safe = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-          var path = requestId + '/' + Date.now() + '_' + Math.random().toString(36).slice(2, 7) + '_' + safe;
-          client.storage.from(CFG.CHAT_MEDIA_BUCKET).upload(path, file, { cacheControl: '3600', upsert: false })
-            .then(function (res) {
-              if (res.error) throw new Error(res.error.message);
-              var pub = client.storage.from(CFG.CHAT_MEDIA_BUCKET).getPublicUrl(path);
-              return insertMessage({
-                body: caption || '[photo]',
-                attachment_url: (pub.data && pub.data.publicUrl) || '',
-                attachment_type: 'image'
-              }, '📷 Photo');
-            })
+          var total = files.length;
+          sendBtn.disabled = true;
+          sendBtn.textContent = total > 1 ? 'Sending 0/' + total + '…' : 'Sending…';
+
+          // Upload every photo, then insert one message row per photo (the
+          // FIRST row carries the caption; the rest are photo-only bubbles).
+          var done = 0;
+          var uploads = files.map(function (f) {
+            return uploadOne(f).then(function (url) {
+              done++;
+              if (total > 1) sendBtn.textContent = 'Sending ' + done + '/' + total + '…';
+              return url;
+            });
+          });
+
+          Promise.all(uploads).then(function (urls) {
+            // Insert sequentially so bubbles keep their order.
+            var chain = Promise.resolve();
+            urls.forEach(function (url, i) {
+              if (!url) return;
+              chain = chain.then(function () {
+                return insertMessage({
+                  body: i === 0 ? (caption || '[photo]') : '[photo]',
+                  attachment_url: url,
+                  attachment_type: 'image'
+                }, total > 1 ? '📷 ' + total + ' photos' : '📷 Photo');
+              });
+            });
+            return chain;
+          })
             .then(function () { input.value = ''; clearPhoto(); })
-            .catch(function (err) { alert('Could not share photo: ' + err.message); })
+            .catch(function (err) { alert('Could not share photos: ' + err.message); })
             .then(function () { sendBtn.disabled = false; sendBtn.textContent = 'Send'; });
           return;
         }
