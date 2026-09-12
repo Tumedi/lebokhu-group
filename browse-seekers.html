@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Job Seekers — LeKhuBo Connect</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <meta name="theme-color" content="#0B2038">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="admin-body">
+
+  <header class="admin-header">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand"><img src="assets/logo.svg" alt="LeKhuBo Connect" class="logo"></a>
+      <nav class="main-nav" id="mainNav" aria-label="Account navigation">
+        <a href="my-services.html">My Services</a>
+        <a href="services-directory.html">Directory</a>
+        <span class="admin-user" id="who"></span>
+        <a href="#" id="logoutBtn" hidden>Log Out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <div class="container">
+      <div class="dash-head">
+        <div>
+          <p class="kicker">Service Provider</p>
+          <h1>Browse Job Seekers</h1>
+        </div>
+        <div class="dash-actions">
+          <a href="my-services.html" class="btn btn-outline btn-sm">← Back to My Services</a>
+        </div>
+      </div>
+
+      <div class="notice" id="notConfigured" hidden>
+        ⚠️ This page isn't available yet — the database connection isn't configured.
+      </div>
+
+      <p class="chat-intro">
+        Have the tools and the work but need extra hands? Browse people who registered as job
+        seekers, view their skills and experience, and reach out directly to hire them for your jobs.
+      </p>
+
+      <!-- Filters -->
+      <div class="job-filters admin-filters">
+        <div class="field">
+          <label for="q">Search</label>
+          <input type="text" id="q" placeholder="Name, skills, location…">
+        </div>
+        <div class="field">
+          <label for="fSector">Sector</label>
+          <select id="fSector"><option value="">All sectors</option></select>
+        </div>
+        <div class="field">
+          <label for="fExp">Experience</label>
+          <select id="fExp"><option value="">All experience</option></select>
+        </div>
+        <div class="field">
+          <label for="fCv">CV</label>
+          <select id="fCv">
+            <option value="">Any</option>
+            <option value="yes">Has CV</option>
+            <option value="no">No CV</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="results-count" id="count">Loading…</p>
+
+      <div class="seeker-grid" id="seekerGrid"></div>
+      <div class="no-results" id="noRows" hidden><p>No job seekers match your filters.</p></div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/browse-seekers.js"></script>
+</body>
+</html>
