@@ -82,6 +82,8 @@
           location.replace(dest.href);
           return Promise.reject(new Error('wrong-role'));
         }
+        // Logged in and allowed → arm the 3-minute inactivity auto-logout.
+        AUTH.startIdleLogout(3);
         return { user: user, profile: profile };
       });
     });
@@ -92,6 +94,36 @@
     _profileCache = null;
     if (!c) return Promise.resolve();
     return c.auth.signOut();
+  };
+
+  // ---- Idle auto-logout ----
+  // Signs the user out after a period of no activity (default 3 minutes) and
+  // sends them to the login page. Safe to call more than once (only arms once).
+  var _idleTimer = null;
+  var _idleArmed = false;
+  AUTH.startIdleLogout = function (minutes) {
+    if (_idleArmed) return;            // don't double-bind listeners
+    _idleArmed = true;
+    var ms = (minutes || 3) * 60 * 1000;
+
+    function doLogout() {
+      _idleArmed = false;
+      AUTH.signOut().then(function () {
+        location.href = 'login.html?timeout=1';
+      }).catch(function () {
+        location.href = 'login.html?timeout=1';
+      });
+    }
+    function reset() {
+      if (_idleTimer) clearTimeout(_idleTimer);
+      _idleTimer = setTimeout(doLogout, ms);
+    }
+
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click', 'visibilitychange']
+      .forEach(function (evt) {
+        document.addEventListener(evt, reset, { passive: true });
+      });
+    reset();   // start the countdown
   };
 
   // Update the top nav to reflect auth state.
