@@ -11,7 +11,11 @@
 -- up client-side and does NOT need this — this is only for the anon link page.
 -- ============================================================
 
-create or replace function public.get_request_by_token(p_id uuid, p_token uuid)
+-- Drop first: Postgres cannot change a function's return columns via
+-- CREATE OR REPLACE (error 42P13). Safe — it's only a function definition.
+drop function if exists public.get_request_by_token(uuid, uuid);
+
+create function public.get_request_by_token(p_id uuid, p_token uuid)
 returns table (
   id uuid,
   provider_name text,
