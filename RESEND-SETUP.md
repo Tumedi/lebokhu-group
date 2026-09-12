@@ -122,3 +122,55 @@ supabase secrets set POST_RECEIVED_BCC="Tbmadihlaba@gmail.com"
 ## What the function sends
 A branded HTML email to the employer confirming their post is approved and live, including the
 job details, with `reply-to` set to `Tbmadihlaba@gmail.com` so replies reach you.
+
+
+---
+
+# Auth Confirmation & Password-Reset Emails (Custom SMTP via Resend)
+
+The **Edge Functions above** handle *app* emails (approvals, welcome, etc.). But the
+**account confirmation email** and **password-reset email** are sent by **Supabase Auth
+itself**, NOT by your code — so they are controlled by Supabase's email settings, not by any
+Edge Function.
+
+## Symptom
+- A user signs up and sees *"Account created! Please check your email…"* (this means the
+  account WAS created in `auth.users` and is waiting for confirmation).
+- ...but **no confirmation email ever arrives.**
+
+## Cause
+Supabase's **built-in email service is heavily rate-limited (only a few per hour) and is not
+meant for production** — it frequently drops messages or lands them in spam. This is the
+default until you configure Custom SMTP.
+
+## Fix — point Supabase Auth at your Resend account
+Because the domain `lebokhu-group.co.za` is already verified in Resend, use it for auth emails too.
+
+1. **Supabase Dashboard → Authentication → Emails → SMTP Settings** → enable **Custom SMTP**:
+
+   | Field | Value |
+   |-------|-------|
+   | Host | `smtp.resend.com` |
+   | Port | `465` (SSL) or `587` (TLS) |
+   | Username | `resend` |
+   | Password | your Resend API key (`re_...`) |
+   | Sender email | `no-reply@lebokhu-group.co.za` |
+   | Sender name | `LeKhuBo Connect` |
+
+2. **Authentication → URL Configuration:**
+   - **Site URL:** `https://tumedi.github.io/lebokhu-group/`
+   - **Redirect URLs (allow-list):** add
+     `https://tumedi.github.io/lebokhu-group/login.html`
+     and `https://tumedi.github.io/lebokhu-group/reset-password.html`
+
+3. **Authentication → Providers → Email:** confirm **"Confirm email"** is ON (if you want
+   confirmation) and **"Allow new users to sign up"** is ON.
+
+4. Save, then do a fresh test signup — or use the **"Resend confirmation"** link now on the
+   signup and login pages.
+
+## Note on where signup accounts live
+Accounts created via **signup.html** live in **`auth.users`** + **`public.profiles`** — they do
+**NOT** appear in the admin **"Job Seekers"** tab, which reads the separate legacy
+**`job_seekers`** table (filled only by `register.html`). Use **Authentication → Users** or
+`supabase-verify.sql` (queries 0 / 0b) to see signup accounts.
