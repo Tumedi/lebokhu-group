@@ -174,3 +174,53 @@ Accounts created via **signup.html** live in **`auth.users`** + **`public.profil
 **NOT** appear in the admin **"Job Seekers"** tab, which reads the separate legacy
 **`job_seekers`** table (filled only by `register.html`). Use **Authentication → Users** or
 `supabase-verify.sql` (queries 0 / 0b) to see signup accounts.
+
+
+---
+
+# Chat "New Message" Notifications
+
+When someone sends a chat message, the other party can be notified two ways:
+
+## 1. Browser (OS) notification — no setup, no email needed
+While a dashboard is open (provider `my-services.html` or homeowner `my-requests.html`),
+an on-screen unread badge + browser tab-title alert update every ~8s, and a native OS
+notification fires when the unread count **increases** and the tab is **not** focused.
+The browser asks for notification permission the first time the user opens a chat. This
+works with zero backend configuration — it's purely client-side.
+
+## 2. Email notification — via the `send-chat-notification` Edge Function (Resend)
+An email is sent to the OTHER party when a message is sent. This requires the
+`send-chat-notification` function to be deployed (see the deploy list above) and a valid
+`RESEND_API_KEY` secret. If it isn't deployed, chat still works — the email is just skipped.
+
+### Direction (now bidirectional)
+- **Provider → Homeowner:** works out of the box. The provider dashboard already passes the
+  homeowner's email into the chat.
+- **Homeowner → Provider:** now also works.
+  - **Logged-in homeowner** (`my-requests.html`): the provider's email is looked up
+    client-side from the `service_providers` table (approved listings are publicly readable)
+    via the request's `provider_id`. **No SQL change needed.**
+  - **Anonymous homeowner link** (`chat.html?r=..&t=..`): the token lookup RPC must expose the
+    provider email. Run **`supabase-chat-provider-email.sql`** ONCE (SQL Editor → paste → Run).
+    It extends `get_request_by_token()` to return `provider_email` for the correct
+    (request id + access_token) pair only. If you don't run it, the anon page still works —
+    the provider just isn't emailed from that page (graceful fallback, no error).
+
+### Optional sender overrides (defaults shown)
+```bash
+supabase secrets set CHAT_FROM="LeKhuBo Connect <no-reply@lebokhu-group.co.za>"
+supabase secrets set CHAT_BCC="Tbmadihlaba@gmail.com"
+```
+
+### Throttling
+The chat email is throttled client-side to at most one per ~30s per open thread, so a burst
+of messages won't send a flood of emails.
+
+### Test
+1. Deploy the function: `supabase functions deploy send-chat-notification --no-verify-jwt`.
+2. (Optional, for the anon link page) run `supabase-chat-provider-email.sql`.
+3. Open a conversation from BOTH sides (provider `my-services.html`, homeowner
+   `my-requests.html`) and send a message each way. The other party should receive a
+   "New message … — LeKhuBo Connect" email (check spam first time). A BCC copy goes to
+   `Tbmadihlaba@gmail.com`.
