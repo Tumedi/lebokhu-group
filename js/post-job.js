@@ -46,6 +46,24 @@
 
   function val(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; }
 
+  // Fire the "we've received your job post" confirmation email (best-effort).
+  // Uses the send-post-received-email Edge Function; silently skips on failure
+  // so a missing/undeployed function never blocks posting.
+  function sendPostReceivedEmail(client, record) {
+    if (!client || !client.functions || !record.contact_email) return;
+    client.functions.invoke('send-post-received-email', {
+      body: {
+        contact_email: record.contact_email,
+        contact_name: record.contact_name,
+        company: record.company,
+        title: record.title,
+        sector: record.sector,
+        location: record.location,
+        job_type: record.job_type
+      }
+    }).catch(function () { /* email is optional; ignore errors */ });
+  }
+
   function validate() {
     var ok = true;
     form.querySelectorAll('[required]').forEach(function (field) {
@@ -90,8 +108,11 @@
 
     client.from(CFG.POSTS_TABLE).insert([record]).then(function (res) {
       if (res.error) throw new Error(res.error.message);
+      // Best-effort "we've received your job post" email (never blocks the post).
+      sendPostReceivedEmail(client, record);
       status.innerHTML = '✓ Thank you! Your job post has been submitted and will appear once our ' +
-        'team approves it. You can <a href="post-job.html">post another</a> or ' +
+        'team approves it. A confirmation email is on its way. You can ' +
+        '<a href="post-job.html">post another</a> or ' +
         '<a href="employer-jobs.html">view current jobs</a>.';
       status.className = 'form-status ok';
       form.reset();
