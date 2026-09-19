@@ -8,5 +8,6 @@ Disallow: /my-requests.html
 Disallow: /my-services.html
 Disallow: /browse-seekers.html
 Disallow: /reset-password.html
+Disallow: /promo.html
 
 Sitemap: https://lekhubo-connect.co.za/sitemap.xml

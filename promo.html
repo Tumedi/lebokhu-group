@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeKhuBo Connect — Promo</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <style>
+    :root{
+      --gold:#E4A020; --gold-light:#F6C453; --gold-dark:#B87910;
+      --teal:#0C6B57; --teal-light:#1FA98A; --ink:#0B2038; --ink-2:#173A5E;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:#000;color:#fff;display:grid;place-items:center;overflow:hidden;
+    }
+
+    /* 9:16 stage (portrait, perfect for Reels/TikTok/WhatsApp status). */
+    .stage{
+      position:relative;width:405px;height:720px;max-height:100vh;max-width:100vw;
+      background:radial-gradient(120% 90% at 50% 0%, var(--ink-2) 0%, var(--ink) 55%, #06131f 100%);
+      overflow:hidden;border-radius:4px;
+    }
+    @media (max-width:430px){ .stage{width:100vw;height:100vh;border-radius:0} }
+
+    /* Soft floating brand glow */
+    .stage::before{
+      content:"";position:absolute;inset:-20%;
+      background:radial-gradient(40% 30% at 30% 20%, rgba(228,160,32,.18), transparent 60%),
+                 radial-gradient(40% 30% at 75% 80%, rgba(12,107,87,.22), transparent 60%);
+      animation:drift 12s ease-in-out infinite alternate;
+    }
+    @keyframes drift{ from{transform:translate(-3%, -2%)} to{transform:translate(3%, 2%)} }
+
+    /* Each scene stacks, fades in/out on its own schedule */
+    .scene{position:absolute;inset:0;display:grid;place-items:center;text-align:center;
+      padding:36px;opacity:0;}
+    .scene .inner{max-width:340px}
+
+    /* Timeline: total loop 24s. Each scene ~ visible window. */
+    .s1{animation:show 24s infinite; animation-delay:0s}
+    .s2{animation:show 24s infinite; animation-delay:4s}
+    .s3{animation:show 24s infinite; animation-delay:8s}
+    .s4{animation:show 24s infinite; animation-delay:12s}
+    .s5{animation:show 24s infinite; animation-delay:16s}
+    .s6{animation:show 24s infinite; animation-delay:20s}
+    /* Each scene visible ~4s within the 24s loop (16.6% window). */
+    @keyframes show{
+      0%   {opacity:0; transform:translateY(14px) scale(.98)}
+      2%   {opacity:1; transform:translateY(0) scale(1)}
+      15%  {opacity:1; transform:translateY(0) scale(1)}
+      17%  {opacity:0; transform:translateY(-10px) scale(1.01)}
+      100% {opacity:0}
+    }
+
+    .logo{width:120px;height:120px;margin:0 auto 20px;animation:pop .8s ease both}
+    @keyframes pop{ from{transform:scale(.6);opacity:0} to{transform:scale(1);opacity:1} }
+
+    .brand{font-size:2rem;font-weight:800;letter-spacing:.5px}
+    .brand .k{color:var(--gold-light)} .brand .b{color:var(--teal-light)}
+    .tag{color:#9fb2c4;font-size:.95rem;margin-top:8px;letter-spacing:2px;text-transform:uppercase}
+
+    h2{font-size:1.9rem;line-height:1.2;margin-bottom:14px}
+    h2 .hi{color:var(--gold-light)}
+    .lead{color:#c7d3de;font-size:1.05rem;line-height:1.5}
+
+    .emoji{font-size:3.2rem;display:block;margin-bottom:16px}
+    .pill{display:inline-block;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+      border-radius:999px;padding:8px 16px;margin:5px 4px;font-size:.9rem;font-weight:600}
+    .pill.gold{background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));color:#3a2600;border:none}
+
+    .cta-btn{display:inline-block;margin-top:22px;background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));
+      color:#3a2600;font-weight:800;padding:14px 30px;border-radius:999px;font-size:1.05rem;
+      box-shadow:0 12px 30px rgba(228,160,32,.45)}
+    .url{margin-top:20px;font-size:1.15rem;font-weight:800;color:var(--gold-light);letter-spacing:.5px}
+    .small{color:#8496a6;font-size:.8rem;margin-top:10px}
+
+    /* progress bar at the bottom shows the 24s loop */
+    .bar{position:absolute;left:0;bottom:0;height:4px;background:var(--gold-light);
+      animation:fill 24s linear infinite;transform-origin:left}
+    @keyframes fill{ from{transform:scaleX(0)} to{transform:scaleX(1)} }
+
+    .replay{position:absolute;top:10px;right:12px;background:rgba(255,255,255,.1);border:none;color:#fff;
+      border-radius:999px;padding:6px 12px;font-size:.75rem;cursor:pointer;z-index:5}
+  </style>
+</head>
+<body>
+  <div class="stage" id="stage">
+
+    <!-- Scene 1 — Brand open -->
+    <div class="scene s1">
+      <div class="inner">
+        <img class="logo" src="assets/logo-white.svg" alt="LeKhuBo Connect"
+             onerror="this.src='assets/icon-512.svg'">
+        <div class="brand"><span class="k">LeKhu</span><span class="b">Bo</span> Connect</div>
+        <div class="tag">Proudly South African</div>
+      </div>
+    </div>
+
+    <!-- Scene 2 — The problem/hook -->
+    <div class="scene s2">
+      <div class="inner">
+        <span class="emoji">🔎</span>
+        <h2>Looking for <span class="hi">work</span>?<br>Need a <span class="hi">reliable hand</span>?</h2>
+        <p class="lead">LeKhuBo Connect brings people, skills and opportunity together — right in your area.</p>
+      </div>
+    </div>
+
+    <!-- Scene 3 — Job seekers -->
+    <div class="scene s3">
+      <div class="inner">
+        <span class="emoji">👤</span>
+        <h2>For <span class="hi">Job Seekers</span></h2>
+        <p class="lead">Find local &amp; domestic work. Qualified or not — everyone deserves a chance.</p>
+      </div>
+    </div>
+
+    <!-- Scene 4 — Service providers -->
+    <div class="scene s4">
+      <div class="inner">
+        <span class="emoji">🛠️</span>
+        <h2>For <span class="hi">Service Providers</span></h2>
+        <p class="lead">List your service free &amp; get hired.</p>
+        <div style="margin-top:12px">
+          <span class="pill">Salon</span><span class="pill">Gardening</span><span class="pill">Barber</span>
+          <span class="pill">Painting</span><span class="pill">Cleaning</span><span class="pill">Transport</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 5 — Hire with confidence -->
+    <div class="scene s5">
+      <div class="inner">
+        <span class="emoji">🤝</span>
+        <h2>Hire with <span class="hi">confidence</span></h2>
+        <p class="lead">Search trusted local providers, chat directly, and connect — all in one app.</p>
+        <div style="margin-top:12px">
+          <span class="pill gold">⭐ Reviewed &amp; Trusted</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scene 6 — Call to action -->
+    <div class="scene s6">
+      <div class="inner">
+        <img class="logo" src="assets/logo-white.svg" alt="LeKhuBo Connect" style="width:80px;height:80px"
+             onerror="this.src='assets/icon-512.svg'">
+        <h2>Join <span class="hi">LeKhuBo Connect</span> today</h2>
+        <span class="cta-btn">Get Started — It's Free</span>
+        <div class="url">lekhubo-connect.co.za</div>
+        <div class="small">Local jobs &amp; trusted home services</div>
+      </div>
+    </div>
+
+    <div class="bar"></div>
+    <button class="replay" onclick="location.reload()">↻ Replay</button>
+  </div>
+</body>
+</html>
