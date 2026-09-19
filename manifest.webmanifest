@@ -1,7 +1,7 @@
 {
   "name": "LeKhuBo Connect",
   "short_name": "LeKhuBo",
-  "description": "Connecting People, Resources & Opportunity. Browse jobs and register as a job seeker with LeKhuBo Connect.",
+  "description": "Local jobs & trusted home services. Find domestic and local work, offer your services (salon call-ins, gardening, barbers, painters, cleaners and more), or hire trusted local providers on LeKhuBo Connect.",
   "lang": "en-ZA",
   "dir": "ltr",
   "start_url": "./index.html",
@@ -40,10 +40,10 @@
       "icons": [{ "src": "assets/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },
     {
-      "name": "Register",
-      "short_name": "Register",
-      "description": "Register as a job seeker",
-      "url": "./register.html",
+      "name": "Find a Service",
+      "short_name": "Services",
+      "description": "Find a trusted local service provider",
+      "url": "./services-directory.html",
       "icons": [{ "src": "assets/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     }
   ]
