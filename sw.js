@@ -8,7 +8,7 @@
    ============================================================ */
 'use strict';
 
-var CACHE_VERSION = 'lekhubo-v25';
+var CACHE_VERSION = 'lekhubo-v26';
 var CACHE_NAME = 'lekhubo-cache-' + CACHE_VERSION;
 
 // Paths are relative so the SW works whether the site is served from
@@ -16,11 +16,11 @@ var CACHE_NAME = 'lekhubo-cache-' + CACHE_VERSION;
 var PRECACHE_URLS = [
   './',
   './index.html',
-  './jobs.html',
+  './employer-jobs.html',
   './register.html',
   './css/styles.css',
   './js/main.js',
-  './js/jobs.js',
+  './js/employer-jobs.js',
   './js/register.js',
   './assets/logo.svg',
   './assets/logo-white.svg',

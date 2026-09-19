@@ -3,13 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Posting Coming Soon — LeKhuBo Connect</title>
-  <meta name="robots" content="noindex,nofollow">
+  <title>Post a Job — LeKhuBo Connect</title>
+  <meta name="description" content="Potential employers: post a job on LeKhuBo Connect and reach local job seekers.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <meta name="theme-color" content="#0B2038">
-  <!-- Employer / company job-posting is temporarily disabled while we focus on
-       job seekers and service providers. Send visitors to the homepage. -->
-  <meta http-equiv="refresh" content="6; url=index.html">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -21,26 +18,115 @@
       </a>
       <nav class="main-nav" id="mainNav" aria-label="Main navigation">
         <a href="index.html#about">About</a>
+        <a href="employer-jobs.html">Jobs</a>
         <a href="services-directory.html">Find a Service</a>
-        <a href="jobs.html">Jobs</a>
       </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
 
+  <section class="page-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <p class="eyebrow">For Potential Employers</p>
+      <h1>Post a Job</h1>
+      <p class="lead">Reach local job seekers on LeKhuBo Connect. Tell us about the role — your
+        post goes live once our team approves it.</p>
+    </div>
+  </section>
+
   <section class="section">
-    <div class="container narrow" style="text-align:center">
-      <p class="kicker">Coming Soon</p>
-      <h1>Employer job posting is on the way</h1>
-      <p class="lead">
-        We're currently focused on connecting <strong>job seekers</strong> with local work and
-        helping <strong>people</strong> find trusted <strong>service providers</strong>.
-        Employer job posting will return as LeKhuBo Connect grows.
-      </p>
-      <p style="margin-top:24px">
-        <a href="services-directory.html" class="btn btn-primary">Find a Service</a>
-        <a href="jobs.html" class="btn btn-ghost">Browse Jobs</a>
-      </p>
-      <p class="hint" style="margin-top:18px">Taking you to the homepage…</p>
+    <div class="container narrow">
+      <form class="reg-form" id="jobForm" novalidate>
+        <div class="notice" id="notConfigured" hidden>
+          ⚠️ Job posting isn't available yet — the database connection isn't configured.
+        </div>
+
+        <h3 class="form-section-title">The role</h3>
+        <div class="field">
+          <label for="title">Job title *</label>
+          <input type="text" id="title" placeholder="e.g. General Worker, Cleaner, Driver" required>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="sector">Sector</label>
+            <select id="sector">
+              <option value="">Choose…</option>
+              <option>Administration</option>
+              <option>Call Centre</option>
+              <option>Cleaning / Domestic</option>
+              <option>Construction</option>
+              <option>Finance</option>
+              <option>Hospitality</option>
+              <option>Information Technology</option>
+              <option>Logistics &amp; Warehousing</option>
+              <option>Retail</option>
+              <option>Security</option>
+              <option>Transport / Driving</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="level">Experience level</label>
+            <select id="level">
+              <option>Entry-level / No experience</option>
+              <option>Graduate</option>
+              <option>Skilled / Experienced</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="location">Location *</label>
+            <input type="text" id="location" placeholder="e.g. Kempton Park, Gauteng" required>
+          </div>
+          <div class="field">
+            <label for="jobType">Job type</label>
+            <select id="jobType">
+              <option>Full-time</option>
+              <option>Part-time</option>
+              <option>Contract</option>
+              <option>Temporary</option>
+              <option>Once-off / Piece job</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="description">Job description *</label>
+          <textarea id="description" rows="5" required placeholder="What will the person do? Any requirements, hours, pay, and how to stand out."></textarea>
+        </div>
+        <div class="field">
+          <label for="closingDate">Closing date (optional)</label>
+          <input type="date" id="closingDate">
+        </div>
+
+        <h3 class="form-section-title">Contact details</h3>
+        <div class="field">
+          <label for="company">Company / your name *</label>
+          <input type="text" id="company" placeholder="Business name or your name" required>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="contactName">Contact person</label>
+            <input type="text" id="contactName">
+          </div>
+          <div class="field">
+            <label for="contactPhone">Contact phone</label>
+            <input type="tel" id="contactPhone">
+          </div>
+        </div>
+        <div class="field">
+          <label for="contactEmail">Contact email *</label>
+          <input type="email" id="contactEmail" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Submit Job Post</button>
+        <p class="form-status" id="jobStatus" role="status" aria-live="polite"></p>
+        <p class="hint center">Your post is reviewed before it appears publicly.
+          <a href="employer-jobs.html">See current jobs</a>.</p>
+      </form>
     </div>
   </section>
 
@@ -50,6 +136,10 @@
     </div>
   </footer>
 
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/post-job.js"></script>
 </body>
 </html>

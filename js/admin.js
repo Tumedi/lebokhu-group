@@ -80,7 +80,7 @@
       window.LEBOKHU_AUTH.startIdleLogout(2);
     }
     loadData();
-    // loadPosts();  // employer job-posting module temporarily disabled
+    loadPosts();
     loadApps();
     loadProviders();
     loadRequests();

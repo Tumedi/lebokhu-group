@@ -181,7 +181,7 @@
         // but not if it just points to the page they're already on.
         var shortcuts = {
           homeowner: { href: 'services-directory.html', label: '＋ Request a Service' },
-          seeker:    { href: 'jobs.html',                label: 'Browse Jobs' },
+          seeker:    { href: 'employer-jobs.html',       label: 'Browse Jobs' },
           provider:  { href: 'list-service.html',        label: 'Edit My Listing' }
         };
         var sc = shortcuts[role];

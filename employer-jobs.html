@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jobs — LeKhuBo Connect</title>
+  <meta name="description" content="Browse jobs posted by employers on LeKhuBo Connect and apply for local work.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0B2038">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header class="site-header" id="top">
+    <div class="container nav-inner">
+      <a href="index.html" class="brand" aria-label="LeKhuBo Connect home">
+        <img src="assets/logo.svg" alt="LeKhuBo Connect" class="logo logo-dark">
+      </a>
+      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
+        <a href="index.html#about">About</a>
+        <a href="employer-jobs.html" class="active">Jobs</a>
+        <a href="services-directory.html">Find a Service</a>
+        <a href="signup.html" class="nav-cta">Sign Up</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <section class="page-hero">
+    <div class="hero-bg" aria-hidden="true"></div>
+    <div class="container">
+      <p class="eyebrow">Jobs</p>
+      <h1>Jobs posted by employers</h1>
+      <p class="lead">Real opportunities posted by employers on LeKhuBo Connect. Find a role and
+        apply — qualified or not, everyone deserves a chance.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+
+      <!-- Filters -->
+      <div class="job-filters">
+        <div class="field">
+          <label for="search">Search</label>
+          <input type="text" id="search" placeholder="Title, keyword, company…">
+        </div>
+        <div class="field">
+          <label for="sector">Sector</label>
+          <select id="sector"><option value="">All sectors</option></select>
+        </div>
+        <div class="field">
+          <label for="level">Level</label>
+          <select id="level"><option value="">All levels</option></select>
+        </div>
+        <div class="field">
+          <label for="loc">Location</label>
+          <select id="loc"><option value="">All locations</option></select>
+        </div>
+      </div>
+
+      <p class="results-count" id="resultsCount">Loading jobs…</p>
+      <div class="job-list" id="jobList"></div>
+      <div class="no-results" id="noResults" hidden>
+        <p>No jobs are posted yet. Please check back soon — new opportunities are added as
+        employers post them.</p>
+      </div>
+
+      <div class="jobs-cta" style="margin-top:26px">
+        <h3>Are you an employer?</h3>
+        <p>Post a job and reach local job seekers.</p>
+        <a href="post-job.html" class="btn btn-outline btn-sm">Post a Job</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== APPLY MODAL ===== -->
+  <div class="modal" id="applyModal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="applyTitle">
+      <button class="modal-close" data-close aria-label="Close">&times;</button>
+      <h3 id="applyTitle">Apply for this job</h3>
+      <p class="modal-role">Role: <strong id="applyRole"></strong></p>
+      <p class="form-status" id="applyNote" role="status" aria-live="polite"></p>
+      <a href="#" class="btn btn-primary btn-block" id="applyProceed">Continue</a>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-bottom">
+      <div class="container"><p>&copy; <span id="year"></span> LeKhuBo Connect. All rights reserved. &middot; <a href="privacy.html">Privacy Policy</a></p></div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/employer-jobs.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

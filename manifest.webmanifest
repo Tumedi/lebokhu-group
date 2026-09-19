@@ -55,7 +55,7 @@
       "name": "Browse Jobs",
       "short_name": "Jobs",
       "description": "See current job opportunities",
-      "url": "./jobs.html",
+      "url": "./employer-jobs.html",
       "icons": [{ "src": "assets/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml" }]
     },
     {
