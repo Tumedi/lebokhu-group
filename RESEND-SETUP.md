@@ -36,7 +36,7 @@ supabase link --project-ref efupodoraphybvzttrjj
 supabase secrets set RESEND_API_KEY=re_your_key_here
 # Optional overrides (defaults shown):
 supabase secrets set APPROVAL_FROM="LeKhuBo Connect <onboarding@resend.dev>"
-supabase secrets set APPROVAL_BCC="Tbmadihlaba@gmail.com"
+supabase secrets set APPROVAL_BCC="info@lekhubo-connect.co.za"
 ```
 After you verify your domain in Resend, change `APPROVAL_FROM` to e.g.
 `"LeKhuBo Connect <jobs@lebokhugroup.co.za>"` for the best deliverability.
@@ -85,9 +85,9 @@ or the browser call will be rejected.
 Optional sender overrides (defaults shown):
 ```bash
 supabase secrets set WELCOME_FROM="LeKhuBo Connect <onboarding@resend.dev>"
-supabase secrets set WELCOME_BCC="Tbmadihlaba@gmail.com"
+supabase secrets set WELCOME_BCC="info@lekhubo-connect.co.za"
 supabase secrets set POST_RECEIVED_FROM="LeKhuBo Connect <onboarding@resend.dev>"
-supabase secrets set POST_RECEIVED_BCC="Tbmadihlaba@gmail.com"
+supabase secrets set POST_RECEIVED_BCC="info@lekhubo-connect.co.za"
 ```
 
 ## Step 6 — Test it
@@ -95,18 +95,18 @@ supabase secrets set POST_RECEIVED_BCC="Tbmadihlaba@gmail.com"
 1. Open your live **admin.html** → log in.
 2. Go to **Job Posts** → **Approve** a post that has a real `contact_email` you can check.
 3. You should see: *"a confirmation email was sent automatically to …"*.
-4. Check that inbox (and Spam the first time). A BCC copy also goes to `Tbmadihlaba@gmail.com`.
+4. Check that inbox (and Spam the first time). A BCC copy also goes to `info@lekhubo-connect.co.za`.
 
 **Welcome email (job seeker):**
 1. Open **register.html** → submit a registration using a real email you can check.
 2. That inbox should receive a "Thanks for registering" email shortly after.
-3. A BCC copy also goes to `Tbmadihlaba@gmail.com`.
+3. A BCC copy also goes to `info@lekhubo-connect.co.za`.
 (If `send-welcome-email` isn't deployed, registration still works — the welcome email is just skipped.)
 
 **Post-received email (employer):**
 1. Open **post-job.html** → submit a job post using a real email you can check.
 2. That inbox should receive a "We've received your job post" email shortly after.
-3. A BCC copy also goes to `Tbmadihlaba@gmail.com`.
+3. A BCC copy also goes to `info@lekhubo-connect.co.za`.
 (If `send-post-received-email` isn't deployed, posting still works — the email is just skipped.)
 
 ---
@@ -121,7 +121,7 @@ supabase secrets set POST_RECEIVED_BCC="Tbmadihlaba@gmail.com"
 
 ## What the function sends
 A branded HTML email to the employer confirming their post is approved and live, including the
-job details, with `reply-to` set to `Tbmadihlaba@gmail.com` so replies reach you.
+job details, with `reply-to` set to `info@lekhubo-connect.co.za` so replies reach you.
 
 
 ---
@@ -210,7 +210,7 @@ An email is sent to the OTHER party when a message is sent. This requires the
 ### Optional sender overrides (defaults shown)
 ```bash
 supabase secrets set CHAT_FROM="LeKhuBo Connect <no-reply@lebokhu-group.co.za>"
-supabase secrets set CHAT_BCC="Tbmadihlaba@gmail.com"
+supabase secrets set CHAT_BCC="info@lekhubo-connect.co.za"
 ```
 
 ### Throttling
@@ -223,4 +223,4 @@ of messages won't send a flood of emails.
 3. Open a conversation from BOTH sides (provider `my-services.html`, homeowner
    `my-requests.html`) and send a message each way. The other party should receive a
    "New message … — LeKhuBo Connect" email (check spam first time). A BCC copy goes to
-   `Tbmadihlaba@gmail.com`.
+   `info@lekhubo-connect.co.za`.

@@ -118,7 +118,7 @@ also receive an **email alert** per registration via Web3Forms. A password-prote
 2. **Create the database + storage + rules:** open **SQL Editor → New query**, paste the
    contents of [`supabase-setup.sql`](supabase-setup.sql), and click **Run**.
 3. **Create your admin login:** Dashboard → **Authentication → Users → Add user** →
-   email `Tbmadihlaba@gmail.com` + a strong password. (This is your dashboard login.)
+   email `info@lekhubo-connect.co.za` + a strong password. (This is your dashboard login.)
 4. **Get your keys:** Dashboard → **Project Settings → API** → copy the **Project URL** and
    the **anon public** key.
 5. **Add the keys to the site:** open `js/supabase-config.js` and replace:
@@ -183,7 +183,7 @@ Only registered users can post or apply for jobs. Two roles:
 4. **Make yourself admin:** sign up on the site (as anything), confirm your email, then run in SQL Editor:
    ```sql
    update public.profiles set role = 'admin'
-   where id = (select id from auth.users where email = 'Tbmadihlaba@gmail.com');
+   where id = (select id from auth.users where email = 'info@lekhubo-connect.co.za');
    ```
    This lets your admin dashboard see & manage ALL applications and posts.
 

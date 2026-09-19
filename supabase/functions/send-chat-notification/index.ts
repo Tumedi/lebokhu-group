@@ -39,7 +39,7 @@ serve(async (req: Request) => {
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const FROM = Deno.env.get("CHAT_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
-    const BCC = Deno.env.get("CHAT_BCC") ?? "Tbmadihlaba@gmail.com";
+    const BCC = Deno.env.get("CHAT_BCC") ?? "info@lekhubo-connect.co.za";
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ error: "RESEND_API_KEY is not configured" }),
         { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
@@ -78,7 +78,7 @@ serve(async (req: Request) => {
           ${linkBtn}
           <p style="color:#5a6b7b;font-size:13px">Reply from your chat to keep the conversation going.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:Tbmadihlaba@gmail.com" style="color:#0C6B57">Tbmadihlaba@gmail.com</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
         </div>
       </div>`;
 
@@ -87,7 +87,7 @@ serve(async (req: Request) => {
       `${who} sent you a new message${svc} on LeKhuBo Connect.\n\n` +
       (preview ? `"${preview}"\n\n` : "") +
       (chat_url ? `Open the chat: ${chat_url}\n\n` : "") +
-      `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -96,7 +96,7 @@ serve(async (req: Request) => {
         from: FROM,
         to: [recipient_email],
         bcc: BCC ? [BCC] : undefined,
-        reply_to: "Tbmadihlaba@gmail.com",
+        reply_to: "info@lekhubo-connect.co.za",
         subject: "New message" + (service ? " about " + service : "") + " — LeKhuBo Connect",
         html, text,
       }),

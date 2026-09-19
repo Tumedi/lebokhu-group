@@ -79,7 +79,7 @@ Bubblewrap prints the **SHA-256 fingerprint** at the end (also: `bubblewrap fing
 2. **Create app** → App name **LeKhuBo Connect**, language English (South Africa), type **App**, **Free**.
 3. **Store listing:** short + full description (reuse the manifest description), app icon
    (512×512 PNG), feature graphic (1024×500), at least 2 phone screenshots, category **Business**,
-   contact email `Tbmadihlaba@gmail.com`, and **Privacy policy URL**
+   contact email `info@lekhubo-connect.co.za`, and **Privacy policy URL**
    `https://lekhubo-connect.co.za/privacy.html`.
 4. **Release → Production (or Internal testing first) → Create release** → upload the **`.aab`**.
 5. Complete **Content rating**, **Data safety**, **Target audience** (18+), and **App access**
@@ -110,7 +110,7 @@ Bubblewrap prints the **SHA-256 fingerprint** at the end (also: `bubblewrap fing
 - Short + full description (reuse the manifest `description`).
 - **Privacy policy URL** (both stores require one — ready at
   `https://lekhubo-connect.co.za/privacy.html`).
-- Contact email: `Tbmadihlaba@gmail.com`.
+- Contact email: `info@lekhubo-connect.co.za`.
 
 ## Notes
 - The `package_name` in `.well-known/assetlinks.json` MUST match the id you use

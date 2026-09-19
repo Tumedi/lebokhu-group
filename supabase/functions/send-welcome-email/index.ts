@@ -8,7 +8,7 @@
 // Deploy:  supabase functions deploy send-welcome-email --no-verify-jwt
 // Secret:  supabase secrets set RESEND_API_KEY=re_xxx
 //          supabase secrets set WELCOME_FROM="LeKhuBo Connect <onboarding@resend.dev>"
-//          supabase secrets set WELCOME_BCC="Tbmadihlaba@gmail.com"
+//          supabase secrets set WELCOME_BCC="info@lekhubo-connect.co.za"
 //
 // NOTE: Registrations come from anonymous (not-logged-in) visitors,
 // so this function is intended to be deployed with --no-verify-jwt.
@@ -45,7 +45,7 @@ serve(async (req: Request) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const FROM =
       Deno.env.get("WELCOME_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
-    const BCC = Deno.env.get("WELCOME_BCC") ?? "Tbmadihlaba@gmail.com";
+    const BCC = Deno.env.get("WELCOME_BCC") ?? "info@lekhubo-connect.co.za";
 
     if (!RESEND_API_KEY) {
       return new Response(
@@ -99,7 +99,7 @@ serve(async (req: Request) => {
           <a href="https://tumedi.github.io/lebokhu-group/jobs.html" style="color:#0C6B57">Jobs page</a>.</p>
           <p>Qualified or not — we're here to help you take the next step. 💪</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:Tbmadihlaba@gmail.com" style="color:#0C6B57">Tbmadihlaba@gmail.com</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
         </div>
         <div style="text-align:center;color:#8496a6;font-size:11px;padding:14px">
           You received this because you registered as a job seeker on lebokhugroup.
@@ -116,7 +116,7 @@ serve(async (req: Request) => {
       (has_cv ? "We've received your CV.\n\n" : "If you have a CV, reply to this email with it attached.\n\n") +
       `Browse current openings: https://tumedi.github.io/lebokhu-group/jobs.html\n\n` +
       `Qualified or not — we're here to help you take the next step.\n\n` +
-      `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -128,7 +128,7 @@ serve(async (req: Request) => {
         from: FROM,
         to: [email],
         bcc: BCC ? [BCC] : undefined,
-        reply_to: "Tbmadihlaba@gmail.com",
+        reply_to: "info@lekhubo-connect.co.za",
         subject: "Thanks for registering — LeKhuBo Connect",
         html,
         text,

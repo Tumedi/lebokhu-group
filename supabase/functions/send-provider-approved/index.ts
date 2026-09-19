@@ -36,7 +36,7 @@ serve(async (req: Request) => {
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const FROM = Deno.env.get("PROVIDER_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
-    const BCC = Deno.env.get("PROVIDER_BCC") ?? "Tbmadihlaba@gmail.com";
+    const BCC = Deno.env.get("PROVIDER_BCC") ?? "info@lekhubo-connect.co.za";
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ error: "RESEND_API_KEY is not configured" }),
         { status: 500, headers: { ...cors, "Content-Type": "application/json" } });
@@ -74,7 +74,7 @@ serve(async (req: Request) => {
           <p style="color:#5a6b7b;font-size:13px">Tip: add a clear profile photo and keep your
           details up to date to attract more customers.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:Tbmadihlaba@gmail.com" style="color:#0C6B57">Tbmadihlaba@gmail.com</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
         </div>
       </div>`;
 
@@ -85,7 +85,7 @@ serve(async (req: Request) => {
       (location ? `Area: ${location}\n` : "") +
       `\nClients in your area can now find you and request your services.\n` +
       `View the directory: https://tumedi.github.io/lebokhu-group/services-directory.html\n\n` +
-      `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -94,7 +94,7 @@ serve(async (req: Request) => {
         from: FROM,
         to: [provider_email],
         bcc: BCC ? [BCC] : undefined,
-        reply_to: "Tbmadihlaba@gmail.com",
+        reply_to: "info@lekhubo-connect.co.za",
         subject: "Your service listing is approved — LeKhuBo Connect",
         html, text,
       }),

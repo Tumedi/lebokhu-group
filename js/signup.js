@@ -148,7 +148,7 @@
         // signup. This is a mail-delivery/config issue on the server side.
         m = 'We could not send your confirmation email right now, so your account ' +
             'was not created. Please try again shortly. If this keeps happening, ' +
-            'contact us at Tbmadihlaba@gmail.com.';
+            'contact us at info@lekhubo-connect.co.za.';
       } else if (/rate limit/i.test(m)) {
         m = 'Too many sign-ups from this address in a short time. Please wait a ' +
             'few minutes and try again.';

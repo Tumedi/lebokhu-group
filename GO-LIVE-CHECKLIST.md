@@ -4,7 +4,7 @@ Work through this top to bottom. Tick each box as you go. Most of it is one-time
 
 - **Live site:** https://lekhubo-connect.co.za/
 - **Repo:** https://github.com/Tumedi/lebokhu-group
-- **Admin email:** Tbmadihlaba@gmail.com
+- **Admin email:** info@lekhubo-connect.co.za
 - **Supabase project ref:** `efupodoraphybvzttrjj`
 - **Sending domain:** `lebokhu-group.co.za` (verified in Resend ✅)
 
@@ -33,12 +33,12 @@ file wasn't run yet.
 ---
 
 ## 2) Make yourself the admin
-1. [ ] Sign up on the live site (`signup.html`) using **Tbmadihlaba@gmail.com** (any role)
+1. [ ] Sign up on the live site (`signup.html`) using **info@lekhubo-connect.co.za** (any role)
 2. [ ] Click the confirmation link in your email
 3. [ ] In Supabase **SQL Editor**, run:
    ```sql
    update public.profiles set role = 'admin'
-   where id = (select id from auth.users where email = 'Tbmadihlaba@gmail.com');
+   where id = (select id from auth.users where email = 'info@lekhubo-connect.co.za');
    ```
    ✅ Expected: **"Success. Rows returned: 1"**
 

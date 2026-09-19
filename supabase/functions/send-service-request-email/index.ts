@@ -36,7 +36,7 @@ serve(async (req: Request) => {
   try {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     const FROM = Deno.env.get("SERVICE_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
-    const ADMIN = Deno.env.get("SERVICE_ADMIN") ?? "Tbmadihlaba@gmail.com";
+    const ADMIN = Deno.env.get("SERVICE_ADMIN") ?? "info@lekhubo-connect.co.za";
     if (!RESEND_API_KEY) {
       return new Response(JSON.stringify({ error: "RESEND_API_KEY is not configured" }),
         { status: 500, headers: { ...cors, "Content-Type": "application/json" } });

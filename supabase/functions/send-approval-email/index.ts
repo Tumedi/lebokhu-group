@@ -48,7 +48,7 @@ serve(async (req: Request) => {
     //   "LeKhuBo Connect <jobs@lebokhugroup.co.za>"
     const FROM =
       Deno.env.get("APPROVAL_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
-    const BCC = Deno.env.get("APPROVAL_BCC") ?? "Tbmadihlaba@gmail.com";
+    const BCC = Deno.env.get("APPROVAL_BCC") ?? "info@lekhubo-connect.co.za";
 
     if (!RESEND_API_KEY) {
       return new Response(
@@ -97,7 +97,7 @@ serve(async (req: Request) => {
           <p>Job seekers can now view and apply for this role. We'll be in touch as suitable candidates come through.</p>
           <p>Thank you for partnering with us to fight youth unemployment in South Africa.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:Tbmadihlaba@gmail.com" style="color:#0C6B57">Tbmadihlaba@gmail.com</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
         </div>
       </div>`;
 
@@ -106,7 +106,7 @@ serve(async (req: Request) => {
       `Good news! Your job post with LeKhuBo Connect has been APPROVED and is now live on our Jobs page.\n\n` +
       `Job title: ${title}\nCompany: ${company}\nSector: ${sector}\nLocation: ${location}\nType: ${job_type}\n\n` +
       `Job seekers can now view and apply for this role. We'll be in touch as suitable candidates come through.\n\n` +
-      `Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
@@ -118,7 +118,7 @@ serve(async (req: Request) => {
         from: FROM,
         to: [contact_email],
         bcc: BCC ? [BCC] : undefined,
-        reply_to: "Tbmadihlaba@gmail.com",
+        reply_to: "info@lekhubo-connect.co.za",
         subject: "Your job post has been approved — LeKhuBo Connect",
         html,
         text,

@@ -492,7 +492,7 @@
       'Thank you for partnering with us to connect people, resources and opportunity.\n\n' +
       'Kind regards,\n' +
       'LeKhuBo Connect\n' +
-      'Tbmadihlaba@gmail.com | 081 798 6359';
+      'info@lekhubo-connect.co.za | 081 798 6359';
 
     var href = 'mailto:' + encodeURIComponent(post.contact_email) +
       '?subject=' + encodeURIComponent(subject) +
@@ -610,7 +610,7 @@
       (reason ? '\nNote from our team: ' + reason + '\n' : '') +
       '\nWe\'d love to help you find the right people. Please feel free to submit an updated post ' +
       'or reply to this email and our team will assist you.\n\n' +
-      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(post.contact_email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
@@ -785,7 +785,7 @@
     var subject = 'Update on your application — LeKhuBo Connect';
     var body = 'Hi ' + name + ',\n\n' + (lines[status] || lines.submitted) +
       '\n\nView your applications: https://lekhubo-connect.co.za/my-applications.html\n\n' +
-      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(app.seeker_email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
@@ -942,7 +942,7 @@
       (job.job_type ? 'Type: ' + job.job_type + '\n' : '') +
       (job.description ? '\n' + job.description + '\n' : '') +
       '\nInterested? Apply / confirm here: ' + applyUrl + '\nOr reply to this email.\n\n' +
-      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(seeker.email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }
@@ -1062,7 +1062,7 @@
       'Great news! Your service listing (' + (p.service || '') + ') has been approved and is now ' +
       'live in the LeKhuBo Connect directory. Clients in your area can now find and contact you.\n\n' +
       'View the directory: https://lekhubo-connect.co.za/services-directory.html\n\n' +
-      'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(p.email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }

@@ -51,12 +51,12 @@ WHY LEKHUBO CONNECT
 Join LeKhuBo Connect today and be part of connecting people, skills and
 opportunity.
 
-Contact: Tbmadihlaba@gmail.com · 081 798 6359 · Glen Marais, Kempton Park.
+Contact: info@lekhubo-connect.co.za · 081 798 6359 · Glen Marais, Kempton Park.
 ```
 
 **App category:** Business
 **Tags:** Jobs, Local services, Home services
-**Contact email:** `Tbmadihlaba@gmail.com`
+**Contact email:** `info@lekhubo-connect.co.za`
 **Contact phone (optional):** `081 798 6359`
 **Website:** `https://lekhubo-connect.co.za/`
 **Privacy policy:** `https://lekhubo-connect.co.za/privacy.html`
@@ -132,7 +132,7 @@ users to provide the service, not with third parties for their own use):
 
 Security practices to tick:
 - Data is encrypted in transit: **Yes**.
-- Users can request that data be deleted: **Yes** (via `Tbmadihlaba@gmail.com`).
+- Users can request that data be deleted: **Yes** (via `info@lekhubo-connect.co.za`).
 - Committed to Play Families policy: N/A (18+).
 
 > Note: the app does NOT collect location. (The chat "Share my location" GPS

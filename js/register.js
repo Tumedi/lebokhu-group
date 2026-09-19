@@ -75,7 +75,7 @@
     // File size guard (avoids a confusing server rejection)
     if (cv && cv.files && cv.files.length && cv.files[0].size > MAX_FILE_BYTES) {
       cv.classList.add('err');
-      status.textContent = 'Your CV is larger than 5 MB. Please upload a smaller file, or email it to Tbmadihlaba@gmail.com.';
+      status.textContent = 'Your CV is larger than 5 MB. Please upload a smaller file, or email it to info@lekhubo-connect.co.za.';
       status.className = 'form-status bad';
       return;
     }
@@ -192,7 +192,7 @@
       })
       .catch(function (err) {
         status.textContent = 'Sorry, something went wrong: ' + err.message +
-          '. Please try again or email us directly at Tbmadihlaba@gmail.com.';
+          '. Please try again or email us directly at info@lekhubo-connect.co.za.';
         status.className = 'form-status bad';
       })
       .then(function () {
