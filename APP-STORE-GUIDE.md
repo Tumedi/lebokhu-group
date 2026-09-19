@@ -23,41 +23,68 @@ loads your existing website full-screen. You reuse the live PWA; almost no new c
 
 **Cost:** one-time **$25** Google Play developer registration.
 
-### Step 1 — Icons (one-time)
-The store build needs **PNG** icons (our repo currently has SVG). The build tools
-below auto-generate all PNG sizes from ONE source image (512×512 PNG of the logo).
-Export `assets/logo.svg` to a 512×512 PNG and keep it handy, or let PWABuilder
-generate them.
+**What's already prepared in this repo for you:**
+- `manifest.webmanifest` — TWA-ready (has `id`, name, colors, PNG icon entries, shortcuts).
+- `.well-known/assetlinks.json` — Digital Asset Links file (needs your fingerprint filled in).
+- `.nojekyll` — makes GitHub Pages serve the `.well-known/` folder (Jekyll hides dotfolders otherwise).
+- `twa-manifest.json` — a pre-filled Bubblewrap config so the build needs almost no input.
+- `privacy.html` — your privacy policy (Play requires a URL): `https://tumedi.github.io/lebokhu-group/privacy.html`.
 
-### Step 2 — Generate the Android app
-Easiest (web UI): **https://www.pwabuilder.com**
-1. Enter `https://tumedi.github.io/lebokhu-group/`.
-2. Click **Package for stores → Android → Google Play**.
-3. Set **Package ID** to `co.za.lebokhugroup.twa` (must match `assetlinks.json`).
-4. Download the generated `.aab` (App Bundle) + the signing key / `assetlinks.json`
-   values it shows you.
+### Step 0 — One-time: create the PNG icons
+The manifest references `assets/icon-192.png`, `assets/icon-512.png` and
+`assets/icon-maskable-512.png`, but the repo currently ships **SVG** icons. Create the PNGs:
+- **Easiest:** let **PWABuilder** (Step 1) generate all sizes from a single 512×512 source image.
+- **Manual:** export `assets/logo.svg` (or `icon-512.svg`) to PNG at 192×192 and 512×512, and a
+  512×512 **maskable** version (logo centered inside ~80% safe zone on the `#0B2038` background),
+  then commit them to `assets/` with those exact names.
+(Any online SVG→PNG converter works; there's no image tooling in this repo.)
 
-CLI alternative (Google's **Bubblewrap**):
+### Step 1 — Generate the Android app (choose ONE)
+
+**A) PWABuilder (web UI, easiest):** https://www.pwabuilder.com
+1. Enter `https://tumedi.github.io/lebokhu-group/` → **Start**.
+2. **Package for stores → Android → Google Play**.
+3. Set **Package ID** to exactly `co.za.lebokhugroup.twa` (MUST match `assetlinks.json`).
+4. Let it generate icons if you skipped Step 0.
+5. Download the ZIP — it contains the **`.aab`** (upload to Play), a **signing key**
+   (`.keystore` — keep it safe forever) and a ready **`assetlinks.json`** with your fingerprint.
+
+**B) Bubblewrap (CLI):** the repo's `twa-manifest.json` is pre-filled.
 ```bash
 npm install -g @bubblewrap/cli
-bubblewrap init --manifest https://tumedi.github.io/lebokhu-group/manifest.webmanifest
-bubblewrap build
+# Copy twa-manifest.json into an empty build folder, then:
+bubblewrap init --manifest ./twa-manifest.json   # or: --manifest https://tumedi.github.io/lebokhu-group/manifest.webmanifest
+bubblewrap build                                  # creates app-release-bundle.aab + android.keystore
 ```
+Bubblewrap prints the **SHA-256 fingerprint** at the end (also: `bubblewrap fingerprint`).
 
-### Step 3 — Digital Asset Links (removes the browser address bar)
-The file `.well-known/assetlinks.json` is already in this repo. Replace
-`REPLACE_WITH_YOUR_APP_SIGNING_SHA256_FINGERPRINT` with the **SHA-256 fingerprint**
-of your app signing key (PWABuilder/Bubblewrap prints it; or from Play Console →
-Release → Setup → App signing). Commit + push so it is served at
-`https://tumedi.github.io/lebokhu-group/.well-known/assetlinks.json`.
-If the package id differs from `co.za.lebokhugroup.twa`, update it there too.
+### Step 2 — Fill in Digital Asset Links (removes the browser address bar)
+1. Get the **SHA-256 fingerprint** of the key that will sign the app. Best source:
+   Play Console → your app → **Release → Setup → App integrity → App signing** (use the
+   *App signing key* fingerprint if you use Play App Signing, which is the default).
+2. Edit `.well-known/assetlinks.json` → replace
+   `REPLACE_WITH_YOUR_APP_SIGNING_SHA256_FINGERPRINT` with that fingerprint
+   (format `AB:CD:EF:...`). Keep `package_name` = `co.za.lebokhugroup.twa`.
+3. Commit + push. Verify it's live at
+   `https://tumedi.github.io/lebokhu-group/.well-known/assetlinks.json`
+   and validate with Google's tool:
+   https://developers.google.com/digital-asset-links/tools/generator
 
-### Step 4 — Submit
+> If you use **Play App Signing** (recommended default), Google re-signs your app, so the
+> fingerprint that matters is the **App signing key** one from Play Console — add that one
+> (you can list multiple fingerprints in the array if needed).
+
+### Step 3 — Submit to Play
 1. Create a Google Play developer account ($25): https://play.google.com/console
-2. **Create app** → fill store listing (name, description, screenshots, privacy
-   policy URL, category "Business").
-3. Upload the `.aab` to a testing track first, then Production.
-4. Complete the content-rating + data-safety forms → submit for review.
+2. **Create app** → App name **LeKhuBo Connect**, language English (South Africa), type **App**, **Free**.
+3. **Store listing:** short + full description (reuse the manifest description), app icon
+   (512×512 PNG), feature graphic (1024×500), at least 2 phone screenshots, category **Business**,
+   contact email `Tbmadihlaba@gmail.com`, and **Privacy policy URL**
+   `https://tumedi.github.io/lebokhu-group/privacy.html`.
+4. **Release → Production (or Internal testing first) → Create release** → upload the **`.aab`**.
+5. Complete **Content rating**, **Data safety**, **Target audience** (18+), and **App access**
+   (provide a test login if reviewers need one).
+6. **Send for review.** First review typically takes a few days.
 
 ---
 
@@ -81,8 +108,8 @@ If the package id differs from `co.za.lebokhugroup.twa`, update it there too.
 - App icon (512×512 PNG).
 - Feature graphic / screenshots (phone screenshots of the app).
 - Short + full description (reuse the manifest `description`).
-- **Privacy policy URL** (both stores require one — we can add a `privacy.html`
-  page to the site if you don't have one yet).
+- **Privacy policy URL** (both stores require one — ready at
+  `https://tumedi.github.io/lebokhu-group/privacy.html`).
 - Contact email: `Tbmadihlaba@gmail.com`.
 
 ## Notes

@@ -639,6 +639,12 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
   .lb-nav{width:40px;height:40px;font-size:1.1rem}
   .lb-close{top:10px;right:14px}
 }
+/* Legal / policy pages */
+.legal{color:var(--slate);line-height:1.65}
+.legal h2{color:var(--ink);font-size:1.15rem;margin:28px 0 8px}
+.legal ul{margin:8px 0 8px}
+.legal p{margin:8px 0}
+
 .chat-intro{font-size:.92rem;color:var(--slate);margin-bottom:12px}
 
 /* Browse Job Seekers (provider) */
