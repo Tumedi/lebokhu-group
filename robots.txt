@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Keep private/utility pages out of search results
+Disallow: /admin.html
+Disallow: /my-applications.html
+Disallow: /my-requests.html
+Disallow: /my-services.html
+Disallow: /browse-seekers.html
+Disallow: /reset-password.html
+
+Sitemap: https://lekhubo-connect.co.za/sitemap.xml
