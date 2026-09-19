@@ -8,7 +8,7 @@
    ============================================================ */
 'use strict';
 
-var CACHE_VERSION = 'lekhubo-v21';
+var CACHE_VERSION = 'lekhubo-v22';
 var CACHE_NAME = 'lekhubo-cache-' + CACHE_VERSION;
 
 // Paths are relative so the SW works whether the site is served from

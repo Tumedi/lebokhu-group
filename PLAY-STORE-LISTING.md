@@ -125,8 +125,6 @@ users to provide the service, not with third parties for their own use):
 | Name | Yes | Yes (with the other party to connect) | App functionality, Account management | Required |
 | Email address | Yes | No | App functionality, Account management, sending notifications | Required |
 | Phone number | Yes | Yes (with the other party to connect) | App functionality | Required |
-| Approximate location | Yes | Yes (only if user shares it in chat) | App functionality | Optional |
-| Precise location | Yes | Yes (only if user taps “Share my location” in chat) | App functionality | Optional |
 | Photos | Yes | Yes (shown to the chat recipient / on listings) | App functionality | Optional |
 | Files/docs (CV) | Yes | Yes (viewable by providers/admin) | App functionality | Optional |
 | Messages (in-app) | Yes | Yes (with the conversation partner) | App functionality | Required for chat |
@@ -137,9 +135,10 @@ Security practices to tick:
 - Users can request that data be deleted: **Yes** (via `Tbmadihlaba@gmail.com`).
 - Committed to Play Families policy: N/A (18+).
 
-> Note: “Precise location” must be declared because the chat “Share my location”
-> feature uses device GPS. If you would rather NOT declare precise location, we can
-> remove that button from the chat — tell me and I’ll do it.
+> Note: the app does NOT collect location. (The chat "Share my location" GPS
+> feature was removed for this release, so no location permission or declaration
+> is needed. It can be re-added later — if you do, remember to declare precise
+> location here again.)
 
 ---
 

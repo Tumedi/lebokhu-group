@@ -64,7 +64,6 @@
         '<form class="chat-input" data-chat-form>' +
           '<button type="button" class="chat-tool" data-chat-emoji title="Add an emoji">😊</button>' +
           '<button type="button" class="chat-tool" data-chat-photo title="Share photos">📷</button>' +
-          '<button type="button" class="chat-tool" data-chat-loc title="Share my location">📍</button>' +
           '<input type="file" accept="image/*" multiple data-chat-file hidden>' +
           '<div class="chat-emoji-panel" data-chat-emoji-panel hidden></div>' +
           '<div class="chat-input-field">' +
@@ -168,7 +167,6 @@
       var input = form.querySelector('[data-chat-text]');
       var fileInput = form.querySelector('[data-chat-file]');
       var photoBtn = form.querySelector('[data-chat-photo]');
-      var locBtn = form.querySelector('[data-chat-loc]');
       var sendBtn = form.querySelector('[data-chat-send]');
       var thumbsEl = form.querySelector('[data-chat-thumbs]');
       var emojiBtn = form.querySelector('[data-chat-emoji]');
@@ -349,22 +347,11 @@
         insertMessage({ body: body });
       });
 
-      // Location: get GPS coords → Google Maps link, send as location message
-      if (locBtn) {
-        locBtn.addEventListener('click', function () {
-          if (!navigator.geolocation) { alert('Location sharing is not supported on this device.'); return; }
-          locBtn.disabled = true; locBtn.textContent = '⏳';
-          navigator.geolocation.getCurrentPosition(function (pos) {
-            var lat = pos.coords.latitude.toFixed(6), lng = pos.coords.longitude.toFixed(6);
-            var mapUrl = 'https://www.google.com/maps?q=' + lat + ',' + lng;
-            insertMessage({ body: mapUrl, attachment_url: mapUrl, attachment_type: 'location' }, '📍 Location')
-              .then(function () { locBtn.disabled = false; locBtn.textContent = '📍'; });
-          }, function (err) {
-            alert('Could not get your location: ' + err.message + '. Please allow location access.');
-            locBtn.disabled = false; locBtn.textContent = '📍';
-          }, { enableHighAccuracy: true, timeout: 10000 });
-        });
-      }
+      // NOTE: the "Share my location" (GPS) button was removed to avoid
+      // collecting precise location for the initial Play Store release. The
+      // render branch for attachment_type === 'location' is kept so any older
+      // location messages still display. Re-add the 📍 button + handler here to
+      // restore the feature later.
     }
 
     /* ---- Typing indicator (Supabase Realtime broadcast) ---- */
