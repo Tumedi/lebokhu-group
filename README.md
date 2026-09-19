@@ -179,7 +179,7 @@ Only registered users can post or apply for jobs. Two roles:
 2. **Email confirmation:** in Supabase → **Authentication → Providers → Email**, keep
    "Confirm email" ON (recommended). Users must click the link in their email before logging in.
 3. **Allowed URLs:** Supabase → **Authentication → URL Configuration** → set **Site URL** to
-   `https://tumedi.github.io/lebokhu-group/` and add it to **Redirect URLs**.
+   `https://lekhubo-connect.co.za/` and add it to **Redirect URLs**.
 4. **Make yourself admin:** sign up on the site (as anything), confirm your email, then run in SQL Editor:
    ```sql
    update public.profiles set role = 'admin'

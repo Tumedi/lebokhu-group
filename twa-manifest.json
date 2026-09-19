@@ -1,6 +1,6 @@
 {
   "packageId": "co.za.lebokhugroup.twa",
-  "host": "tumedi.github.io",
+  "host": "lekhubo-connect.co.za",
   "name": "LeKhuBo Connect",
   "launcherName": "LeKhuBo",
   "display": "standalone",
@@ -12,9 +12,9 @@
   "navigationDividerColorDark": "#0B2038",
   "backgroundColor": "#0B2038",
   "enableNotifications": true,
-  "startUrl": "/lebokhu-group/index.html",
-  "iconUrl": "https://tumedi.github.io/lebokhu-group/assets/icon-512.png",
-  "maskableIconUrl": "https://tumedi.github.io/lebokhu-group/assets/icon-maskable-512.png",
+  "startUrl": "/index.html",
+  "iconUrl": "https://lekhubo-connect.co.za/assets/icon-512.png",
+  "maskableIconUrl": "https://lekhubo-connect.co.za/assets/icon-maskable-512.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./android.keystore",
@@ -26,18 +26,18 @@
     {
       "name": "Browse Jobs",
       "shortName": "Jobs",
-      "url": "/lebokhu-group/jobs.html",
-      "chosenIconUrl": "https://tumedi.github.io/lebokhu-group/assets/icon-192.png"
+      "url": "/jobs.html",
+      "chosenIconUrl": "https://lekhubo-connect.co.za/assets/icon-192.png"
     },
     {
       "name": "Find a Service",
       "shortName": "Services",
-      "url": "/lebokhu-group/services-directory.html",
-      "chosenIconUrl": "https://tumedi.github.io/lebokhu-group/assets/icon-192.png"
+      "url": "/services-directory.html",
+      "chosenIconUrl": "https://lekhubo-connect.co.za/assets/icon-192.png"
     }
   ],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://tumedi.github.io/lebokhu-group/manifest.webmanifest",
+  "webManifestUrl": "https://lekhubo-connect.co.za/manifest.webmanifest",
   "fallbackType": "customtabs",
   "features": {},
   "alphaDependencies": {
@@ -46,7 +46,7 @@
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
   "isMetaQuest": false,
-  "fullScopeUrl": "https://tumedi.github.io/lebokhu-group/",
+  "fullScopeUrl": "https://lekhubo-connect.co.za/",
   "minSdkVersion": 21,
   "orientation": "portrait"
 }

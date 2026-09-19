@@ -58,8 +58,8 @@ Contact: Tbmadihlaba@gmail.com · 081 798 6359 · Glen Marais, Kempton Park.
 **Tags:** Jobs, Local services, Home services
 **Contact email:** `Tbmadihlaba@gmail.com`
 **Contact phone (optional):** `081 798 6359`
-**Website:** `https://tumedi.github.io/lebokhu-group/`
-**Privacy policy:** `https://tumedi.github.io/lebokhu-group/privacy.html`
+**Website:** `https://lekhubo-connect.co.za/`
+**Privacy policy:** `https://lekhubo-connect.co.za/privacy.html`
 
 ---
 
@@ -81,7 +81,7 @@ Contact: Tbmadihlaba@gmail.com · 081 798 6359 · Glen Marais, Kempton Park.
 
 ### Privacy policy
 ```
-https://tumedi.github.io/lebokhu-group/privacy.html
+https://lekhubo-connect.co.za/privacy.html
 ```
 
 ### App access

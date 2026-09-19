@@ -2,7 +2,7 @@
 
 Work through this top to bottom. Tick each box as you go. Most of it is one-time setup.
 
-- **Live site:** https://tumedi.github.io/lebokhu-group/
+- **Live site:** https://lekhubo-connect.co.za/
 - **Repo:** https://github.com/Tumedi/lebokhu-group
 - **Admin email:** Tbmadihlaba@gmail.com
 - **Supabase project ref:** `efupodoraphybvzttrjj`
@@ -46,8 +46,8 @@ file wasn't run yet.
 
 ## 3) Supabase Auth settings
 - [ ] **Authentication → URL Configuration**
-  - **Site URL:** `https://tumedi.github.io/lebokhu-group/`
-  - **Redirect URLs:** add `https://tumedi.github.io/lebokhu-group/**`
+  - **Site URL:** `https://lekhubo-connect.co.za/`
+  - **Redirect URLs:** add `https://lekhubo-connect.co.za/**`
     (covers login, password reset, and email confirmation redirects)
 - [ ] **Authentication → Providers → Email:** keep **Confirm email = ON** (recommended)
 

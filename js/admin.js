@@ -784,7 +784,7 @@
     };
     var subject = 'Update on your application — LeKhuBo Connect';
     var body = 'Hi ' + name + ',\n\n' + (lines[status] || lines.submitted) +
-      '\n\nView your applications: https://tumedi.github.io/lebokhu-group/my-applications.html\n\n' +
+      '\n\nView your applications: https://lekhubo-connect.co.za/my-applications.html\n\n' +
       'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(app.seeker_email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
@@ -930,7 +930,7 @@
 
   function openMatchMailto(seeker, job) {
     var subject = 'A job matching your profile — LeKhuBo Connect';
-    var applyUrl = 'https://tumedi.github.io/lebokhu-group/register.html?role=' + encodeURIComponent(job.title || '');
+    var applyUrl = 'https://lekhubo-connect.co.za/register.html?role=' + encodeURIComponent(job.title || '');
     var body =
       'Hi ' + (seeker.first_name || 'there') + ',\n\n' +
       'Good news — we found a job opportunity that matches your profile!\n\n' +
@@ -1061,7 +1061,7 @@
     var body = 'Hi ' + (p.full_name || 'there') + ',\n\n' +
       'Great news! Your service listing (' + (p.service || '') + ') has been approved and is now ' +
       'live in the LeKhuBo Connect directory. Clients in your area can now find and contact you.\n\n' +
-      'View the directory: https://tumedi.github.io/lebokhu-group/services-directory.html\n\n' +
+      'View the directory: https://lekhubo-connect.co.za/services-directory.html\n\n' +
       'Kind regards,\nLeKhuBo Connect\nTbmadihlaba@gmail.com | 081 798 6359';
     window.location.href = 'mailto:' + encodeURIComponent(p.email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);

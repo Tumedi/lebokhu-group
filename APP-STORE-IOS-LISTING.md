@@ -69,17 +69,17 @@ jobs,work,hire,services,plumber,painter,gardener,cleaner,barber,salon,local,Sout
 
 **Support URL**
 ```
-https://tumedi.github.io/lebokhu-group/
+https://lekhubo-connect.co.za/
 ```
 
 **Marketing URL** (optional)
 ```
-https://tumedi.github.io/lebokhu-group/
+https://lekhubo-connect.co.za/
 ```
 
 **Privacy Policy URL**
 ```
-https://tumedi.github.io/lebokhu-group/privacy.html
+https://lekhubo-connect.co.za/privacy.html
 ```
 
 **Primary category:** Business

@@ -1,7 +1,7 @@
 # Publishing LeKhuBo Connect to the App Stores
 
 LeKhuBo Connect is a **PWA (installable website)** hosted on GitHub Pages at
-`https://tumedi.github.io/lebokhu-group/`. This guide covers three routes, from
+`https://lekhubo-connect.co.za/`. This guide covers three routes, from
 easiest to hardest. **You** must do the submissions — they need your paid
 developer accounts, identity verification and signing keys, which cannot be
 automated.
@@ -28,7 +28,7 @@ loads your existing website full-screen. You reuse the live PWA; almost no new c
 - `.well-known/assetlinks.json` — Digital Asset Links file (needs your fingerprint filled in).
 - `.nojekyll` — makes GitHub Pages serve the `.well-known/` folder (Jekyll hides dotfolders otherwise).
 - `twa-manifest.json` — a pre-filled Bubblewrap config so the build needs almost no input.
-- `privacy.html` — your privacy policy (Play requires a URL): `https://tumedi.github.io/lebokhu-group/privacy.html`.
+- `privacy.html` — your privacy policy (Play requires a URL): `https://lekhubo-connect.co.za/privacy.html`.
 
 ### Step 0 — One-time: create the PNG icons
 The manifest references `assets/icon-192.png`, `assets/icon-512.png` and
@@ -42,7 +42,7 @@ The manifest references `assets/icon-192.png`, `assets/icon-512.png` and
 ### Step 1 — Generate the Android app (choose ONE)
 
 **A) PWABuilder (web UI, easiest):** https://www.pwabuilder.com
-1. Enter `https://tumedi.github.io/lebokhu-group/` → **Start**.
+1. Enter `https://lekhubo-connect.co.za/` → **Start**.
 2. **Package for stores → Android → Google Play**.
 3. Set **Package ID** to exactly `co.za.lebokhugroup.twa` (MUST match `assetlinks.json`).
 4. Let it generate icons if you skipped Step 0.
@@ -53,7 +53,7 @@ The manifest references `assets/icon-192.png`, `assets/icon-512.png` and
 ```bash
 npm install -g @bubblewrap/cli
 # Copy twa-manifest.json into an empty build folder, then:
-bubblewrap init --manifest ./twa-manifest.json   # or: --manifest https://tumedi.github.io/lebokhu-group/manifest.webmanifest
+bubblewrap init --manifest ./twa-manifest.json   # or: --manifest https://lekhubo-connect.co.za/manifest.webmanifest
 bubblewrap build                                  # creates app-release-bundle.aab + android.keystore
 ```
 Bubblewrap prints the **SHA-256 fingerprint** at the end (also: `bubblewrap fingerprint`).
@@ -66,7 +66,7 @@ Bubblewrap prints the **SHA-256 fingerprint** at the end (also: `bubblewrap fing
    `REPLACE_WITH_YOUR_APP_SIGNING_SHA256_FINGERPRINT` with that fingerprint
    (format `AB:CD:EF:...`). Keep `package_name` = `co.za.lebokhugroup.twa`.
 3. Commit + push. Verify it's live at
-   `https://tumedi.github.io/lebokhu-group/.well-known/assetlinks.json`
+   `https://lekhubo-connect.co.za/.well-known/assetlinks.json`
    and validate with Google's tool:
    https://developers.google.com/digital-asset-links/tools/generator
 
@@ -80,7 +80,7 @@ Bubblewrap prints the **SHA-256 fingerprint** at the end (also: `bubblewrap fing
 3. **Store listing:** short + full description (reuse the manifest description), app icon
    (512×512 PNG), feature graphic (1024×500), at least 2 phone screenshots, category **Business**,
    contact email `Tbmadihlaba@gmail.com`, and **Privacy policy URL**
-   `https://tumedi.github.io/lebokhu-group/privacy.html`.
+   `https://lekhubo-connect.co.za/privacy.html`.
 4. **Release → Production (or Internal testing first) → Create release** → upload the **`.aab`**.
 5. Complete **Content rating**, **Data safety**, **Target audience** (18+), and **App access**
    (provide a test login if reviewers need one).
@@ -109,7 +109,7 @@ Bubblewrap prints the **SHA-256 fingerprint** at the end (also: `bubblewrap fing
 - Feature graphic / screenshots (phone screenshots of the app).
 - Short + full description (reuse the manifest `description`).
 - **Privacy policy URL** (both stores require one — ready at
-  `https://tumedi.github.io/lebokhu-group/privacy.html`).
+  `https://lekhubo-connect.co.za/privacy.html`).
 - Contact email: `Tbmadihlaba@gmail.com`.
 
 ## Notes

@@ -158,10 +158,10 @@ Because the domain `lebokhu-group.co.za` is already verified in Resend, use it f
    | Sender name | `LeKhuBo Connect` |
 
 2. **Authentication → URL Configuration:**
-   - **Site URL:** `https://tumedi.github.io/lebokhu-group/`
+   - **Site URL:** `https://lekhubo-connect.co.za/`
    - **Redirect URLs (allow-list):** add
-     `https://tumedi.github.io/lebokhu-group/login.html`
-     and `https://tumedi.github.io/lebokhu-group/reset-password.html`
+     `https://lekhubo-connect.co.za/login.html`
+     and `https://lekhubo-connect.co.za/reset-password.html`
 
 3. **Authentication → Providers → Email:** confirm **"Confirm email"** is ON (if you want
    confirmation) and **"Allow new users to sign up"** is ON.
