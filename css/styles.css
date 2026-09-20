@@ -644,6 +644,12 @@ blockquote{margin-top:22px;padding:18px 24px;border-left:4px solid var(--gold);b
 /* Brand name inside the hero H1 — kept for SEO, shown as a small lead-in line */
 .sr-brand{display:block;font-size:.42em;font-weight:700;color:var(--gold-light);letter-spacing:1px;margin-bottom:6px;text-transform:uppercase}
 
+/* Back-to-service-groups bar (services directory, after drilling into a category) */
+.back-services{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:16px}
+.back-services[hidden]{display:none}
+.back-services .back-link{color:var(--teal);font-weight:700;text-decoration:none;font-size:.9rem}
+.back-services .back-link:hover{text-decoration:underline}
+
 /* Legal / policy pages */
 .legal{color:var(--slate);line-height:1.65}
 .legal h2{color:var(--ink);font-size:1.15rem;margin:28px 0 8px}

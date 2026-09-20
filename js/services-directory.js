@@ -169,10 +169,19 @@
     }, { passive: true });
   }
 
+  var backServices = document.getElementById('backServices');
+
+  // Show the "back to all services" bar whenever a category filter is active.
+  function updateBackBar() {
+    if (!backServices) return;
+    backServices.hidden = !(serviceEl.value);
+  }
+
   function render() {
     var s = (searchEl.value || '').trim().toLowerCase();
     var service = serviceEl.value;
     var loc = (locEl.value || '').trim().toLowerCase();
+    updateBackBar();
 
     VIEW = PROVIDERS.filter(function (p) {
       if (service && p.service !== service) return false;
@@ -217,6 +226,18 @@
     el.addEventListener('input', render);
     el.addEventListener('change', render);
   });
+
+  // "← All services": clear the category filter (and keyword) and show everything.
+  var clearServiceBtn = document.getElementById('clearService');
+  if (clearServiceBtn) {
+    clearServiceBtn.addEventListener('click', function () {
+      serviceEl.value = '';
+      if (searchEl) searchEl.value = '';
+      // Drop the ?service= param from the URL so a refresh doesn't re-filter.
+      try { history.replaceState(null, '', location.pathname); } catch (e) {}
+      render();
+    });
+  }
 
   // Preselect the service filter from a ?service= URL param (used by the
   // category shortcuts on the homepage). If the value matches a dropdown option
