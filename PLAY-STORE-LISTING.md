@@ -89,7 +89,7 @@ If reviewers need to see logged-in areas, provide a test account:
 ```
 All or some functionality is restricted (login required for dashboards).
 Provide a test login, e.g.:
-  Email:    reviewer@lebokhu-group.co.za   (create this in Supabase)
+  Email:    reviewer@lekhubo-connect.co.za   (create this in Supabase)
   Password: (set one and paste here)
 Notes: Choose "Service Provider" or "Potential Employer" to see dashboards & chat.
 ```

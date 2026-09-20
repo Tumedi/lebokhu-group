@@ -144,7 +144,7 @@ meant for production** — it frequently drops messages or lands them in spam. T
 default until you configure Custom SMTP.
 
 ## Fix — point Supabase Auth at your Resend account
-Because the domain `lebokhu-group.co.za` is already verified in Resend, use it for auth emails too.
+Because the domain `lekhubo-connect.co.za` is already verified in Resend, use it for auth emails too.
 
 1. **Supabase Dashboard → Authentication → Emails → SMTP Settings** → enable **Custom SMTP**:
 
@@ -154,7 +154,7 @@ Because the domain `lebokhu-group.co.za` is already verified in Resend, use it f
    | Port | `465` (SSL) or `587` (TLS) |
    | Username | `resend` |
    | Password | your Resend API key (`re_...`) |
-   | Sender email | `no-reply@lebokhu-group.co.za` |
+   | Sender email | `no-reply@lekhubo-connect.co.za` |
    | Sender name | `LeKhuBo Connect` |
 
 2. **Authentication → URL Configuration:**
@@ -209,7 +209,7 @@ An email is sent to the OTHER party when a message is sent. This requires the
 
 ### Optional sender overrides (defaults shown)
 ```bash
-supabase secrets set CHAT_FROM="LeKhuBo Connect <no-reply@lebokhu-group.co.za>"
+supabase secrets set CHAT_FROM="LeKhuBo Connect <no-reply@lekhubo-connect.co.za>"
 supabase secrets set CHAT_BCC="info@lekhubo-connect.co.za"
 ```
 

@@ -146,7 +146,7 @@ live. The app works installed/offline-capable (PWA) and is more than a website: 
 offers account-based, personalised, interactive functionality.
 
 TEST ACCOUNT (please use to review dashboards & chat):
-  Email:    reviewer@lebokhu-group.co.za
+  Email:    reviewer@lekhubo-connect.co.za
   Password: (set this in Supabase and paste here)
   Tip: sign in, open "Find a Service", open a provider, and start a chat.
 

@@ -6,7 +6,7 @@ Work through this top to bottom. Tick each box as you go. Most of it is one-time
 - **Repo:** https://github.com/Tumedi/lebokhu-group
 - **Admin email:** info@lekhubo-connect.co.za
 - **Supabase project ref:** `efupodoraphybvzttrjj`
-- **Sending domain:** `lebokhu-group.co.za` (verified in Resend ✅)
+- **Sending domain:** `lekhubo-connect.co.za` (verified in Resend ✅)
 
 > How to run SQL: Supabase → **SQL Editor → New query** → paste the file's contents → **Run**.
 > Remember: paste the **contents** of each `.sql` file, not the filename.
@@ -76,15 +76,15 @@ supabase secrets set RESEND_API_KEY=re_your_key_here
 
 **Point all emails at your verified domain (optional but recommended):**
 ```bash
-supabase secrets set APPROVAL_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set DECLINED_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set MATCH_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set STATUS_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set PROVIDER_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set WELCOME_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set POST_RECEIVED_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set SERVICE_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
-supabase secrets set CHAT_FROM="LeKhuBo Connect <jobs@lebokhu-group.co.za>"
+supabase secrets set APPROVAL_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set DECLINED_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set MATCH_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set STATUS_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set PROVIDER_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set WELCOME_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set POST_RECEIVED_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set SERVICE_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
+supabase secrets set CHAT_FROM="LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
 ```
 
 ---
