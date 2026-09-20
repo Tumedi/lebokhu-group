@@ -218,8 +218,27 @@
       .then(function (res) {
         if (res.error) { countEl.textContent = 'Error loading providers: ' + res.error.message; return; }
         PROVIDERS = res.data || [];
+        buildAreaSuggestions();
         render();
       });
+  }
+
+  // Populate the Area autocomplete (datalist) from the distinct locations that
+  // providers actually serve, so suggestions are real and relevant.
+  function buildAreaSuggestions() {
+    var dl = document.getElementById('areaList');
+    if (!dl) return;
+    var seen = {};
+    PROVIDERS.forEach(function (p) {
+      var loc = (p.location || '').trim();
+      if (!loc) return;
+      var key = loc.toLowerCase();
+      if (!seen[key]) seen[key] = loc;
+    });
+    var areas = Object.keys(seen).map(function (k) { return seen[k]; }).sort();
+    dl.innerHTML = areas.map(function (a) {
+      return '<option value="' + esc(a) + '"></option>';
+    }).join('');
   }
 
   [searchEl, serviceEl, locEl].forEach(function (el) {
