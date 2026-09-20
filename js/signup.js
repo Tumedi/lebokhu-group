@@ -118,10 +118,24 @@
       }
     }).then(function (res) {
       if (res.error) throw new Error(res.error.message);
+
+      // DUPLICATE-EMAIL CHECK (confirm-email ON):
+      // Supabase deliberately does NOT return an error when the email already
+      // exists (to prevent email enumeration). Instead it returns a user object
+      // with an EMPTY identities array. Detect that and show a clear message.
+      var user = res.data && res.data.user;
+      var hasSession = res.data && res.data.session;
+      if (user && !hasSession && Array.isArray(user.identities) && user.identities.length === 0) {
+        status.innerHTML = 'This email is already in use. Please <a href="login.html">log in</a> instead, ' +
+          'or use <a href="login.html">Forgot password</a> if you\'ve forgotten it.';
+        status.className = 'form-status bad';
+        btn.disabled = false; btn.textContent = original;
+        return;
+      }
+
       // When "Confirm email" is OFF, signUp returns an active session and would
       // log the user straight in. We instead send them to the login page so they
       // sign in with the password they just chose (confirms it works).
-      var hasSession = res.data && res.data.session;
       if (hasSession) {
         window.LEBOKHU_AUTH.signOut().then(function () {
           location.href = 'login.html?registered=1&email=' + encodeURIComponent(email);
@@ -154,8 +168,13 @@
             'few minutes and try again.';
       } else if (/database error/i.test(m)) {
         m = 'We could not create your account (server setup issue). Please try again later or contact us.';
-      } else if (/already registered|already exists/i.test(m)) {
-        m = 'An account with this email already exists. Try logging in instead.';
+      } else if (/already registered|already exists|already in use|user.*exists/i.test(m)) {
+        // Show the clear "already in use" message with a login link (HTML).
+        status.innerHTML = 'This email is already in use. Please <a href="login.html">log in</a> instead, ' +
+          'or use <a href="login.html">Forgot password</a> if you\'ve forgotten it.';
+        status.className = 'form-status bad';
+        btn.disabled = false; btn.textContent = original;
+        return;
       }
       status.textContent = 'Sign up failed: ' + m;
       status.className = 'form-status bad';
