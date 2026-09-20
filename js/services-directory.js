@@ -218,6 +218,25 @@
     el.addEventListener('change', render);
   });
 
+  // Preselect the service filter from a ?service= URL param (used by the
+  // category shortcuts on the homepage). If the value matches a dropdown option
+  // it selects it; otherwise it falls back to a free-text search so the link
+  // still filters sensibly.
+  (function preselectFromUrl() {
+    var svc;
+    try { svc = new URLSearchParams(location.search).get('service'); } catch (e) { svc = null; }
+    if (!svc) return;
+    svc = svc.trim();
+    var matched = false;
+    for (var i = 0; i < serviceEl.options.length; i++) {
+      if (serviceEl.options[i].value.toLowerCase() === svc.toLowerCase()) {
+        serviceEl.value = serviceEl.options[i].value; matched = true; break;
+      }
+    }
+    if (!matched && searchEl) searchEl.value = svc;   // fallback: search by keyword
+    render();
+  })();
+
   /* ---- Request a service modal ---- */
   var modal = document.getElementById('reqModal');
   var reqProvider = document.getElementById('reqProvider');

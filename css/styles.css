@@ -135,7 +135,9 @@ h3{font-size:1.25rem}
 .company-visual{display:flex;flex-wrap:wrap;gap:14px;align-content:center;justify-content:center;
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);padding:30px}
 .cbadge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;
-  padding:14px 22px;border-radius:12px;font-weight:700}
+  padding:14px 22px;border-radius:12px;font-weight:700;cursor:pointer;transition:.18s;text-decoration:none;display:inline-block}
+a.cbadge:hover{background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));color:#3a2600;
+  border-color:transparent;transform:translateY(-2px)}
 
 /* ---------- Steps ---------- */
 .steps{list-style:none;counter-reset:s;margin:22px 0 28px;display:grid;gap:16px}
