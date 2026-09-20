@@ -134,15 +134,27 @@
         status.className = 'form-status bad';
         return;
       }
+      forgot.textContent = 'Sending…';
       client.auth.resetPasswordForEmail(email, {
         redirectTo: location.origin + location.pathname.replace(/login\.html$/, 'reset-password.html')
       }).then(function (res) {
         if (res.error) throw new Error(res.error.message);
-        status.textContent = 'Password reset link sent to ' + email + '. Check your inbox.';
+        status.innerHTML = 'If an account exists for <strong>' + email + '</strong>, a password ' +
+          'reset link has been sent. Please check your inbox <strong>and spam folder</strong>. ' +
+          'The link may take a minute to arrive.';
         status.className = 'form-status ok';
       }).catch(function (err) {
-        status.textContent = 'Could not send reset email: ' + err.message;
+        try { console.error('[reset] resetPasswordForEmail failed:', err); } catch (e) {}
+        var m = err && err.message ? err.message : 'Please try again.';
+        if (/rate limit/i.test(m)) {
+          m = 'Too many attempts right now. Please wait a few minutes and try again.';
+        } else if (/redirect|url/i.test(m)) {
+          m = 'Reset is temporarily unavailable. Please contact info@lekhubo-connect.co.za.';
+        }
+        status.textContent = 'Could not send reset email: ' + m;
         status.className = 'form-status bad';
+      }).then(function () {
+        forgot.textContent = 'Forgot password?';
       });
     });
   }
