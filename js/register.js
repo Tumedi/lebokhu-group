@@ -58,6 +58,13 @@
       field.classList.toggle('err', !ok);
       if (!ok) valid = false;
     });
+    // Email is OPTIONAL now (domestic workers may not have one). But if the
+    // user DID type an email, it must be a valid format.
+    var emailEl = document.getElementById('email');
+    if (emailEl && emailEl.value.trim() && !emailRe.test(emailEl.value.trim())) {
+      emailEl.classList.add('err');
+      valid = false;
+    }
     return valid;
   }
 
