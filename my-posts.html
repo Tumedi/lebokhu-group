@@ -3,53 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Job Posts Coming Soon — LeKhuBo Connect</title>
+  <title>My Job Posts — LeKhuBo Connect</title>
+  <meta name="description" content="Employer dashboard: review applicants for the jobs you posted and shortlist, reject or accept them.">
   <meta name="robots" content="noindex,nofollow">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <meta name="theme-color" content="#0B2038">
-  <!-- Employer dashboard is temporarily disabled while we focus on job seekers
-       and service providers. Send visitors to the homepage. -->
-  <meta http-equiv="refresh" content="6; url=index.html">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="admin-body">
 
-  <header class="site-header" id="top">
+  <header class="admin-header">
     <div class="container nav-inner">
-      <a href="index.html" class="brand" aria-label="LeKhuBo Connect home">
-        <img src="assets/logo.svg" alt="LeKhuBo Connect" class="logo logo-dark">
-      </a>
-      <nav class="main-nav" id="mainNav" aria-label="Main navigation">
-        <a href="index.html#about">About</a>
-        <a href="services-directory.html">Find a Service</a>
-        <a href="employer-jobs.html">Jobs</a>
+      <a href="index.html" class="brand"><img src="assets/logo.svg" alt="LeKhuBo Connect" class="logo"></a>
+      <nav class="main-nav" id="mainNav" aria-label="Account navigation">
+        <a href="post-job.html">＋ Post a Job</a>
+        <a href="my-requests.html">My Requests</a>
+        <span class="admin-user" id="who"></span>
+        <a href="#" id="logoutBtn" hidden>Log Out</a>
       </nav>
     </div>
   </header>
 
-  <section class="section">
-    <div class="container narrow" style="text-align:center">
-      <p class="kicker">Coming Soon</p>
-      <h1>Employer dashboards are on the way</h1>
-      <p class="lead">
-        We're currently focused on connecting <strong>job seekers</strong> with local work and
-        helping <strong>people</strong> find trusted <strong>service providers</strong>.
-        Employer features will return as LeKhuBo Connect grows.
-      </p>
-      <p style="margin-top:24px">
-        <a href="services-directory.html" class="btn btn-primary">Find a Service</a>
-        <a href="employer-jobs.html" class="btn btn-ghost">Browse Jobs</a>
-      </p>
-      <p class="hint" style="margin-top:18px">Taking you to the homepage…</p>
+  <main class="dashboard">
+    <div class="container">
+      <div class="dash-head">
+        <div>
+          <p class="kicker">Employer</p>
+          <h1>My Job Posts</h1>
+          <p class="lead">Review everyone who applied to your jobs and move them through
+            your hiring pipeline — shortlist, reject or accept.</p>
+        </div>
+        <div class="dash-actions">
+          <a href="post-job.html" class="btn btn-primary btn-sm">＋ Post a Job</a>
+          <button class="btn btn-ghost btn-sm" id="refreshBtn" type="button">↻ Refresh</button>
+        </div>
+      </div>
+
+      <div class="notice" id="notConfigured" hidden>
+        ⚠️ Accounts aren't available yet — the database connection isn't configured.
+      </div>
+
+      <!-- Stat cards -->
+      <div class="stat-cards" id="statCards"></div>
+
+      <p class="results-count" id="count">Loading…</p>
+
+      <!-- One block per job post, each with its applicants -->
+      <div id="posts"></div>
+
+      <div class="no-results" id="noRows" hidden>
+        <p>You haven't posted any jobs yet. <a href="post-job.html">Post a job</a> to start
+        receiving applications.</p>
+      </div>
     </div>
-  </section>
+  </main>
 
   <footer class="site-footer">
     <div class="footer-bottom">
-      <div class="container"><p>&copy; <span id="year"></span> LeKhuBo Connect. All rights reserved.</p></div>
+      <div class="container"><p>&copy; <span id="year"></span> LeKhuBo Connect. All rights reserved. &middot; <a href="privacy.html">Privacy Policy</a></p></div>
     </div>
   </footer>
 
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/my-posts.js"></script>
+  <script>var y=document.getElementById('year');if(y)y.textContent=new Date().getFullYear();</script>
 </body>
 </html>

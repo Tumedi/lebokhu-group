@@ -44,7 +44,10 @@
       loc: p.location || 'Other',
       type: p.job_type || 'Full-time',
       posted: relTime(p.created_at),
-      desc: p.description || ''
+      desc: p.description || '',
+      // Carried through so we can notify the employer when someone applies.
+      contactEmail: p.contact_email || '',
+      contactName: p.contact_name || ''
     };
   }
 
@@ -198,9 +201,31 @@
         if (job.id) appliedJobIds[job.id] = true;
         if (noteEl) noteEl.innerHTML = '✓ Application submitted! Track it under ' +
           '<a href="my-applications.html">My Applications</a>.';
+        // Best-effort: notify the employer (and admin via BCC) that a new
+        // applicant has arrived. Never blocks or fails the application.
+        notifyEmployerOfApplicant(client, job, record);
         render();
       });
     });
+  }
+
+  // Fire the "you have a new applicant" email to the employer who posted the
+  // job (and admin via BCC). Uses the send-new-applicant-email Edge Function;
+  // silently skips on any failure so a missing/undeployed function never
+  // affects the seeker's application.
+  function notifyEmployerOfApplicant(client, job, record) {
+    if (!client || !client.functions || !job || !job.contactEmail) return;
+    client.functions.invoke('send-new-applicant-email', {
+      body: {
+        employer_email: job.contactEmail,
+        employer_name: job.contactName || '',
+        job_title: job.title || '',
+        company: job.company || '',
+        seeker_name: record.seeker_name || '',
+        seeker_email: record.seeker_email || '',
+        seeker_phone: record.seeker_phone || ''
+      }
+    }).catch(function () { /* email is optional; ignore errors */ });
   }
 
   function loadMyApplications() {
