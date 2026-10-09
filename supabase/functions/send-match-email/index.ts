@@ -73,7 +73,7 @@ serve(async (req: Request) => {
 
     const name = seeker_name || "there";
     const applyUrl = apply_url ||
-      ("https://tumedi.github.io/lebokhu-group/register.html?role=" +
+      ("https://lekhubo-connect.co.za/register.html?role=" +
         encodeURIComponent(title));
     const descBlock = description
       ? `<p style="background:#f4f7f9;border-radius:8px;padding:12px 16px">${esc(description)}</p>`
