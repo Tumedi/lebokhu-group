@@ -96,13 +96,13 @@ serve(async (req: Request) => {
           registrations and matches candidates to suitable opportunities. If a role fits your
           profile, we'll be in touch. ${cvNote}</p>
           <p>In the meantime, you can browse current openings on our
-          <a href="https://tumedi.github.io/lebokhu-group/jobs.html" style="color:#0C6B57">Jobs page</a>.</p>
+          <a href="https://lekhubo-connect.co.za/jobs.html" style="color:#0C6B57">Jobs page</a>.</p>
           <p>Qualified or not — we're here to help you take the next step. 💪</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
           <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
         </div>
         <div style="text-align:center;color:#8496a6;font-size:11px;padding:14px">
-          You received this because you registered as a job seeker on lebokhugroup.
+          You received this because you registered as a job seeker on LeKhuBo Connect.
         </div>
       </div>`;
 
@@ -114,7 +114,7 @@ serve(async (req: Request) => {
       `\nWhat happens next? Our team reviews new registrations and matches candidates to suitable opportunities. ` +
       `If a role fits your profile, we'll be in touch. ` +
       (has_cv ? "We've received your CV.\n\n" : "If you have a CV, reply to this email with it attached.\n\n") +
-      `Browse current openings: https://tumedi.github.io/lebokhu-group/jobs.html\n\n` +
+      `Browse current openings: https://lekhubo-connect.co.za/jobs.html\n\n` +
       `Qualified or not — we're here to help you take the next step.\n\n` +
       `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
 

@@ -98,7 +98,7 @@ serve(async (req: Request) => {
           <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
         </div>
         <div style="text-align:center;color:#8496a6;font-size:11px;padding:14px">
-          You received this because a job post was submitted using this email on lebokhugroup.
+          You received this because a job post was submitted using this email on LeKhuBo Connect.
         </div>
       </div>`;
 
