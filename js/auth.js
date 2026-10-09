@@ -23,11 +23,12 @@
 
   // Map a role to its dashboard page + label.
   AUTH.dashboardFor = function (role) {
-    // NOTE: the employer / job-posting module is temporarily disabled while we
-    // focus on job seekers and service providers. It can be re-enabled later by
-    // restoring the 'employer' -> my-posts.html mapping.
     if (role === 'provider') return { href: 'my-services.html', label: 'My Services' };
-    if (role === 'homeowner') return { href: 'my-requests.html', label: 'My Requests' };
+    // The "homeowner" role is the Potential Employer: they post jobs AND can
+    // request services. Their primary dashboard is now the employer job-posts
+    // dashboard (where they review applicants); a header shortcut still links
+    // to their service requests.
+    if (role === 'homeowner') return { href: 'my-posts.html', label: 'My Job Posts' };
     if (role === 'admin') return { href: 'admin.html', label: 'Admin Dashboard' };
     if (role === 'seeker') return { href: 'my-applications.html', label: 'My Applications' };
     // Unknown / missing role — don't guess a role-specific page (that can
@@ -180,7 +181,7 @@
         // Each role gets a quick primary action shortcut in the header —
         // but not if it just points to the page they're already on.
         var shortcuts = {
-          homeowner: { href: 'services-directory.html', label: '＋ Request a Service' },
+          homeowner: { href: 'post-job.html',            label: '＋ Post a Job' },
           seeker:    { href: 'employer-jobs.html',       label: 'Browse Jobs' },
           provider:  { href: 'list-service.html',        label: 'Edit My Listing' }
         };

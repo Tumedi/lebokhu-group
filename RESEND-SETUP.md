@@ -54,7 +54,8 @@ supabase functions deploy send-declined-email
 # 1c) Candidate-match email (also called by the logged-in admin)
 supabase functions deploy send-match-email
 
-# 1d) Application status-change email (also called by the logged-in admin)
+# 1d) Application status-change email (called by the admin OR the employer
+#      from their my-posts.html dashboard)
 supabase functions deploy send-status-email
 
 # 1e) Provider-listing-approved email (also called by the logged-in admin)
@@ -71,6 +72,11 @@ supabase functions deploy send-post-received-email --no-verify-jwt
 # 4) Service request email (called by anonymous homeowners requesting a service)
 #    Also public/anonymous, so deploy WITHOUT jwt verification:
 supabase functions deploy send-service-request-email --no-verify-jwt
+
+# 4b) New-applicant email — notifies the EMPLOYER (homeowner) + admin (BCC)
+#     when a job seeker applies to their post. Called from the public jobs
+#     page right after the application is saved, so deploy WITHOUT jwt verify:
+supabase functions deploy send-new-applicant-email --no-verify-jwt
 
 # 5) Chat new-message notification (called by anonymous homeowners + providers)
 #    Also public/anonymous, so deploy WITHOUT jwt verification:
@@ -224,3 +230,43 @@ of messages won't send a flood of emails.
    `my-requests.html`) and send a message each way. The other party should receive a
    "New message … — LeKhuBo Connect" email (check spam first time). A BCC copy goes to
    `info@lekhubo-connect.co.za`.
+
+
+---
+
+# Employer Application Management (new)
+
+Employers (the **Potential Employer** / `homeowner` role) can now review and manage the
+applicants to the jobs **they** posted — previously only the admin could. When a job seeker
+applies, the employer **and** the admin are emailed, and the employer can **Shortlist /
+Reject / Accept** each applicant from their dashboard.
+
+## What changed
+- **`supabase-employer-applications.sql`** — adds ONE RLS policy so an employer can UPDATE
+  the status of applications made to their own posts. (The read policies already existed in
+  `supabase-auth.sql`.) **Run this once** in the Supabase SQL Editor.
+- **`my-posts.html` + `js/my-posts.js`** — the employer dashboard. Lists the employer's own
+  job posts and, under each, every applicant with Shortlist / Reject / Accept actions.
+- **`supabase/functions/send-new-applicant-email`** — emails the employer (to) + admin (bcc)
+  when someone applies. Deploy with `--no-verify-jwt` (see the deploy list above).
+- **`js/employer-jobs.js`** — after an application is saved, calls `send-new-applicant-email`
+  (best-effort; never blocks the application).
+- **`js/auth.js`** — the `homeowner` role now lands on `my-posts.html` ("My Job Posts").
+
+## Button → status mapping
+| Button | Application status |
+|--------|--------------------|
+| Shortlist | `shortlisted` |
+| Reject | `rejected` |
+| Accept | `hired` |
+
+On any change the applicant is emailed via the existing `send-status-email` function
+(best-effort, with a mailto fallback). Nothing here needs new secrets beyond `RESEND_API_KEY`;
+optional sender overrides: `NEW_APPLICANT_FROM`, `NEW_APPLICANT_BCC`.
+
+## Deploy checklist
+1. SQL Editor → run **`supabase-employer-applications.sql`**.
+2. `supabase functions deploy send-new-applicant-email --no-verify-jwt`
+3. (If not already deployed) `supabase functions deploy send-status-email`
+4. Log in as a `homeowner` account that has posted a job → open **My Job Posts** → confirm
+   you see applicants and can Shortlist / Reject / Accept.
