@@ -12,7 +12,7 @@ When you click **Approve** on a job post in the admin dashboard, the employer is
 ## Step 1 — Create a Resend account & API key
 1. Sign up free at **[resend.com](https://resend.com)**.
 2. Go to **API Keys → Create API Key** → copy it (looks like `re_xxxxxxxx`). Save it somewhere safe.
-3. (Optional but recommended) Go to **Domains** and verify `lebokhugroup.co.za` so emails come
+3. (Optional but recommended) Go to **Domains** and verify `lekhubo-connect.co.za` so emails come
    **from your own domain**. Until you do, use Resend's test sender `onboarding@resend.dev`
    (works immediately, but some inboxes mark it as "via resend.dev").
 
@@ -39,7 +39,7 @@ supabase secrets set APPROVAL_FROM="LeKhuBo Connect <onboarding@resend.dev>"
 supabase secrets set APPROVAL_BCC="info@lekhubo-connect.co.za"
 ```
 After you verify your domain in Resend, change `APPROVAL_FROM` to e.g.
-`"LeKhuBo Connect <jobs@lebokhugroup.co.za>"` for the best deliverability.
+`"LeKhuBo Connect <jobs@lekhubo-connect.co.za>"` for the best deliverability.
 
 ## Step 5 — Deploy the functions
 There are **two** functions:

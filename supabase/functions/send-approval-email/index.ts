@@ -44,8 +44,8 @@ serve(async (req: Request) => {
     const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
     // Until you verify your own domain in Resend, use their test sender:
     //   "LeKhuBo Connect <onboarding@resend.dev>"
-    // After verifying lebokhugroup.co.za, set APPROVAL_FROM to e.g.
-    //   "LeKhuBo Connect <jobs@lebokhugroup.co.za>"
+    // After verifying lekhubo-connect.co.za, set APPROVAL_FROM to e.g.
+    //   "LeKhuBo Connect <jobs@lekhubo-connect.co.za>"
     const FROM =
       Deno.env.get("APPROVAL_FROM") ?? "LeKhuBo Connect <onboarding@resend.dev>";
     const BCC = Deno.env.get("APPROVAL_BCC") ?? "info@lekhubo-connect.co.za";
@@ -95,7 +95,7 @@ serve(async (req: Request) => {
             <tr><td style="padding:6px 0;color:#5a6b7b">Type</td><td style="padding:6px 0">${esc(job_type)}</td></tr>
           </table>
           <p>Job seekers can now view and apply for this role. We'll be in touch as suitable candidates come through.</p>
-          <p>Thank you for partnering with us to fight youth unemployment in South Africa.</p>
+          <p>Thank you for partnering with us to connect people, resources and opportunity.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
           <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
         </div>

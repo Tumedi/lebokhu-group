@@ -68,7 +68,7 @@ serve(async (req: Request) => {
           <p>Clients in your area can now find you and request your services. Keep your phone
           handy — enquiries may come through soon!</p>
           <p style="text-align:center;margin:22px 0">
-            <a href="https://tumedi.github.io/lebokhu-group/services-directory.html"
+            <a href="https://lekhubo-connect.co.za/services-directory.html"
                style="background:#E4A020;color:#3a2600;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:999px;display:inline-block">View the Directory</a>
           </p>
           <p style="color:#5a6b7b;font-size:13px">Tip: add a clear profile photo and keep your
@@ -84,7 +84,7 @@ serve(async (req: Request) => {
       (service ? `Service: ${service}\n` : "") +
       (location ? `Area: ${location}\n` : "") +
       `\nClients in your area can now find you and request your services.\n` +
-      `View the directory: https://tumedi.github.io/lebokhu-group/services-directory.html\n\n` +
+      `View the directory: https://lekhubo-connect.co.za/services-directory.html\n\n` +
       `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {

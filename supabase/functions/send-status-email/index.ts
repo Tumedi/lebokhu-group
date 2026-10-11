@@ -117,7 +117,7 @@ serve(async (req: Request) => {
           <h2 style="font-family:Georgia,serif;font-size:18px;color:${copy.tone};margin:6px 0 12px">${copy.headline}</h2>
           <p>${copy.body}</p>
           <p style="text-align:center;margin:22px 0">
-            <a href="https://tumedi.github.io/lebokhu-group/my-applications.html"
+            <a href="https://lekhubo-connect.co.za/my-applications.html"
                style="background:#E4A020;color:#3a2600;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:999px;display:inline-block">View My Applications</a>
           </p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
@@ -129,7 +129,7 @@ serve(async (req: Request) => {
       `Hi ${name},\n\n` +
       `${copy.headline}\n\n` +
       copy.body.replace(/<[^>]+>/g, "") + "\n\n" +
-      `View your applications: https://tumedi.github.io/lebokhu-group/my-applications.html\n\n` +
+      `View your applications: https://lekhubo-connect.co.za/my-applications.html\n\n` +
       `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
