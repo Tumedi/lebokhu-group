@@ -270,3 +270,51 @@ optional sender overrides: `NEW_APPLICANT_FROM`, `NEW_APPLICANT_BCC`.
 3. (If not already deployed) `supabase functions deploy send-status-email`
 4. Log in as a `homeowner` account that has posted a job → open **My Job Posts** → confirm
    you see applicants and can Shortlist / Reject / Accept.
+
+
+---
+
+# Admin User Management (new)
+
+The admin dashboard has a **Users** tab to list every registered account and
+**suspend / unsuspend / delete** them. Listing + the suspended flag use RLS on
+`public.profiles`; the real auth actions (which free the email / block login)
+run in a privileged Edge Function.
+
+## Setup
+
+1. **SQL** — run **`supabase-admin-users.sql`** in the SQL Editor. It adds a
+   `profiles.suspended` flag, admin UPDATE/DELETE policies on `profiles`, and
+   an admin-only `admin_list_users()` function that returns each user's email
+   (joined from `auth.users`, which the browser can't read directly).
+
+2. **Edge Function** — deploy **with JWT verification ON** (the function needs
+   the caller's token to confirm they're an admin):
+   ```bash
+   supabase functions deploy admin-user-action
+   ```
+   It uses the **service_role** key, which Supabase injects automatically. If
+   your project doesn't inject the reserved names, set them explicitly:
+   ```bash
+   supabase secrets set SB_URL="https://efupodoraphybvzttrjj.supabase.co"
+   supabase secrets set SB_SERVICE_ROLE_KEY="<service_role key from Dashboard → Settings → API>"
+   supabase secrets set SB_ANON_KEY="<anon/publishable key>"
+   ```
+   ⚠️ The service_role key stays **server-side in the function** — never put it
+   in the browser / `supabase-config.js`.
+
+## Security model
+- The function verifies the **caller's** JWT belongs to a `role='admin'`
+  profile before doing anything (non-admins get 403).
+- An admin **cannot delete or suspend their own** account via this tool.
+- Admin rows show as **protected** in the Users table (no destructive buttons).
+- **Suspend** uses Supabase's native account ban (blocks login immediately);
+  **unsuspend** lifts it. **Delete** removes the `auth.users` account and
+  cascades to the profile — this is what frees a stuck email address.
+
+## Test
+1. Run the SQL, deploy the function, open **admin.html → Users**.
+2. You should see all accounts with name, email, role, status.
+3. Suspend a test account → confirm it can no longer log in.
+4. Unsuspend it → confirm login works again.
+5. Delete a test account → confirm the email becomes available for sign-up.
