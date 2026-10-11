@@ -85,6 +85,7 @@
     loadProviders();
     loadRequests();
     loadReviews();
+    loadUsers();
   }
   function showLogin() {
     dashView.hidden = true;
@@ -195,6 +196,7 @@
     else if (activeTab === 'providers') loadProviders();
     else if (activeTab === 'requests') loadRequests();
     else if (activeTab === 'reviews') loadReviews();
+    else if (activeTab === 'users') loadUsers();
     else loadData();
   });
   document.getElementById('exportBtn').addEventListener('click', function () {
@@ -203,6 +205,7 @@
     else if (activeTab === 'providers') exportProvidersCsv();
     else if (activeTab === 'requests') exportRequestsCsv();
     else if (activeTab === 'reviews') exportReviewsCsv();
+    else if (activeTab === 'users') exportUsersCsv();
     else exportCsv();
   });
 
@@ -214,7 +217,8 @@
     apps: document.getElementById('tabApps'),
     providers: document.getElementById('tabProviders'),
     requests: document.getElementById('tabRequests'),
-    reviews: document.getElementById('tabReviews')
+    reviews: document.getElementById('tabReviews'),
+    users: document.getElementById('tabUsers')
   };
   var panels = {
     seekers: document.getElementById('panelSeekers'),
@@ -222,7 +226,8 @@
     apps: document.getElementById('panelApps'),
     providers: document.getElementById('panelProviders'),
     requests: document.getElementById('panelRequests'),
-    reviews: document.getElementById('panelReviews')
+    reviews: document.getElementById('panelReviews'),
+    users: document.getElementById('panelUsers')
   };
   function switchTab(tab) {
     activeTab = tab;
@@ -1318,5 +1323,190 @@
         csvCell(r.reviewer_name), csvCell(r.comment)].join(',');
     });
     downloadCsv('\uFEFF' + head + '\n' + rows.join('\n'), 'lebokhu-reviews');
+  }
+
+  /* ============================================================
+     USERS (admin) — list registered accounts, suspend / unsuspend / delete
+     ------------------------------------------------------------
+     Lists public.profiles (admin SELECT policy). Suspend/unsuspend/delete
+     call the admin-user-action Edge Function, which holds the service_role
+     key server-side and performs the real auth action (the browser cannot).
+     ============================================================ */
+  var USERS = [], USERS_VIEW = [];
+  var ROLE_LABELS = {
+    seeker: 'Job Seeker',
+    homeowner: 'Potential Employer',
+    provider: 'Service Provider',
+    admin: 'Admin'
+  };
+  function roleLabel(r) { return ROLE_LABELS[r] || (r || '—'); }
+
+  function loadUsers() {
+    var countEl = document.getElementById('userCount');
+    if (!countEl) return;
+    countEl.textContent = 'Loading…';
+    // Prefer the admin_list_users() RPC — it joins auth.users so we get each
+    // user's EMAIL (not stored on profiles). Fall back to the profiles table
+    // (no email) if the function hasn't been created yet.
+    client.rpc('admin_list_users')
+      .then(function (res) {
+        if (res.error) return loadUsersFallback(countEl, res.error);
+        USERS = res.data || [];
+        applyUserFilters();
+        renderUserStats();
+      })
+      .catch(function (e) { loadUsersFallback(countEl, e); });
+  }
+
+  function loadUsersFallback(countEl, firstErr) {
+    client.from('profiles').select('*').order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error) {
+          countEl.textContent = 'Error loading users: ' + res.error.message +
+            ' (run supabase-admin-users.sql and ensure your account role is admin).';
+          return;
+        }
+        USERS = res.data || [];
+        applyUserFilters();
+        renderUserStats();
+        if (firstErr) {
+          countEl.textContent += ' — emails hidden until admin_list_users() is created (run supabase-admin-users.sql).';
+        }
+      });
+  }
+
+  function applyUserFilters() {
+    var q = (document.getElementById('uq').value || '').trim().toLowerCase();
+    var role = document.getElementById('uRole').value;
+    var st = document.getElementById('uStatus').value;
+    USERS_VIEW = USERS.filter(function (u) {
+      if (role && (u.role || '') !== role) return false;
+      if (st === 'suspended' && !u.suspended) return false;
+      if (st === 'active' && u.suspended) return false;
+      if (q) {
+        var hay = [u.full_name, u.email, u.phone, u.company].join(' ').toLowerCase();
+        if (hay.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+    renderUserTable();
+  }
+  ['uq', 'uRole', 'uStatus'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (el) { el.addEventListener('input', applyUserFilters); el.addEventListener('change', applyUserFilters); }
+  });
+
+  function userStatusBadge(u) {
+    return u.suspended
+      ? '<span class="badge badge-declined">suspended</span>'
+      : '<span class="badge badge-approved">active</span>';
+  }
+
+  function renderUserTable() {
+    var tbody = document.getElementById('userTbody');
+    document.getElementById('userCount').textContent =
+      USERS_VIEW.length + ' of ' + USERS.length + ' users';
+    document.getElementById('userNoRows').hidden = USERS_VIEW.length !== 0;
+    tbody.innerHTML = USERS_VIEW.map(function (u) {
+      var isAdmin = (u.role === 'admin');
+      var actions = '';
+      if (u.suspended) {
+        actions += '<button class="mini-btn approve" data-user-unsuspend="' + esc(u.id) + '">Unsuspend</button>';
+      } else {
+        actions += '<button class="mini-btn decline" data-user-suspend="' + esc(u.id) + '">Suspend</button>';
+      }
+      actions += '<button class="mini-btn danger" data-user-del="' + esc(u.id) + '">Delete</button>';
+      // Admins are protected: no destructive actions offered on an admin row.
+      if (isAdmin) actions = '<span class="muted">protected</span>';
+      return '<tr>' +
+        '<td class="nowrap">' + esc(fmtDate2(u.created_at)) + '</td>' +
+        '<td>' + esc(u.full_name || '—') + (u.company ? '<br><span class="muted">' + esc(u.company) + '</span>' : '') + '</td>' +
+        '<td>' + (u.email ? '<a href="mailto:' + esc(u.email) + '">' + esc(u.email) + '</a>' : '<span class="muted">—</span>') + '</td>' +
+        '<td>' + esc(u.phone || '—') + '</td>' +
+        '<td>' + esc(roleLabel(u.role)) + '</td>' +
+        '<td>' + userStatusBadge(u) + '</td>' +
+        '<td class="actions-cell">' + actions + '</td>' +
+      '</tr>';
+    }).join('');
+
+    tbody.querySelectorAll('[data-user-suspend]').forEach(function (b) {
+      b.addEventListener('click', function () { userAction(b.getAttribute('data-user-suspend'), 'suspend'); });
+    });
+    tbody.querySelectorAll('[data-user-unsuspend]').forEach(function (b) {
+      b.addEventListener('click', function () { userAction(b.getAttribute('data-user-unsuspend'), 'unsuspend'); });
+    });
+    tbody.querySelectorAll('[data-user-del]').forEach(function (b) {
+      b.addEventListener('click', function () { userAction(b.getAttribute('data-user-del'), 'delete'); });
+    });
+  }
+
+  function findUser(id) {
+    return USERS.filter(function (x) { return String(x.id) === String(id); })[0];
+  }
+
+  // All three privileged actions go through the admin-user-action Edge
+  // Function (service_role, server-side). The browser can't do these itself.
+  function userAction(id, action) {
+    var u = findUser(id);
+    if (!u) return;
+    var who = (u.full_name || u.email || id);
+
+    var prompts = {
+      delete: 'Permanently DELETE this account?\n\n' + who + '\n\nThis removes their login ' +
+        '(freeing the email) and all their profile data. This cannot be undone.',
+      suspend: 'Suspend this account?\n\n' + who + '\n\nThey will be blocked from logging in ' +
+        'until you unsuspend them.',
+      unsuspend: 'Unsuspend this account?\n\n' + who + '\n\nThey will be able to log in again.'
+    };
+    if (!confirm(prompts[action])) return;
+
+    if (!client.functions) {
+      alert('User management requires the admin-user-action Edge Function, which isn\'t available.');
+      return;
+    }
+    client.functions.invoke('admin-user-action', { body: { action: action, user_id: id } })
+      .then(function (res) {
+        var err = (res && res.error) || (res && res.data && res.data.error);
+        if (err) {
+          var msg = (res.data && res.data.error) || (res.error && res.error.message) || 'Action failed';
+          alert('Could not ' + action + ': ' + msg);
+          return;
+        }
+        // Reflect the change locally without a full reload.
+        if (action === 'delete') {
+          USERS = USERS.filter(function (x) { return x.id !== id; });
+        } else {
+          u.suspended = (action === 'suspend');
+        }
+        applyUserFilters(); renderUserStats();
+        alert('Done ✓ — ' + who + ' was ' +
+          (action === 'delete' ? 'deleted' : action === 'suspend' ? 'suspended' : 'unsuspended') + '.');
+      })
+      .catch(function (e) {
+        alert('Could not ' + action + ': ' + (e && e.message ? e.message : 'request failed') +
+          '\n\n(Is the admin-user-action function deployed?)');
+      });
+  }
+
+  function renderUserStats() {
+    function role(r) { return USERS.filter(function (u) { return (u.role || '') === r; }).length; }
+    var suspended = USERS.filter(function (u) { return !!u.suspended; }).length;
+    var cards = [
+      { label: 'Total Users', value: USERS.length },
+      { label: 'Job Seekers', value: role('seeker') },
+      { label: 'Employers', value: role('homeowner') },
+      { label: 'Suspended', value: suspended }
+    ];
+    document.getElementById('userStatCards').innerHTML = cards.map(function (c) {
+      return '<div class="stat-card"><span class="stat-num">' + c.value + '</span><span class="stat-label">' + c.label + '</span></div>';
+    }).join('');
+  }
+
+  function exportUsersCsv() {
+    if (!USERS_VIEW.length) { alert('Nothing to export with the current filters.'); return; }
+    var cols = ['created_at', 'full_name', 'email', 'phone', 'role', 'company', 'location', 'suspended'];
+    var csv = '\uFEFF' + cols.join(',') + '\n' +
+      USERS_VIEW.map(function (r) { return cols.map(function (c) { return csvCell(r[c]); }).join(','); }).join('\n');
+    downloadCsv(csv, 'lebokhu-users');
   }
 })();

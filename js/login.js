@@ -74,7 +74,17 @@
         if (res.error) throw new Error(res.error.message);
         return window.LEBOKHU_AUTH.getProfile(true);
       })
-      .then(function (profile) { redirectAfterLogin(profile); })
+      .then(function (profile) {
+        // Defensive: a suspended account should never reach a dashboard.
+        // (Native auth ban already blocks sign-in; this covers the flag too.)
+        if (profile && profile.suspended) {
+          return client.auth.signOut().then(function () {
+            throw new Error('This account has been suspended. Please contact ' +
+              'info@lekhubo-connect.co.za.');
+          });
+        }
+        redirectAfterLogin(profile);
+      })
       .catch(function (err) {
         var msg = err.message || 'Login failed';
         if (/confirm/i.test(msg)) {

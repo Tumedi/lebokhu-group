@@ -72,6 +72,7 @@
         <button class="tab" id="tabProviders" role="tab" aria-selected="false">🛠️ Service Providers</button>
         <button class="tab" id="tabRequests" role="tab" aria-selected="false">🏠 Service Requests</button>
         <button class="tab" id="tabReviews" role="tab" aria-selected="false">⭐ Reviews</button>
+        <button class="tab" id="tabUsers" role="tab" aria-selected="false">🧑‍💼 Users</button>
       </div>
 
       <!-- ===== JOB SEEKERS TAB ===== -->
@@ -323,6 +324,51 @@
             <tbody id="rvTbody"></tbody>
           </table>
           <div class="no-results" id="rvNoRows" hidden><p>No reviews match your filters.</p></div>
+        </div>
+      </div>
+
+      <!-- ===== USERS TAB ===== -->
+      <div class="tab-panel" id="panelUsers" hidden>
+        <div class="stat-cards" id="userStatCards"></div>
+
+        <div class="job-filters admin-filters">
+          <div class="field">
+            <label for="uq">Search</label>
+            <input type="text" id="uq" placeholder="Name, email, phone, company…">
+          </div>
+          <div class="field">
+            <label for="uRole">Role</label>
+            <select id="uRole">
+              <option value="">All roles</option>
+              <option value="seeker">Job Seeker</option>
+              <option value="homeowner">Potential Employer</option>
+              <option value="provider">Service Provider</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="uStatus">Status</label>
+            <select id="uStatus">
+              <option value="">All</option>
+              <option value="active">Active</option>
+              <option value="suspended">Suspended</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="results-count" id="userCount"></p>
+
+        <div class="table-wrap">
+          <table class="data-table" id="userTable">
+            <thead>
+              <tr>
+                <th>Registered</th><th>Name</th><th>Email</th><th>Phone</th>
+                <th>Role</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="userTbody"></tbody>
+          </table>
+          <div class="no-results" id="userNoRows" hidden><p>No users match your filters.</p></div>
         </div>
       </div>
 
