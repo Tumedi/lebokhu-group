@@ -42,7 +42,7 @@ Pick ONE option.
 ### Option A — Dashboard (simplest, no keys)
 1. **Authentication → Users**.
 2. Sort/scan the list, select every account **except your admin**
-   (`Tbmadihlaba@gmail.com`, or whichever account you set to `role='admin'`).
+   (`bigboy.madihlaba@gmail.com`, or whichever account you set to `role='admin'`).
 3. Delete the selected users. Their `profiles` rows cascade-delete automatically.
 
 ### Option B — Admin API script (if you have many test users)
@@ -52,7 +52,7 @@ Run locally with your **service_role** key (never put this key in the browser/fr
 # Requires: Node 18+, @supabase/supabase-js
 export SUPABASE_URL="https://efupodoraphybvzttrjj.supabase.co"
 export SUPABASE_SERVICE_ROLE_KEY="<your service_role key from Dashboard → Settings → API>"
-export ADMIN_EMAIL="Tbmadihlaba@gmail.com"   # the account to KEEP
+export ADMIN_EMAIL="bigboy.madihlaba@gmail.com"   # the account to KEEP
 node delete-non-admin-users.mjs
 ```
 

@@ -18,9 +18,30 @@
 --   output; if anything looks wrong, nothing is lost until you COMMIT.
 --   The script COMMITs at the end. To abort instead, change COMMIT; to
 --   ROLLBACK; before running.
+--
+--   The admin account to PRESERVE is: bigboy.madihlaba@gmail.com
+--   (change ADMIN_EMAIL in step 0 below if this ever changes).
 -- ============================================================
 
 begin;
+
+-- ---- STEP 0: make sure THE admin account is flagged role='admin' --
+-- This guarantees the account you want to keep (bigboy.madihlaba@gmail.com)
+-- is correctly marked admin BEFORE the wipe runs, so the safety guard at the
+-- end sees it and preserves it. If that email has no account yet, the whole
+-- transaction aborts (so you can go sign up / confirm it first).
+do $$
+declare
+  v_admin_email text := 'bigboy.madihlaba@gmail.com';   -- <<< THE account to keep
+  v_id uuid;
+begin
+  select id into v_id from auth.users where lower(email) = lower(v_admin_email);
+  if v_id is null then
+    raise exception 'ABORT: no auth user found for %. Sign up/confirm that account first.', v_admin_email;
+  end if;
+  update public.profiles set role = 'admin' where id = v_id;
+  raise notice 'Admin confirmed: % (id %) set to role=admin.', v_admin_email, v_id;
+end $$;
 
 -- ---- BEFORE: show what exists now --------------------------
 select 'BEFORE' as phase,
