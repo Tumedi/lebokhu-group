@@ -1,0 +1,48 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LeKhuBo Connect social profile picture">
+  <!-- ============================================================
+       LeKhuBo Connect — social media PROFILE PICTURE (1:1, 1024px)
+       Square, centered emblem with safe padding so nothing is
+       clipped by the circular crop social platforms apply.
+       Convert to PNG with tools/svg-to-png (see repo), or any
+       SVG->PNG converter at 1024x1024.
+       ============================================================ -->
+  <defs>
+    <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F6C453"/>
+      <stop offset="100%" stop-color="#B87910"/>
+    </linearGradient>
+    <linearGradient id="t" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1FA98A"/>
+      <stop offset="100%" stop-color="#0C6B57"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#173A5E"/>
+      <stop offset="100%" stop-color="#0B2038"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Full-bleed navy background (safe inside a circular crop) -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- Emblem centered at (512,512). Scaled from the 512 app icon (x2),
+       sized to sit well within the circular profile mask. -->
+  <g>
+    <!-- gold ring -->
+    <circle cx="512" cy="512" r="300" fill="none" stroke="url(#g)" stroke-width="14"/>
+
+    <!-- radiating industry nodes -->
+    <g fill="url(#g)">
+      <circle cx="512" cy="238" r="21"/>
+      <circle cx="742" cy="340" r="21"/>
+      <circle cx="774" cy="608" r="21"/>
+      <circle cx="512" cy="786" r="21"/>
+      <circle cx="250" cy="608" r="21"/>
+      <circle cx="282" cy="340" r="21"/>
+    </g>
+
+    <!-- interlocking link -->
+    <path d="M534 384 a128 128 0 1 0 0 256 a77 77 0 1 1 0 -256 Z" fill="url(#t)"/>
+    <path d="M490 640 a128 128 0 1 0 0 -256 a77 77 0 1 1 0 256 Z" fill="url(#g)"/>
+    <circle cx="512" cy="512" r="35" fill="#0B2038"/>
+  </g>
+</svg>
