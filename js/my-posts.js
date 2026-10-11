@@ -75,7 +75,11 @@
   // guests to login and other roles to their own dashboard.
   AUTH.requireAuth('homeowner').then(function (ctx) {
     profile = ctx.profile;
-    AUTH.renderHeader('#mainNav');
+    // NOTE: do NOT call AUTH.renderHeader() here. This page already has its
+    // own static nav (Post a Job / My Requests / user name / Log Out), and
+    // renderHeader() would INJECT a second set of links (incl. another Log
+    // Out), causing the duplicated menu. The static nav below is the single
+    // source of truth, matching the other dashboard pages.
     var who = document.getElementById('who');
     if (who) who.textContent = (profile && (profile.full_name || profile.company || profile.email)) || '';
     var lo = document.getElementById('logoutBtn'); if (lo) lo.hidden = false;
