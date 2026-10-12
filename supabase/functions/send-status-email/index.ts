@@ -121,7 +121,7 @@ serve(async (req: Request) => {
                style="background:#E4A020;color:#3a2600;text-decoration:none;font-weight:bold;padding:12px 24px;border-radius:999px;display:inline-block">View My Applications</a>
           </p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 083 943 4887</p>
         </div>
       </div>`;
 
@@ -130,7 +130,7 @@ serve(async (req: Request) => {
       `${copy.headline}\n\n` +
       copy.body.replace(/<[^>]+>/g, "") + "\n\n" +
       `View your applications: https://lekhubo-connect.co.za/my-applications.html\n\n` +
-      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 083 943 4887`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",

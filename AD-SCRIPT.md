@@ -90,4 +90,4 @@ Paste the **Part B script** into a tool like **Canva (Magic → text to video)**
 ## Assets to use
 - Logo: `assets/logo-white.svg` (on dark) / `assets/logo.svg` (on light).
 - Colours: navy `#0B2038`, gold `#E4A020` / `#F6C453`, teal `#0C6B57`.
-- URL: **lekhubo-connect.co.za** · Contact: info@lekhubo-connect.co.za · 081 798 6359.
+- URL: **lekhubo-connect.co.za** · Contact: info@lekhubo-connect.co.za · 083 943 4887.

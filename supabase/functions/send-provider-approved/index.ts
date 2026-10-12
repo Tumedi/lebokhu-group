@@ -74,7 +74,7 @@ serve(async (req: Request) => {
           <p style="color:#5a6b7b;font-size:13px">Tip: add a clear profile photo and keep your
           details up to date to attract more customers.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 083 943 4887</p>
         </div>
       </div>`;
 
@@ -85,7 +85,7 @@ serve(async (req: Request) => {
       (location ? `Area: ${location}\n` : "") +
       `\nClients in your area can now find you and request your services.\n` +
       `View the directory: https://lekhubo-connect.co.za/services-directory.html\n\n` +
-      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 083 943 4887`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
