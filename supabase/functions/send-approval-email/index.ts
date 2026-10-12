@@ -97,7 +97,7 @@ serve(async (req: Request) => {
           <p>Job seekers can now view and apply for this role. We'll be in touch as suitable candidates come through.</p>
           <p>Thank you for partnering with us to connect people, resources and opportunity.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 083 943 4887</p>
         </div>
       </div>`;
 
@@ -106,7 +106,7 @@ serve(async (req: Request) => {
       `Good news! Your job post with LeKhuBo Connect has been APPROVED and is now live on our Jobs page.\n\n` +
       `Job title: ${title}\nCompany: ${company}\nSector: ${sector}\nLocation: ${location}\nType: ${job_type}\n\n` +
       `Job seekers can now view and apply for this role. We'll be in touch as suitable candidates come through.\n\n` +
-      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 083 943 4887`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",

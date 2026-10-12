@@ -59,7 +59,7 @@ WHY LEKHUBO CONNECT
 Join LeKhuBo Connect today and be part of connecting people, skills and
 opportunity.
 
-Contact: info@lekhubo-connect.co.za · 081 798 6359 · Glen Marais, Kempton Park.
+Contact: info@lekhubo-connect.co.za · 083 943 4887 · Glen Marais, Kempton Park.
 ```
 
 **Keywords** (max 100 chars, comma-separated, no spaces after commas for efficiency)
@@ -150,7 +150,7 @@ TEST ACCOUNT (please use to review dashboards & chat):
   Password: (set this in Supabase and paste here)
   Tip: sign in, open "Find a Service", open a provider, and start a chat.
 
-Contact: info@lekhubo-connect.co.za / 081 798 6359
+Contact: info@lekhubo-connect.co.za / 083 943 4887
 ```
 
 ## "What's New" (version notes for v1.0)

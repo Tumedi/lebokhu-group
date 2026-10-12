@@ -95,7 +95,7 @@ serve(async (req: Request) => {
           confirmation email. We'll also help connect you with suitable candidates.</p>
           <p>If you have any questions, just reply to this email.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 083 943 4887</p>
         </div>
         <div style="text-align:center;color:#8496a6;font-size:11px;padding:14px">
           You received this because a job post was submitted using this email on LeKhuBo Connect.
@@ -109,7 +109,7 @@ serve(async (req: Request) => {
       `What happens next? Our team will review your post shortly. Once approved, it goes live on our ` +
       `Jobs page and you'll receive a confirmation email.\n\n` +
       `If you have any questions, just reply to this email.\n\n` +
-      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 083 943 4887`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",

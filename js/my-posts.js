@@ -271,7 +271,7 @@
     var subject = 'Update on your application — LeKhuBo Connect';
     var body = 'Hi ' + name + ',\n\n' + (lines[status] || lines.submitted) +
       '\n\nView your applications: https://lekhubo-connect.co.za/my-applications.html\n\n' +
-      'Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359';
+      'Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 083 943 4887';
     window.location.href = 'mailto:' + encodeURIComponent(app.seeker_email) +
       '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
   }

@@ -78,7 +78,7 @@ serve(async (req: Request) => {
           ${linkBtn}
           <p style="color:#5a6b7b;font-size:13px">Reply from your chat to keep the conversation going.</p>
           <p style="margin-top:20px">Kind regards,<br><strong>LeKhuBo Connect</strong><br>
-          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 081 798 6359</p>
+          <a href="mailto:info@lekhubo-connect.co.za" style="color:#0C6B57">info@lekhubo-connect.co.za</a> &middot; 083 943 4887</p>
         </div>
       </div>`;
 
@@ -87,7 +87,7 @@ serve(async (req: Request) => {
       `${who} sent you a new message${svc} on LeKhuBo Connect.\n\n` +
       (preview ? `"${preview}"\n\n` : "") +
       (chat_url ? `Open the chat: ${chat_url}\n\n` : "") +
-      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 081 798 6359`;
+      `Kind regards,\nLeKhuBo Connect\ninfo@lekhubo-connect.co.za | 083 943 4887`;
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
